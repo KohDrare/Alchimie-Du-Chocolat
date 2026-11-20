@@ -1,8 +1,8 @@
 import json,re,os
 here=os.path.dirname(os.path.abspath(__file__))
 R=lambda f:open(os.path.join(here,f),encoding='utf8').read()
-d=json.load(open('/home/claude/extract/data.json'))
-logo=R('logo.svg') if os.path.exists(os.path.join(here,'logo.svg')) else open('/home/claude/extract/logo.svg').read()
+d=json.load(open(os.path.join(here,'data.json'),encoding='utf8'))
+logo=R('logo.svg') if os.path.exists(os.path.join(here,'logo.svg')) else ''
 logo=re.sub(r'\s+',' ',logo).replace('class="logo"','class="logo" focusable="false"')
 light=re.sub(r"(fill|stroke)=\"#(4B2A00|010202)\"",r"\1=\"#F3ECE2\"",logo,flags=re.I)
 data={
