@@ -1,0 +1,88 @@
+<div class="app" id="app">
+<header class="hdr" id="hdr">
+  <a class="lg" href="#accueil" aria-label="L'alchimie du chocolat — accueil">%%LOGO%%</a>
+  <nav class="nav" aria-label="Navigation">
+    <a href="#accueil" data-n="accueil" class="on">Accueil</a>
+    <a href="#menu" data-n="menu">Carte</a>
+    <a href="#atelier" data-n="atelier"><span class="nd"></span>Atelier</a>
+  </nav>
+  <button class="pf qrb" id="qrBtn" aria-label="Ma carte de points"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button>
+  <button class="pf" id="pfBtn" aria-label="Mon profil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/></svg><span class="on"></span></button>
+</header>
+
+<!-- ================= ACCUEIL ================= -->
+<section class="view on" id="v-accueil">
+  <div id="liveOrder"></div>
+  <div class="hello">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div class="eyebrow"><span class="dots"><i></i><i></i></span>Waterloo · Ixelles</div><span class="status" id="status"><i></i><span>…</span></span></div>
+    <h1>Le chocolat,<br><em>à votre façon.</em></h1>
+    <p>Commandez en ligne, composez votre ballotin praline par praline, et retirez-le en boutique à l'heure qui vous arrange.</p>
+  </div>
+  <div class="offers" id="offers"></div>
+  <div class="pager" id="pager"></div>
+
+  <div class="sec-h"><h2>La carte</h2><a href="#menu">Tout voir</a></div>
+  <div class="cats" id="homeCats"></div>
+
+  <div class="sec-h"><h2>Les incontournables</h2></div>
+  <div class="picks" id="picks"></div>
+
+  <button class="atl-card" data-go="atelier">
+    <div class="tx">
+      <div class="eyebrow"><span class="dots"><i></i><i></i></span>L'Atelier</div>
+      <h3>Votre ballotin,<br>praline par praline.</h3>
+      <p>Choisissez la taille, puis chaque praline parmi plus de 45 créations de la maison.</p>
+      <span class="go">Composer <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span>
+    </div>
+    <span id="atlTeaser"></span>
+  </button>
+
+  <button class="sp-card" data-go="infos">
+    <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l1.5-5h13L20 10"/><path d="M4 10v9h16v-9"/><path d="M4 10c0 1.4 1.1 2.5 2.7 2.5S9.3 11.4 9.3 10c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 11.4 20 10"/><path d="M10 19v-4h4v4"/></svg></span>
+    <span><h3>Retrait en boutique</h3><p>Commandez maintenant, on prépare tout. Vous passez, c'est prêt. Paiement sur place.</p>
+      <span class="chips"><span>Waterloo</span><span>Ixelles</span><span>Emballage cadeau offert</span></span></span>
+  </button>
+
+  <div class="proof" id="proof"></div>
+</section>
+
+<!-- ================= CARTE ================= -->
+<section class="view" id="v-menu">
+  <div class="mhead"><div class="eyebrow"><span class="dots"><i></i><i></i></span>L'alchimie du chocolat</div><h1>La carte</h1></div>
+  <nav class="pills" id="pills"></nav>
+  <div id="menuList"></div>
+</section>
+
+<!-- ================= BOUTIQUES ================= -->
+<section class="view" id="v-infos">
+  <div class="mhead"><div class="eyebrow"><span class="dots"><i></i><i></i></span>Retrait en boutique</div><h1>Nos boutiques</h1></div>
+  <p style="padding:8px 20px 16px;color:var(--mute);font-size:15px">Commandez en ligne, on prépare votre commande, vous la retirez à l'heure choisie.</p>
+  <div class="steps3" id="howSteps"></div>
+  <div id="shopCards"></div>
+  <div class="sec-h"><h2>Bon à savoir</h2></div>
+  <div class="ilist">
+    <div class="irow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/></svg></span><span><b>Paiement</b><span id="infoPay"></span></span></div>
+    <div class="irow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1.5S10 8 12 8zm0 0c2-4 6-4 6-1.5S14 8 12 8z"/></svg></span><span><b>Pour offrir</b><span>Cochez « C'est pour offrir » : emballage cadeau et petit mot sur la carte, sans supplément.</span></span></div>
+    <div class="irow"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8 2.5v4M16 2.5v4"/></svg></span><span><b>Précommandes</b><span id="infoPre"></span></span></div>
+    <button class="irow" data-lg="allergenes" style="width:100%;text-align:left"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v6M12 16.5v.01"/></svg></span><span><b>Allergènes</b><span>Gluten, fruits à coque : le détail par praline.</span></span><span class="go">Voir</span></button>
+  </div>
+</section>
+<footer class="ft" id="footer"></footer>
+</div>
+
+<!-- ================= ATELIER (ballotin sur mesure) ================= -->
+<section class="atl" id="atl" aria-label="L'Atelier — ballotin sur mesure">
+  <div class="atl-top">
+    <button class="bk" id="atlBack" aria-label="Retour"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
+    <div class="t"><b>L'Atelier</b><span>Votre ballotin sur mesure</span></div>
+    <button class="rs" id="atlReset" aria-label="Recommencer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 3v2.5h2.5"/></svg></button>
+  </div>
+  <div class="stage" id="stage"><div class="livep" id="livep"></div><div id="stageBox"></div><div class="layers" id="layers"></div></div>
+  <div class="panel" id="atlPanel"></div>
+</section>
+
+<div class="cbar" id="cbar"><button id="openCart"><span class="n" id="cbN">0</span><span class="l">Voir le panier</span><span id="cbT"></span></button></div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast"></div>

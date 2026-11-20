@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#161514">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>L'alchimie — Espace personnel</title>
+<style>
+:root{--bg:#1e130a;--card:#2b1a0f;--card2:#3a2516;--ink:#fff;--mute:#b3a08d;--or:#b8692f;--or-d:#8a4a22;--green:#2fbf6b;--red:#ff5b4f;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,"Segoe UI",Roboto,sans-serif;--st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--ease:cubic-bezier(.2,.85,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--font);-webkit-font-smoothing:antialiased;min-height:100%}
+button,input{font:inherit;color:inherit;border:0;background:none}
+button{cursor:pointer}
+.app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding:calc(14px + var(--st)) 18px calc(18px + var(--sb))}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.top img{height:24px}
+.top .who{font-size:12.5px;color:var(--mute);text-align:right;line-height:1.3}
+.top .who b{color:#fff;font-weight:650;display:block}
+.top .who button{color:var(--or);font-weight:650;font-size:12.5px}
+h1{font-size:28px;font-weight:850;letter-spacing:-.035em;line-height:1.05}
+.sub{color:var(--mute);font-size:14.5px;margin-top:6px}
+.card{background:var(--card);border-radius:22px;padding:18px;margin-top:16px}
+.fld{display:flex;gap:8px;margin-top:12px}
+.fld input{flex:1;min-width:0;background:var(--card2);border-radius:14px;padding:14px 15px;font-size:16px;outline:none}
+.fld input:focus{box-shadow:0 0 0 2px var(--or)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:16px;padding:15px 18px;font-weight:750;font-size:16px;background:var(--or);color:#fff;transition:transform .12s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn.lt{background:var(--card2)}
+.btn.wh{background:#fff;color:#161514}
+.btn[disabled],.btn.dis{opacity:.35;pointer-events:none}
+.lk{color:var(--or);font-weight:650;font-size:14px;margin-top:12px}
+/* scanner */
+.cam{position:relative;width:100%;aspect-ratio:1;border-radius:26px;overflow:hidden;background:#000;margin-top:14px}
+.cam video{width:100%;height:100%;object-fit:cover}
+.cam .fr{position:absolute;inset:16%;border-radius:22px;box-shadow:0 0 0 999px #0000008c}
+.cam .fr::before,.cam .fr::after{content:"";position:absolute;inset:-3px;border-radius:24px;border:4px solid var(--or);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% 30px no-repeat,linear-gradient(#000 0 0) bottom/100% 30px no-repeat;mask:linear-gradient(#000 0 0) top/100% 30px no-repeat,linear-gradient(#000 0 0) bottom/100% 30px no-repeat;opacity:.9}
+.cam .fr::after{-webkit-mask:linear-gradient(#000 0 0) left/30px 100% no-repeat,linear-gradient(#000 0 0) right/30px 100% no-repeat;mask:linear-gradient(#000 0 0) left/30px 100% no-repeat,linear-gradient(#000 0 0) right/30px 100% no-repeat}
+.cam .ln{position:absolute;left:18%;right:18%;height:2px;background:var(--or);box-shadow:0 0 12px var(--or);top:20%;animation:scan 2.2s ease-in-out infinite alternate}
+@keyframes scan{to{top:80%}}
+.cam .msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:#ddd;font-size:14.5px;background:#000c}
+.cam .msg button{margin-top:12px}
+.hint{text-align:center;color:var(--mute);font-size:13.5px;margin-top:10px}
+.or{display:flex;align-items:center;gap:10px;color:var(--mute);font-size:12.5px;margin:18px 0 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:#ffffff1a}
+.tok{text-transform:uppercase;letter-spacing:.14em;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-weight:700}
+/* client */
+.cli{display:flex;align-items:center;gap:14px}
+.av{width:54px;height:54px;border-radius:50%;background:var(--or);display:grid;place-items:center;font-size:22px;font-weight:800;flex:none}
+.cli .nm b{font-size:20px;font-weight:800;letter-spacing:-.02em;display:block;color:#fff}
+.cli .nm span{color:var(--mute);font-size:13px}
+.bal{margin-left:auto;text-align:right}
+.bal b{font-size:34px;font-weight:850;letter-spacing:-.04em;line-height:1}
+.bal span{display:block;color:var(--mute);font-size:13px}
+.lbl{font-size:13px;font-weight:650;color:var(--mute);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.amt{display:flex;align-items:center;background:var(--card2);border-radius:16px;padding:6px 6px 6px 16px}
+.amt input{flex:1;min-width:0;font-size:30px;font-weight:800;letter-spacing:-.02em;outline:none;padding:6px 0}
+.amt i{font-style:normal;font-size:24px;font-weight:700;color:var(--mute);margin-right:10px}
+.quick{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.quick button{background:var(--card2);border-radius:12px;padding:10px 14px;font-weight:700;font-size:15px}
+.quick button:active{background:var(--or)}
+.rw{display:grid;gap:8px}
+.rw button{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:16px;padding:13px 14px;text-align:left}
+.rw button i{font-style:normal;font-size:24px}
+.rw button b{flex:1;font-weight:700}
+.rw button span{font-weight:800;color:var(--or)}
+.rw button[disabled]{opacity:.35}
+.row{display:flex;gap:10px;margin-top:18px}
+.row .btn{flex:1}
+/* résultat */
+.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 0}
+.done .ck{width:90px;height:90px;border-radius:50%;background:var(--green);display:grid;place-items:center;animation:pop .5s var(--ease)}
+.done .ck svg{width:44px;height:44px}
+.done.m .ck{background:var(--or)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.1)}100%{transform:none}}
+.done h2{font-size:44px;font-weight:850;letter-spacing:-.04em;margin-top:18px;line-height:1}
+.done p{color:var(--mute);margin-top:8px;font-size:15px}
+.done .nb{margin-top:16px;background:var(--card);border-radius:30px;padding:10px 18px;font-size:15px}
+.done .nb b{font-size:20px;font-weight:800}
+/* historique */
+.hist div{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #ffffff12;font-size:14px}
+.hist div:last-child{border-bottom:0}
+.hist .t{flex:1;min-width:0}
+.hist .t small{display:block;color:var(--mute);font-size:12px}
+.hist .d{font-weight:800}
+.hist .d.p{color:var(--green)}.hist .d.m{color:var(--or)}
+.hist button{font-size:12px;font-weight:700;color:var(--red);background:#ff5b4f1f;border-radius:10px;padding:6px 9px}
+.empty{color:var(--mute);font-size:13.5px;padding:6px 0}
+.toast{position:fixed;left:50%;bottom:calc(24px + var(--sb));transform:translate(-50%,140%);opacity:0;visibility:hidden;background:#fff;color:#161514;font-weight:650;font-size:14.5px;padding:12px 18px;border-radius:30px;transition:transform .35s var(--ease);z-index:9;max-width:90%;text-align:center}
+.toast.show{transform:translate(-50%,0);opacity:1;visibility:visible}
+.toast.bad{background:var(--red);color:#fff}
+.spin{width:28px;height:28px;border-radius:50%;border:3px solid #ffffff30;border-top-color:var(--or);animation:sp .8s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(1turn)}}
+/* onglets */
+.tabs{display:flex;gap:4px;background:var(--card);border-radius:16px;padding:4px;margin:-4px 0 16px}
+.tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border-radius:12px;font-weight:700;font-size:14.5px;color:var(--mute);position:relative}
+.tabs button.on{background:#fff;color:#161514}
+.tabs .bd{min-width:20px;height:20px;border-radius:10px;background:var(--or);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;padding:0 5px}
+.app.wide{max-width:1400px}
+/* commandes */
+.ob{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ob h1{font-size:26px;margin-right:auto}
+.chip{background:var(--card);border-radius:20px;padding:8px 13px;font-size:13.5px;font-weight:700;color:var(--mute)}
+.chip.on{background:var(--or);color:#fff}
+.snd{background:var(--card);border-radius:20px;padding:8px 13px;font-size:13px;font-weight:700}
+.snd.off{background:var(--or);color:#fff;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.6}}
+.cols{display:grid;gap:18px}
+.col h3{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);margin-bottom:10px}
+.col h3 i{width:10px;height:10px;border-radius:50%}
+.col h3 em{font-style:normal;background:var(--card2);color:#fff;border-radius:10px;padding:1px 8px;font-size:12px}
+.col.new h3 i{background:var(--or)}.col.prep h3 i{background:#f2b33a}.col.ready h3 i{background:var(--green)}
+.col .none{color:#5f5952;font-size:13.5px;padding:14px;border:1.5px dashed #ffffff14;border-radius:18px;text-align:center}
+.oc{background:var(--card);border-radius:20px;padding:15px 15px 13px;margin-bottom:10px;border-left:5px solid var(--or);animation:inn .4s var(--ease)}
+@keyframes inn{from{opacity:0;transform:translateY(-8px)}}
+.oc.prep{border-left-color:#f2b33a}.oc.ready{border-left-color:var(--green)}.oc.done,.oc.cancelled{border-left-color:#4a443e;opacity:.75}
+.oc.flash{animation:flash 1.2s ease-in-out 3}
+@keyframes flash{50%{box-shadow:0 0 0 3px var(--or)}}
+.oc-h{display:flex;align-items:flex-start;gap:10px}
+.oc-n{font:800 22px/1 ui-monospace,"SF Mono",Menlo,monospace}
+.oc-t{margin-left:auto;text-align:right}
+.oc-t b{font-size:19px;font-weight:850;display:block;line-height:1.1}
+.oc-t b.asap{color:var(--or)}
+.oc-t small{color:var(--mute);font-size:12px}
+.oc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.oc-tags span{font-size:11.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;background:var(--card2);border-radius:7px;padding:4px 8px}
+.oc-tags .lv{background:#2563eb;color:#fff}.oc-tags .sp{background:#1f9a55;color:#fff}.oc-tags .pts{background:#f2b33a;color:#161514}
+.oc-who{margin-top:9px;font-size:14.5px}
+.oc-who a{color:var(--or);font-weight:700;text-decoration:none;margin-left:6px}
+.oc-it{margin-top:10px;border-top:1px solid #ffffff12;padding-top:9px}
+.oc-it div{display:flex;gap:9px;padding:4px 0;font-size:15px}
+.oc-it .q{font-weight:850;color:var(--or);min-width:26px}
+.oc-it .o{display:block;font-size:12.5px;color:var(--mute);line-height:1.35}
+.oc-it .nt{display:block;font-size:13px;color:#f2b33a;font-weight:700}
+.oc-note{margin-top:8px;background:#f2b33a1f;color:#f2c96a;border-radius:10px;padding:8px 10px;font-size:13.5px}
+.oc-f{display:flex;align-items:center;gap:8px;margin-top:12px}
+.oc-f .tt{font-weight:850;font-size:17px;margin-right:auto}
+.oc-f .tt small{display:block;font-weight:600;font-size:11.5px;color:var(--mute)}
+.oc-f .go{background:var(--or);color:#fff;border-radius:13px;padding:11px 16px;font-weight:800;font-size:14.5px}
+.oc.prep .go{background:#f2b33a;color:#161514}.oc.ready .go{background:var(--green)}
+.oc-f .mo{background:var(--card2);border-radius:13px;width:42px;height:42px;font-weight:800;font-size:18px;color:var(--mute)}
+.oc-menu{display:flex;gap:6px;margin-top:8px}
+.oc-menu button{flex:1;background:var(--card2);border-radius:11px;padding:9px;font-size:13px;font-weight:700}
+.oc-menu .x{color:var(--red)}
+.donel summary{cursor:pointer;color:var(--mute);font-weight:700;font-size:14px;padding:12px 0;list-style:none}
+.donel summary::-webkit-details-marker{display:none}
+.alert-new{position:fixed;left:50%;top:calc(12px + var(--st));transform:translate(-50%,-160%);background:var(--or);color:#fff;font-weight:800;padding:12px 20px;border-radius:30px;z-index:20;transition:transform .35s var(--ease);box-shadow:0 10px 30px #0006}
+.alert-new.show{transform:translate(-50%,0)}
+@media (min-width:900px){
+  .cols{grid-template-columns:repeat(3,1fr);align-items:start}
+  .col{background:#1c1a18;border-radius:22px;padding:14px;min-height:60vh}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"><div class="spin"></div></div>
+<div class="toast" id="toast"></div>
+<canvas id="cv" hidden></canvas>
+<script src="../assets/vendor/jsQR.min.js"></script>
+<script type="module">
+/* =====================================================================
+   RÉGLAGES — à garder identiques à CONFIG.points dans ../index.html
+   ===================================================================== */
+const CFG = {
+  supabaseUrl: "",       // même valeur que CONFIG.account dans ../index.html
+  supabaseAnonKey: "",   // clé publique (publishable)
+  perEuro: 1,
+  rewards: [
+    { pts: 50,  label: "Un macaron offert",            icon: "✨" },
+    { pts: 150, label: "Un écrin de 9 pralines offert", icon: "🎁" },
+  ],
+};
+
+const $ = s => document.querySelector(s), app = $("#app");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+let tt; function toast(m, bad) { const t = $("#toast"); t.textContent = m; t.classList.toggle("bad", !!bad); t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 2400) }
+const buzz = p => { try { navigator.vibrate && navigator.vibrate(p) } catch (e) {} };
+const errMsg = e => { const m = (e && (e.message || e.error_description)) || ""; return /expir|inconnu/i.test(m) ? "QR expiré ou inconnu : demande au client de rouvrir son QR" : /assez/.test(m) ? "Pas assez de points" : /personnel/.test(m) ? "Compte non autorisé" : /tard/.test(m) ? "Trop tard pour annuler (15 min)" : "Erreur, réessaie" };
+
+if (!CFG.supabaseUrl && !window.__SUPA_MOCK) { app.innerHTML = `<h1 style="margin-top:40px">Espace personnel</h1><p class="sub">Pas encore activé : il faut d'abord brancher Supabase (voir le README du projet).</p>`; throw new Error("Supabase non configuré") }
+const sb = window.__SUPA_MOCK || (await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm")).createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, storageKey: "alchimie-auth" } });
+const S = { user: null, team: false, tab: "orders", login: { step: "email", email: "" }, token: null, client: null, busy: false };
+
+/* ---------------- en-tête ---------------- */
+const top = () => `<div class="top"><a href="../" aria-label="Retour au site"><svg class="logo" style="height:34px;width:auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625.4 194" role="img" aria-label="L'alchimie du chocolat"> <g> <g> <g> <g> <path fill="none" stroke="#C6D41F" stroke-width="1.5" d="M107.8,119.1c-9.6,8-21.6,11.7-38.2,13.9c-4.4,0-8.8,0-13.2,0 c-28.9-3.6-50.8-14.4-53.5-44.2c0-1.7,0-3.3,0-5c1.9-19.1,9.9-34.9,20-48.5C32.5,22.2,47,8,67.5,7c0.9,0,1.9,0,2.9,0 c29.7,3.6,42.2,24.4,63.5,36.4c0,2,0,4,0,6.1c-14.4-7.5-24-17.8-39.6-25.7c-3.5-1.8-13.8-6.4-15.7-1.1 c-2,5.7,9.2,11.7,12.9,14.6c5.9,4.8,12.7,10.7,18.4,17.8 M92.5,70c-9.1-10.1-21.4-16.3-40.4-14.8c-7.5,0.6-12.4,1.5-20.3,3.2 C26.3,59.6,17,60,16.1,65.6c-0.5,3,1.4,6.2,3.6,9.6c5.6,8.8,9.8,16.5,16.1,23.9c12.9,15.1,31,20.5,54.2,15 c0.8-0.2,1.5-0.4,2.2-0.5"/> <path fill-rule="evenodd" fill="#C6D41F" d="M92.2,84.7c-4.6-3.8-9.7-7.2-15.1-10.3c-16-9-33.7-12.2-59.2-10 c-0.7-1,2.2-1.3,2.9-1.4c9.2-1.4,19.2-0.7,27.1-0.4c18.6,0.8,33.3,8.7,44.6,18.8"/> <path fill-rule="evenodd" fill="#C6D41F" d="M92.2,109.6c-31.8,1.4-54.2-15.9-67.8-34c-0.1-0.4,0.1-0.6,0.4-0.7 c12.3,13.4,26.3,25.3,48.5,30c5.4,1.1,11.9,2.3,18.2,2.4"/> <path fill-rule="evenodd" fill="#C6D41F" d="M20.7,71.2c-1-1.6-3.2-2-3.2-4.6c1.8,1.7,3.3,3.6,5,5.3 C21.9,72,21.3,70.1,20.7,71.2z"/> <path fill-rule="evenodd" fill="#C6D41F" d="M20.7,71.2c0.6-1.1,1.1,0.7,1.8,0.7c0.4,1.2,2,1.4,2.1,2.9 c-0.3,0.1-0.4,0.3-0.4,0.7C22.8,74.4,21.9,72.7,20.7,71.2z"/> <path fill-rule="evenodd" fill="#C6D41F" d="M92.5,99.6C66.8,90.8,41.4,78,18.6,65.9c-0.6-0.2,0-0.4,0.4-0.4 C44,74.8,69.5,85.7,92.4,97.2"/> </g> </g> <g> <path fill="#F3ECE2" d="M97.9,112.3h14.8v3.2h-18V56.1h3.2"/> <path fill="#F3ECE2" d="M116.9,55.2c-1.3,6.6-4.5,16.7-5.7,19.2l-2.4,0.4C110,71,112,61.5,112.7,56L116.9,55.2z"/> <path fill="#F3ECE2" d="M123.3,95.1l-4,20.5h-3.1L128,56h3l12,59.5h-3.3l-4-20.5H123.3z M134.9,91.8L131.7,75 c-0.9-4.6-1.6-8.8-2.2-13.6h-0.3c-0.6,4.9-1.3,9.3-2.1,13.7L124,91.8L134.9,91.8L134.9,91.8z"/> <path fill="#F3ECE2" d="M149.8,56h3.2v56.3h14.8v3.2h-18V56z"/> <path fill="#F3ECE2" d="M190.3,114.4c-1.6,1.1-4,1.7-7,1.7c-7.9,0-15.4-7.4-15.4-29.7c0-24.1,9.3-30.9,16.2-30.9 c2.7,0,4.8,0.6,5.9,1.4l-1,3.4c-1.2-0.7-2.5-1.3-5.3-1.3c-5.2,0-12.3,6.5-12.3,26.7c0,20.8,6.3,27,12.6,27c2.4,0,4.4-0.7,5.6-1.5 L190.3,114.4z"/> <path fill="#F3ECE2" d="M199.8,56v26.6h16.4V56h3.2v59.5h-3.2V86h-16.4v29.6h-3.2V56H199.8z"/> <path fill="#F3ECE2" d="M231.8,56v59.5h-3.2V56H231.8z"/> <path fill="#F3ECE2" d="M271.1,86.9c-0.4-9.2-0.7-18.5-0.5-25.5h-0.4c-1.2,6.8-2.5,13.8-4.5,22.2l-7.3,32h-1.6L250,85.2 c-2.1-9.3-3.6-16.6-4.8-23.8h-0.3c0.1,7.3-0.1,16.2-0.5,26.3l-1,27.9h-3.2l2.6-59.5h3.7l7,30.8c1.9,8,3.1,13.4,4.3,20.2h0.2 c1.1-6.9,2.2-11.9,4-20.2l6.8-30.8h4l2.8,59.5h-3.3L271.1,86.9z"/> <path fill="#F3ECE2" d="M287.1,56v59.5h-3.2V56H287.1z"/> <path fill="#F3ECE2" d="M312.8,86h-13.2v26.2h15.1v3.3h-18.3V56.1h17.4v3.4h-14.2v23.2h13.2V86z"/> <path fill="#F3ECE2" d="M332.4,56.9c2-0.9,4.1-1.2,6.3-1.2c4.6,0,7.9,1.4,10.4,4c3.6,3.6,6.9,11.3,6.9,24.2 c0,14.6-2.9,21.3-5.4,25.1c-3.1,4.7-7.9,6.8-12.8,6.8c-1.8,0-3.9-0.1-5.3-0.5L332.4,56.9L332.4,56.9z M335.6,112.3 c1,0.2,1.9,0.2,2.4,0.2c7.2,0,14.6-5.4,14.6-28c0-16.7-4.6-25.4-14-25.4c-1,0-2.2,0.2-3.1,0.4V112.3z"/> <path fill="#F3ECE2" d="M366.4,56v40.6c0,12,3.6,16.2,8.1,16.2c5.1,0,8.3-4.8,8.3-16.2V56h3.2v40.2c0,15.5-5.6,20.1-11.6,20.1 c-5.7,0-11.1-4.2-11.1-18.8V56L366.4,56L366.4,56z"/> <path fill="#F3ECE2" d="M427.2,114.4c-1.6,1.1-4,1.7-7,1.7c-7.8,0-15.4-7.4-15.4-29.7c0-24.1,9.4-30.9,16.2-30.9 c2.7,0,4.8,0.6,5.9,1.4l-1,3.4c-1.3-0.7-2.4-1.3-5.3-1.3c-5.2,0-12.3,6.5-12.3,26.7c0,20.8,6.3,27,12.6,27c2.5,0,4.4-0.7,5.5-1.5 L427.2,114.4z"/> <path fill="#F3ECE2" d="M436.7,56v26.6h16.4V56h3.2v59.5h-3.2V86h-16.4v29.6h-3.2V56H436.7z"/> <path fill="#F3ECE2" d="M476.2,116.3c-6.5,0-12.7-8.2-12.7-30.5c0-21.9,6.3-30.5,13.6-30.5c6.4,0,12.5,8.1,12.5,30.5 C489.7,108,483.4,116.3,476.2,116.3L476.2,116.3z M476.7,112.8c7.8,0,9.6-15.5,9.6-27c0-11.5-1.9-27-9.7-27s-9.7,15.4-9.7,27 C466.9,97.3,468.8,112.8,476.7,112.8L476.7,112.8z"/> <path fill="#F3ECE2" d="M517.4,114.4c-1.6,1.1-4,1.7-7,1.7c-7.9,0-15.5-7.4-15.5-29.7c0-24.1,9.4-30.9,16.2-30.9 c2.7,0,4.8,0.6,5.9,1.4l-1,3.4c-1.3-0.7-2.5-1.3-5.3-1.3c-5.2,0-12.3,6.5-12.3,26.7c0,20.8,6.3,27,12.6,27c2.4,0,4.4-0.7,5.6-1.5 L517.4,114.4z"/> <path fill="#F3ECE2" d="M532.9,116.3c-6.5,0-12.7-8.2-12.7-30.5c0-21.9,6.3-30.5,13.6-30.5c6.4,0,12.5,8.1,12.5,30.5 C546.4,108,540.1,116.3,532.9,116.3L532.9,116.3z M533.4,112.8c7.8,0,9.6-15.5,9.6-27c0-11.5-1.9-27-9.7-27 c-7.8,0-9.7,15.4-9.7,27C523.6,97.3,525.5,112.8,533.4,112.8L533.4,112.8z"/> <path fill="#F3ECE2" d="M553.7,56h3.2v56.3h14.8v3.2h-18L553.7,56L553.7,56z"/> <path fill="#F3ECE2" d="M582.3,95.1l-4,20.5h-3.1L587,56h3l12,59.5h-3.3l-4-20.5H582.3z M594,91.8L590.8,75 c-0.9-4.6-1.6-8.8-2.2-13.6h-0.3c-0.6,4.9-1.3,9.3-2.2,13.7L583,91.8L594,91.8L594,91.8z"/> <path fill="#F3ECE2" d="M609.9,59.3h-9.3V56h21.9v3.3h-9.3v56.2h-3.2L609.9,59.3L609.9,59.3z"/> </g> </g> <g> <path fill="#F3ECE2" d="M223.3,154.3l2-1l-0.1,0.5c0,0.4-0.1,0.7-0.1,1c0,0.3,0,0.5-0.1,0.6l-0.2,1.6c0,0,0,0.2-0.1,0.5 c1.1-1.1,2.2-2.1,3.3-2.9c1.1-0.9,2.1-1.5,3-1.9s1.7-0.6,2.5-0.6c0.8,0,1.4,0.3,1.9,0.8s0.7,1.3,0.7,2.2c0,1-0.4,2.2-1.1,3.5 c-0.7,1.3-1.7,2.6-3,4c-1.4,1.5-2.7,2.6-3.9,3.4c0.4,0,0.7,0,0.7,0c1.4,0,2.6,0.4,3.5,1.3c0.9,0.9,1.4,2,1.4,3.3 c0,1.4-0.4,2.7-1.2,4s-1.9,2.4-3.2,3.4c-1.5,1-3.3,1.6-5.3,1.6c-1.7,0-2.9-0.3-3.6-1l1-1.3c0.4,0.5,1,0.8,1.6,1.1 c0.6,0.3,1.3,0.4,2,0.4c1.2,0,2.3-0.4,3.3-1.1s1.9-1.7,2.5-2.9s0.9-2.5,0.9-3.9c0-0.9-0.2-1.6-0.5-2.2s-0.8-1.1-1.3-1.4 c-0.6-0.3-1.2-0.5-2-0.5c-0.4,0-0.8,0.1-1.3,0.2l0.2-1c1.2-0.7,2.3-1.5,3.5-2.6c1.1-1.1,2.1-2.2,2.9-3.4c1-1.5,1.5-3,1.5-4.2 c0-0.8-0.2-1.4-0.6-1.9c-0.4-0.5-0.9-0.7-1.6-0.7c-1.2,0-2.7,0.8-4.6,2.3c-1.3,1.1-2.3,2.1-3.1,3l-0.1,0.4c-0.2,1.5-0.5,3-0.9,4.7 c-0.4,1.7-0.9,3.5-1.4,5.3c-0.5,1.9-1.1,3.6-1.6,5.1c-0.6,1.8-1.2,3.1-1.9,4c-0.6,0.9-1.2,1.3-1.8,1.3c-0.9,0-1.4-0.8-1.4-2.3 c0-1,0.2-2.3,0.6-3.9c0.4-1.6,0.9-3.1,1.4-4.5c1.4-3.5,3-6.4,5.1-8.7c0.1-0.8,0.2-1.7,0.4-2.8C223.1,156,223.2,155,223.3,154.3z M222.5,161.3c-1,1.2-2,2.7-2.9,4.5c-0.9,1.8-1.7,3.6-2.2,5.4c-0.4,1.1-0.6,2.2-0.8,3.3c-0.2,1.1-0.3,1.9-0.3,2.5 c0,0.8,0.2,1.2,0.6,1.2c0.3,0,0.6-0.2,0.8-0.6s0.6-1.1,1-2.1c0.2-0.5,0.5-1.2,0.7-2s0.5-1.6,0.8-2.3c0.2-0.8,0.5-1.6,0.8-2.6 c0.3-1,0.5-1.8,0.6-2.4C221.9,164.3,222.3,162.6,222.5,161.3z"/> <path fill="#F3ECE2" d="M233.6,186.2l1-1.3c0.8,0.8,1.6,1.2,2.6,1.2c1,0,1.8-0.4,2.5-1.2c0.6-0.8,1.1-2.1,1.5-4l0.9-4.1 c-1.5,1.7-2.8,2.6-4,2.6c-0.7,0-1.2-0.2-1.6-0.6c-0.4-0.4-0.6-1-0.6-1.7c0-0.5,0.1-1,0.2-1.6l1.4-7.1l1.9-0.8l-1.9,8 c-0.2,0.6-0.2,1.1-0.2,1.5c0,0.5,0.1,0.8,0.4,1.1c0.3,0.3,0.6,0.4,1.1,0.4c0.5,0,1-0.2,1.6-0.6s1.2-1.1,2-1.9l1.7-7.6l1.9-0.8 l-2.9,11.7c-0.4,1.4-0.7,2.5-1,3.3c-0.3,0.8-0.7,1.5-1.1,2c-1.3,1.7-2.9,2.5-4.8,2.5C235.1,187,234.3,186.7,233.6,186.2z"/> <path fill="#F3ECE2" d="M266.7,166.3l-1.4,1.2c-0.4-0.6-0.7-1.3-0.9-2s-0.3-1.5-0.3-2.5c0-2.3,0.6-4.8,1.9-7.2 c0.5-1.1,1.1-1.9,1.8-2.5s1.3-0.9,1.9-0.9c0.8,0,1.4,0.5,1.9,1.4s0.6,2.4,0.6,4.2c0,1.7-0.2,3.5-0.7,5.7s-1,4.1-1.8,6.1 c0.8-0.1,1.3-0.1,1.8-0.1c0.1,0,0.2,0,0.3,0l-0.1,0.6c-0.7,0-1.4,0-2.1,0.2c-1.1,2.7-2.4,5.2-3.9,7.5c-1.5,2.3-3.1,4.1-4.7,5.4 c-1.6,1.3-3,1.9-4.4,1.9c-0.9,0-1.7-0.3-2.2-0.8s-0.8-1.3-0.8-2.3c0-0.7,0.2-1.6,0.6-2.4s1-1.8,1.7-2.6c0.7-0.9,1.5-1.7,2.5-2.5 c0.9-0.7,1.8-1.3,2.7-1.9c0.9-0.5,2-1,3-1.4c1.1-0.4,2.2-0.8,3.4-1.1l0.1-0.4c1.1-3.4,1.9-6.4,2.3-9c0.3-1.8,0.4-3.3,0.4-4.5 c0-0.9-0.1-1.7-0.3-2.2c-0.2-0.5-0.5-0.8-0.9-0.8c-0.6,0-1.1,0.4-1.7,1.2c-0.6,0.8-1.1,1.9-1.4,3.1c-0.4,1.3-0.6,2.5-0.6,3.7 C265.4,163.3,265.8,165,266.7,166.3z M267.2,170.8c-1.6,0.4-3.1,1-4.6,1.7s-2.7,1.6-3.8,2.5c-1.2,1.1-2.2,2.3-2.9,3.6 s-1.1,2.5-1.1,3.6c0,0.7,0.2,1.3,0.5,1.7c0.4,0.5,0.8,0.7,1.4,0.7c1.7,0,3.6-1.5,5.8-4.5c0.5-0.7,1-1.5,1.6-2.6 c0.5-1,1.2-2.3,1.9-3.9C266.5,172.8,266.8,171.8,267.2,170.8z"/> <path fill="#F3ECE2" d="M280.1,176l0.4,0.3c-0.8,1.1-1.6,1.9-2.4,2.4c-0.8,0.5-1.6,0.7-2.5,0.7c-1.1,0-1.9-0.4-2.6-1.1 c-0.6-0.7-1-1.7-1-2.9s0.3-2.4,1-3.6c0.6-1.2,1.4-2.2,2.4-3c1-0.8,1.9-1.2,2.8-1.2c0.5,0,1,0.2,1.3,0.5s0.5,0.7,0.5,1.2 c0,1-0.6,2-1.7,3.1c-1.1,1-2.6,1.9-4.6,2.6c0,0.1,0,0.2,0,0.4c0,0.9,0.2,1.7,0.8,2.2c0.5,0.6,1.1,0.9,2,0.9c0.6,0,1.2-0.2,1.8-0.6 C278.8,177.5,279.4,176.9,280.1,176z M273.7,174.5c1.4-0.6,2.5-1.4,3.3-2.1c0.5-0.5,0.9-1.1,1.2-1.7c0.3-0.6,0.5-1.2,0.5-1.6 c0-0.6-0.3-0.9-0.9-0.9c-0.9,0-1.7,0.7-2.6,2C274.4,171.5,273.9,173,273.7,174.5z"/> <path fill="#F3ECE2" d="M293.1,167.4l-1.9,7.3c-0.2,0.8-0.3,1.4-0.3,1.9c0,0.4,0.1,0.7,0.3,1s0.4,0.4,0.6,0.4c0.4,0,1-0.5,1.9-1.4 l0.3,0.3l-0.2,0.3c-0.7,0.8-1.2,1.4-1.6,1.7s-0.7,0.5-1,0.5c-0.4,0-0.8-0.2-1.1-0.7c-0.3-0.4-0.5-1-0.5-1.5c0-0.4,0.2-1.4,0.5-2.9 l0.2-0.8c-0.5,1.1-1.1,2.2-2,3.3c-1.4,1.8-2.7,2.6-4,2.6c-0.8,0-1.4-0.3-1.8-0.8s-0.7-1.3-0.7-2.2c0-1.2,0.4-2.5,1.1-3.9 c0.7-1.4,1.6-2.5,2.6-3.4s2.1-1.3,3.1-1.3c1,0,1.8,0.4,2.4,1.1l0.2-0.8L293.1,167.4z M290.8,169.9c-0.2-0.5-0.4-0.9-0.8-1.2 c-0.4-0.3-0.8-0.4-1.3-0.4c-0.6,0-1.2,0.3-1.9,0.8s-1.2,1.3-1.8,2.2c-0.4,0.8-0.8,1.6-1.1,2.5c-0.3,0.9-0.4,1.7-0.4,2.3 c0,0.7,0.1,1.2,0.4,1.6c0.3,0.4,0.6,0.6,1.1,0.6c0.6,0,1.2-0.3,1.9-0.9c0.7-0.6,1.3-1.4,2-2.5c0.4-0.6,0.7-1.2,0.9-1.8 s0.5-1.5,0.8-2.5L290.8,169.9z"/> <path fill="#F3ECE2" d="M295.3,179.3l2.1-11l1.9-0.8l-1.7,7.3c1.1-2.3,2.2-4.1,3.3-5.3c1.1-1.2,2.1-1.8,3.1-1.8 c0.5,0,0.9,0.2,1.2,0.5c0.3,0.3,0.5,0.8,0.5,1.3c0,0.3-0.1,0.7-0.2,1.3l-0.2,0.8l-0.6,2.4l-0.2,0.8c-0.2,0.8-0.3,1.4-0.3,1.8 s0.1,0.8,0.2,1s0.3,0.4,0.6,0.4c0.4,0,1.1-0.5,2-1.5l0.3,0.3l-0.2,0.2c-0.8,0.9-1.3,1.5-1.7,1.8c-0.4,0.3-0.7,0.5-1,0.5 c-0.4,0-0.8-0.2-1-0.6c-0.3-0.4-0.4-0.9-0.4-1.6c0-0.4,0.1-1,0.2-1.9l0.8-4.2c0.1-0.7,0.2-1.1,0.2-1.4c0-0.3-0.1-0.5-0.2-0.6 s-0.4-0.2-0.6-0.2c-0.9,0-2,1-3.4,3c-0.6,0.9-1.2,1.9-1.6,2.8c-0.4,0.9-0.9,2.2-1.4,3.8l-0.2,0.5L295.3,179.3z"/> <path fill="#F3ECE2" d="M314.8,172.6l-0.2,0.9h-4.9l0.2-0.9H314.8z"/> <path fill="#F3ECE2" d="M318,178.6l1.1-2c2.2,1.2,4.4,1.9,6.5,1.9c1.4,0,2.7-0.3,3.9-0.8c1.2-0.5,2.1-1.2,2.8-2.1s1-1.8,1-2.9 c0-1-0.3-1.9-0.9-2.7c-0.6-0.8-1.7-1.7-3.3-2.8c-1.5-1-2.5-1.7-2.8-1.9s-0.8-0.6-1.3-1c-1-0.9-1.5-1.9-1.5-3c0-2.1,1.4-4.1,4.1-6 c0.8-0.5,1.6-1,2.6-1.5c1-0.4,1.9-0.8,2.9-1c0.9-0.2,1.8-0.3,2.6-0.3c1.2,0,2.2,0.2,2.9,0.7c0.7,0.5,1,1.1,1,1.9 c0,1-0.4,2.1-1.3,3.2c-0.8,1.1-2,2.2-3.4,3.1l-1.6-0.9c1-0.7,1.8-1.3,2.5-2s1.2-1.3,1.6-1.9s0.6-1.2,0.6-1.7 c0-0.4-0.1-0.7-0.3-0.9c-0.2-0.2-0.5-0.5-0.9-0.6c-0.4-0.1-0.8-0.2-1.4-0.2c-1,0-2.1,0.2-3.3,0.6c-1.2,0.4-2.3,0.9-3.4,1.6 c-2.3,1.5-3.5,3.1-3.5,4.9c0,0.5,0.1,1,0.4,1.4s0.8,0.9,1.5,1.5c0.7,0.6,1.7,1.3,3,2.1c1,0.6,1.8,1.2,2.3,1.6s0.9,0.8,1.3,1.3 c0.7,0.9,1.1,2,1.1,3.2c0,0.9-0.2,1.8-0.7,2.8s-1.1,1.8-2,2.6c-2,1.9-4.8,2.9-8.4,2.9C321.2,179.6,319.3,179.3,318,178.6z"/> <path fill="#F3ECE2" d="M345.4,176l0.4,0.3c-0.8,1.1-1.6,1.9-2.4,2.4c-0.8,0.5-1.6,0.7-2.5,0.7c-1.1,0-1.9-0.4-2.6-1.1 c-0.6-0.7-1-1.7-1-2.9s0.3-2.4,1-3.6c0.6-1.2,1.4-2.2,2.4-3c1-0.8,1.9-1.2,2.8-1.2c0.5,0,1,0.2,1.4,0.5c0.4,0.3,0.5,0.7,0.5,1.2 c0,1-0.6,2-1.7,3.1c-1.1,1-2.6,1.9-4.6,2.6c0,0.1,0,0.2,0,0.4c0,0.9,0.2,1.7,0.8,2.2s1.1,0.9,2,0.9c0.6,0,1.2-0.2,1.8-0.6 C344.1,177.5,344.8,176.9,345.4,176z M339.1,174.5c1.4-0.6,2.5-1.4,3.3-2.1c0.5-0.5,0.9-1.1,1.2-1.7s0.5-1.2,0.5-1.6 c0-0.6-0.3-0.9-0.9-0.9c-0.9,0-1.7,0.7-2.6,2C339.7,171.5,339.2,173,339.1,174.5z M346.5,162.9l-4.2,3.1l-0.4-0.1l3.3-3.3 L346.5,162.9z"/> <path fill="#F3ECE2" d="M352.4,152.1l2.1-1l-5.7,24.5c2.4-5.3,4.7-8,7-8c0.5,0,0.9,0.1,1.2,0.4c0.4,0.2,0.6,0.6,0.9,1.1 c0.2,0.5,0.3,1,0.3,1.5c0,1-0.2,2.1-0.7,3.4c-0.5,1.2-1.1,2.3-1.8,3.2c-1.3,1.6-2.7,2.4-4.3,2.4c-0.5,0-1-0.1-1.4-0.2 s-1-0.4-1.5-0.8l-1.4,0.8L352.4,152.1z M348.8,177.1c0.6,1.2,1.5,1.9,2.6,1.9c0.8,0,1.5-0.4,2.2-1c0.7-0.7,1.3-1.7,1.8-3 c0.3-0.7,0.6-1.5,0.8-2.4c0.2-0.9,0.3-1.6,0.3-2.1c0-1.2-0.4-1.9-1.3-1.9c-0.6,0-1.2,0.4-2,1.1c-0.8,0.7-1.5,1.7-2.2,3 C350.2,173.9,349.5,175.4,348.8,177.1z"/> <path fill="#F3ECE2" d="M371.1,167.4l-1.9,7.3c-0.2,0.8-0.3,1.4-0.3,1.9c0,0.4,0.1,0.7,0.3,1s0.4,0.4,0.6,0.4c0.4,0,1-0.5,1.9-1.4 l0.3,0.3l-0.2,0.3c-0.7,0.8-1.2,1.4-1.6,1.7s-0.7,0.5-1,0.5c-0.4,0-0.8-0.2-1.1-0.7c-0.3-0.4-0.5-1-0.5-1.5c0-0.4,0.2-1.4,0.5-2.9 l0.2-0.8c-0.5,1.1-1.1,2.2-2,3.3c-1.4,1.8-2.7,2.6-4,2.6c-0.8,0-1.4-0.3-1.8-0.8s-0.7-1.3-0.7-2.2c0-1.2,0.4-2.5,1.1-3.9 c0.7-1.4,1.6-2.5,2.6-3.4s2.1-1.3,3.1-1.3c1,0,1.8,0.4,2.4,1.1l0.2-0.8L371.1,167.4z M368.8,169.9c-0.2-0.5-0.4-0.9-0.8-1.2 c-0.4-0.3-0.8-0.4-1.3-0.4c-0.6,0-1.2,0.3-1.9,0.8s-1.2,1.3-1.8,2.2c-0.4,0.8-0.8,1.6-1.1,2.5s-0.4,1.7-0.4,2.3 c0,0.7,0.1,1.2,0.4,1.6c0.3,0.4,0.6,0.6,1.1,0.6c0.6,0,1.2-0.3,1.9-0.9c0.7-0.6,1.3-1.4,2-2.5c0.4-0.6,0.7-1.2,0.9-1.8 c0.2-0.6,0.5-1.5,0.8-2.5L368.8,169.9z"/> <path fill="#F3ECE2" d="M372,177.9l1.1-1.3c0.6,1.4,1.5,2.1,2.8,2.1c0.7,0,1.2-0.2,1.7-0.6s0.7-0.9,0.7-1.5c0-0.4-0.1-0.8-0.3-1 c-0.2-0.3-0.8-0.8-1.6-1.5c-0.8-0.6-1.3-1.1-1.6-1.5s-0.4-0.8-0.4-1.3c0-0.6,0.2-1.2,0.5-1.7c0.4-0.5,0.9-1,1.5-1.3 c0.6-0.3,1.2-0.5,1.9-0.5c0.6,0,1.1,0.1,1.5,0.5c0.4,0.3,0.6,0.7,0.6,1.1c0,0.6-0.3,1-0.8,1.2c-0.1-0.6-0.3-1.1-0.7-1.5 c-0.4-0.4-0.9-0.5-1.5-0.5c-0.5,0-1,0.2-1.4,0.5c-0.4,0.4-0.6,0.8-0.6,1.2c0,0.6,0.4,1.1,1,1.6l1.1,0.9c1.1,0.9,1.7,1.8,1.7,2.7 c0,0.7-0.2,1.3-0.6,1.9c-0.4,0.6-0.9,1.1-1.6,1.4c-0.7,0.4-1.4,0.5-2.1,0.5C373.8,179.5,372.8,178.9,372,177.9z"/> <path fill="#F3ECE2" d="M385.6,168.5l-1.5,6.6c-0.2,0.7-0.2,1.2-0.2,1.5c0,0.5,0.1,0.9,0.3,1.1s0.5,0.4,0.9,0.4 c0.4,0,0.7-0.1,1-0.3c0.3-0.2,0.8-0.6,1.4-1.3l0.2-0.2l0.3,0.3c-0.8,1-1.4,1.6-2,2c-0.5,0.4-1,0.6-1.5,0.6c-0.6,0-1.1-0.2-1.5-0.6 c-0.4-0.4-0.6-1-0.6-1.6c0-0.5,0.1-1.2,0.3-2.2l1.3-6.4H382l0.1-0.7h1.9l1.1-5.4l1.9-0.8l-1.4,6.1h3.2l-0.1,0.7L385.6,168.5 L385.6,168.5z"/> <path fill="#F3ECE2" d="M393.1,167.5l-1.8,6.5c-0.3,1.1-0.4,1.9-0.4,2.6c0,0.4,0.1,0.8,0.2,1c0.1,0.3,0.3,0.4,0.6,0.4 c0.4,0,1.1-0.5,2-1.5l0.3,0.3l-0.2,0.2c-0.8,0.9-1.3,1.5-1.7,1.8c-0.4,0.3-0.7,0.5-1,0.5c-0.4,0-0.8-0.2-1-0.6 c-0.3-0.4-0.4-0.9-0.4-1.6c0-0.4,0.1-1,0.2-1.9l1.3-7L393.1,167.5z M393.6,159.7c0.4,0,0.6,0.1,0.8,0.3c0.2,0.2,0.3,0.5,0.3,0.8 c0,0.3-0.1,0.6-0.3,0.8c-0.2,0.2-0.5,0.3-0.8,0.3c-0.3,0-0.6-0.1-0.8-0.4c-0.2-0.2-0.4-0.5-0.4-0.8c0-0.3,0.1-0.6,0.3-0.8 C393,159.8,393.3,159.7,393.6,159.7z"/> <path fill="#F3ECE2" d="M403.1,176l0.4,0.3c-0.8,1.1-1.6,1.9-2.4,2.4c-0.8,0.5-1.6,0.7-2.5,0.7c-1.1,0-1.9-0.4-2.6-1.1 c-0.7-0.7-1-1.7-1-2.9s0.3-2.4,1-3.6c0.6-1.2,1.4-2.2,2.4-3c1-0.8,1.9-1.2,2.8-1.2c0.5,0,1,0.2,1.3,0.5c0.3,0.3,0.5,0.7,0.5,1.2 c0,1-0.6,2-1.7,3.1s-2.6,1.9-4.6,2.6c0,0.1,0,0.2,0,0.4c0,0.9,0.2,1.7,0.8,2.2s1.2,0.9,2,0.9c0.6,0,1.2-0.2,1.8-0.6 C401.8,177.5,402.4,176.9,403.1,176z M396.7,174.5c1.4-0.6,2.5-1.4,3.3-2.1c0.5-0.5,0.9-1.1,1.2-1.7s0.5-1.2,0.5-1.6 c0-0.6-0.3-0.9-0.8-0.9c-0.9,0-1.7,0.7-2.6,2C397.4,171.5,396.9,173,396.7,174.5z"/> <path fill="#F3ECE2" d="M405,179.3l2.1-11l1.9-0.8l-1.7,7.3c1.1-2.3,2.2-4.1,3.3-5.3c1.1-1.2,2.1-1.8,3.1-1.8 c0.5,0,0.9,0.2,1.2,0.5s0.5,0.8,0.5,1.3c0,0.3-0.1,0.7-0.2,1.3l-0.2,0.8l-0.6,2.4l-0.2,0.8c-0.2,0.8-0.3,1.4-0.3,1.8 s0.1,0.8,0.2,1c0.1,0.3,0.3,0.4,0.6,0.4c0.4,0,1.1-0.5,2-1.5l0.3,0.3l-0.2,0.2c-0.8,0.9-1.3,1.5-1.7,1.8s-0.7,0.5-1,0.5 c-0.4,0-0.8-0.2-1-0.6s-0.4-0.9-0.4-1.6c0-0.4,0.1-1,0.2-1.9l0.8-4.2c0.1-0.7,0.2-1.1,0.2-1.4c0-0.3-0.1-0.5-0.2-0.6 c-0.2-0.1-0.3-0.2-0.6-0.2c-0.9,0-2,1-3.4,3c-0.7,0.9-1.2,1.9-1.6,2.8c-0.4,0.9-0.9,2.2-1.4,3.8l-0.2,0.5L405,179.3z"/> <path fill="#F3ECE2" d="M437.4,166.3l-1.4,1.2c-0.4-0.6-0.7-1.3-0.9-2c-0.2-0.7-0.3-1.5-0.3-2.5c0-2.3,0.6-4.8,1.8-7.2 c0.5-1.1,1.1-1.9,1.8-2.5c0.7-0.6,1.3-0.9,1.9-0.9c0.8,0,1.4,0.5,1.8,1.4s0.6,2.4,0.6,4.2c0,1.7-0.2,3.5-0.7,5.7 c-0.4,2.1-1,4.1-1.8,6.1c0.8-0.1,1.3-0.1,1.8-0.1c0.1,0,0.2,0,0.3,0l-0.1,0.6c-0.7,0-1.4,0-2.2,0.2c-1.1,2.7-2.4,5.2-3.9,7.5 c-1.5,2.3-3.1,4.1-4.7,5.4c-1.6,1.3-3,1.9-4.3,1.9c-0.9,0-1.7-0.3-2.2-0.8s-0.8-1.3-0.8-2.3c0-0.7,0.2-1.6,0.6-2.4 c0.4-0.9,1-1.8,1.7-2.6c0.7-0.9,1.5-1.7,2.5-2.5c0.9-0.7,1.8-1.3,2.7-1.9c0.9-0.5,2-1,3-1.4c1.1-0.4,2.2-0.8,3.4-1.1l0.1-0.4 c1.1-3.4,1.9-6.4,2.3-9c0.3-1.8,0.4-3.3,0.4-4.5c0-0.9-0.1-1.7-0.3-2.2c-0.2-0.5-0.5-0.8-0.9-0.8c-0.6,0-1.1,0.4-1.7,1.2 c-0.6,0.8-1.1,1.9-1.4,3.1c-0.4,1.3-0.6,2.5-0.6,3.7C436.1,163.3,436.5,165,437.4,166.3z M437.9,170.8c-1.6,0.4-3.1,1-4.6,1.7 c-1.5,0.7-2.7,1.6-3.8,2.5c-1.2,1.1-2.2,2.3-2.9,3.6s-1.1,2.5-1.1,3.6c0,0.7,0.2,1.3,0.5,1.7s0.8,0.7,1.4,0.7 c1.7,0,3.6-1.5,5.8-4.5c0.5-0.7,1-1.5,1.6-2.6s1.2-2.3,1.9-3.9C437.2,172.8,437.6,171.8,437.9,170.8z"/> <path fill="#F3ECE2" d="M442.7,175.3c0-1.2,0.3-2.4,1-3.6s1.5-2.1,2.5-2.9c1-0.7,2.1-1.1,3.1-1.1c1.1,0,2,0.4,2.7,1.1 c0.7,0.7,1,1.7,1,2.9c0,1.3-0.3,2.5-0.9,3.7s-1.5,2.2-2.5,2.9c-1,0.8-2.1,1.1-3.1,1.1c-1.1,0-2-0.4-2.7-1.1 C443.1,177.6,442.7,176.6,442.7,175.3z M451.2,170.9c0-0.8-0.2-1.5-0.6-2s-0.9-0.8-1.5-0.8c-0.6,0-1.1,0.2-1.6,0.5s-1,0.9-1.4,1.6 c-0.5,0.8-0.9,1.7-1.2,2.8c-0.3,1.1-0.5,2-0.5,2.8c0,1,0.2,1.7,0.6,2.3s0.9,0.8,1.7,0.8c1.2,0,2.2-0.8,3-2.4 c0.5-0.8,0.8-1.7,1.1-2.8C451.1,172.8,451.2,171.8,451.2,170.9z"/> <path fill="#F3ECE2" d="M454.8,179.3l2.1-11l1.9-0.8l-1.7,7.3c1.1-2.3,2.2-4.1,3.3-5.3c1.1-1.2,2.1-1.8,3.1-1.8 c0.5,0,0.9,0.2,1.2,0.5s0.5,0.8,0.5,1.3c0,0.3-0.1,0.7-0.2,1.3l-0.2,0.8l-0.6,2.4l-0.2,0.8c-0.2,0.8-0.3,1.4-0.3,1.8 s0.1,0.8,0.2,1c0.1,0.3,0.3,0.4,0.6,0.4c0.4,0,1.1-0.5,2-1.5l0.3,0.3l-0.2,0.2c-0.8,0.9-1.3,1.5-1.7,1.8s-0.7,0.5-1,0.5 c-0.4,0-0.8-0.2-1-0.6s-0.4-0.9-0.4-1.6c0-0.4,0.1-1,0.2-1.9l0.8-4.2c0.1-0.7,0.2-1.1,0.2-1.4c0-0.3-0.1-0.5-0.2-0.6 c-0.1-0.1-0.3-0.2-0.6-0.2c-0.9,0-2,1-3.4,3c-0.7,0.9-1.2,1.9-1.6,2.8c-0.4,0.9-0.9,2.2-1.4,3.8l-0.2,0.5L454.8,179.3z"/> <path fill="#F3ECE2" d="M468.1,179.3l2.1-11l1.9-0.8l-1.7,7.3c1.1-2.3,2.2-4.1,3.3-5.3c1.1-1.2,2.1-1.8,3.1-1.8 c0.5,0,0.9,0.2,1.2,0.5s0.5,0.8,0.5,1.3c0,0.3-0.1,0.7-0.2,1.3l-0.2,0.8l-0.6,2.4l-0.2,0.8c-0.2,0.8-0.3,1.4-0.3,1.8 s0.1,0.8,0.2,1c0.1,0.3,0.3,0.4,0.6,0.4c0.4,0,1.1-0.5,2-1.5l0.3,0.3l-0.2,0.2c-0.8,0.9-1.3,1.5-1.7,1.8s-0.7,0.5-1,0.5 c-0.4,0-0.8-0.2-1-0.6s-0.4-0.9-0.4-1.6c0-0.4,0.1-1,0.2-1.9l0.8-4.2c0.1-0.7,0.2-1.1,0.2-1.4c0-0.3-0.1-0.5-0.2-0.6 c-0.1-0.1-0.3-0.2-0.6-0.2c-0.9,0-2,1-3.4,3c-0.7,0.9-1.2,1.9-1.6,2.8c-0.4,0.9-0.9,2.2-1.4,3.8l-0.2,0.5L468.1,179.3z"/> <path fill="#F3ECE2" d="M489.2,176l0.4,0.3c-0.8,1.1-1.6,1.9-2.4,2.4c-0.8,0.5-1.6,0.7-2.5,0.7c-1.1,0-1.9-0.4-2.6-1.1 c-0.7-0.7-1-1.7-1-2.9s0.3-2.4,0.9-3.6s1.4-2.2,2.4-3c1-0.8,1.9-1.2,2.8-1.2c0.5,0,1,0.2,1.3,0.5c0.3,0.3,0.5,0.7,0.5,1.2 c0,1-0.6,2-1.7,3.1s-2.6,1.9-4.6,2.6c0,0.1,0,0.2,0,0.4c0,0.9,0.2,1.7,0.8,2.2c0.5,0.6,1.2,0.9,2,0.9c0.6,0,1.2-0.2,1.8-0.6 C487.9,177.5,488.6,176.9,489.2,176z M482.9,174.5c1.4-0.6,2.5-1.4,3.3-2.1c0.5-0.5,0.9-1.1,1.2-1.7s0.5-1.2,0.5-1.6 c0-0.6-0.3-0.9-0.8-0.9c-0.9,0-1.7,0.7-2.6,2C483.5,171.5,483,173,482.9,174.5z M490.3,162.9l-4.2,3.1l-0.4-0.1l3.3-3.3 L490.3,162.9z"/> </g> </g> </svg></a>${S.user ? `<div class="who"><b>${esc(S.user.email || "")}</b><button id="out">Se déconnecter</button></div>` : `<div class="who"><b>Espace personnel</b>Points clients</div>`}</div>`;
+const tabs = () => S.team ? `<div class="tabs"><button data-tab="orders" class="${S.tab === "orders" ? "on" : ""}">Commandes${O.list.filter(o => o.status === "new").length ? `<span class="bd">${O.list.filter(o => o.status === "new").length}</span>` : ""}</button><button data-tab="scan" class="${S.tab === "scan" ? "on" : ""}">Scanner un client</button></div>` : "";
+function bindTop() {
+  const o = $("#out"); if (o) o.onclick = async () => { stopCam(); await sb.auth.signOut(); S.user = null; S.team = false; render() };
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { S.tab = b.dataset.tab; stopCam(); render() });
+  app.classList.toggle("wide", S.team && S.tab === "orders");
+}
+
+/* ---------------- connexion ---------------- */
+function viewLogin() {
+  const L = S.login;
+  app.innerHTML = top() + `<h1>Connexion<br>du personnel</h1><p class="sub">Avec ton e-mail. Jean-Sébastien ou Géraldine doivent t'avoir ajouté à la liste du personnel.</p>
+  <div class="card">${L.step === "email"
+    ? `<b>Ton e-mail</b><div class="fld"><input id="em" type="email" inputmode="email" autocomplete="email" placeholder="toi@email.com" value="${esc(L.email)}"></div><button class="btn" id="go" style="width:100%;margin-top:12px">Recevoir un code</button>`
+    : `<b>Code reçu par e-mail</b><p class="sub">Envoyé à ${esc(L.email)}</p><div class="fld"><input id="cd" class="tok" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="••••••"></div><button class="btn" id="vf" style="width:100%;margin-top:12px">Valider</button><button class="lk" id="bk">← Changer d'e-mail</button>`}</div>`;
+  bindTop();
+  const go = $("#go"), em = $("#em");
+  if (go) { go.onclick = async () => { const v = em.value.trim(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return toast("E-mail invalide", 1); go.classList.add("dis");
+      const { error } = await sb.auth.signInWithOtp({ email: v, options: { shouldCreateUser: true } }); go.classList.remove("dis");
+      if (error) return toast("Envoi impossible, réessaie", 1); L.email = v; L.step = "code"; viewLogin(); setTimeout(() => $("#cd")?.focus(), 200) };
+    em.onkeydown = e => e.key === "Enter" && go.click() }
+  const vf = $("#vf"), cd = $("#cd");
+  if (vf) { vf.onclick = async () => { const v = cd.value.replace(/\D/g, ""); if (v.length < 6) return toast("Entre le code", 1); vf.classList.add("dis");
+      const { data, error } = await sb.auth.verifyOtp({ email: L.email, token: v, type: "email" }); vf.classList.remove("dis");
+      if (error || !data?.user) return toast("Code incorrect ou expiré", 1); await setUser(data.user) };
+    cd.onkeydown = e => e.key === "Enter" && vf.click(); $("#bk").onclick = () => { L.step = "email"; viewLogin() } }
+}
+async function setUser(u) {
+  S.user = u; S.team = false;
+  if (u) { try { const { data } = await sb.rpc("is_team"); S.team = !!data } catch (e) {} }
+  render();
+}
+
+function viewNotTeam() {
+  app.innerHTML = top() + `<h1>Compte pas encore autorisé</h1><p class="sub">Ce compte n'est pas dans la liste du personnel. Envoie cette adresse à Jean-Sébastien ou Géraldine pour qu'il t'ajoute :</p>
+    <div class="card tok" style="text-transform:none;letter-spacing:0;font-size:17px">${esc(S.user.email || S.user.id)}</div>
+    <button class="btn lt" id="re" style="margin-top:16px">J'ai été ajouté, réessayer</button>`;
+  bindTop(); $("#re").onclick = () => setUser(S.user);
+}
+
+/* ---------------- scanner ---------------- */
+let stream = null, raf = 0;
+function stopCam() { cancelAnimationFrame(raf); raf = 0; if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null } }
+async function viewScan() {
+  stopCam(); S.token = null; S.client = null;
+  app.innerHTML = top() + tabs() + `<h1>Scanner un client</h1>
+    <div class="cam" id="cam"><video id="vd" playsinline muted autoplay></video><div class="fr"></div><div class="ln"></div></div>
+    <p class="hint">Vise le QR que le client montre dans « Mon profil ».</p>
+    <div class="or">ou tape le code sous son QR</div>
+    <div class="fld"><input id="mt" class="tok" placeholder="ABC-DEF-GHJ" maxlength="11" autocapitalize="characters" autocomplete="off"><button class="btn" id="mg" style="padding:0 20px">OK</button></div>
+    <div class="lbl">Derniers mouvements</div><div class="card hist" id="hist" style="margin-top:0"><div class="empty">Chargement…</div></div>`;
+  bindTop();
+  const mt = $("#mt"); $("#mg").onclick = () => { const v = mt.value.replace(/[^a-z0-9]/gi, "").toUpperCase(); if (v.length !== 9) return toast("Le code fait 9 caractères", 1); lookup(v) };
+  mt.onkeydown = e => e.key === "Enter" && $("#mg").click();
+  loadHist();
+  if (!navigator.mediaDevices?.getUserMedia) { camMsg("Caméra indisponible sur ce navigateur. Utilise le code sous le QR."); return }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } }, audio: false });
+    const vd = $("#vd"); if (!vd) return stopCam(); vd.srcObject = stream; await vd.play().catch(() => {});
+    const cv = $("#cv"), cx = cv.getContext("2d", { willReadFrequently: true });
+    const tick = () => {
+      if (!stream) return;
+      if (vd.readyState >= 2 && vd.videoWidth) {
+        const s = Math.min(vd.videoWidth, vd.videoHeight), w = Math.min(640, s);
+        cv.width = cv.height = w;
+        cx.drawImage(vd, (vd.videoWidth - s) / 2, (vd.videoHeight - s) / 2, s, s, 0, 0, w, w);
+        const r = window.jsQR && jsQR(cx.getImageData(0, 0, w, w).data, w, w, { inversionAttempts: "dontInvert" });
+        const m = r && /^ALCHIMIE:([A-Z0-9]{9})$/.exec(r.data);
+        if (m) { buzz(30); stopCam(); lookup(m[1]); return }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  } catch (e) { camMsg(e && e.name === "NotAllowedError" ? "Accès caméra refusé. Autorise la caméra pour ce site (Réglages › Safari › Caméra), ou tape le code." : "Caméra indisponible. Tape le code sous le QR du client.") }
+}
+function camMsg(t) { const c = $("#cam"); if (c) c.insertAdjacentHTML("beforeend", `<div class="msg"><div>${esc(t)}<br><button class="btn lt" id="retry">Réessayer</button></div></div>`); const r = $("#retry"); if (r) r.onclick = viewScan }
+
+async function loadHist() {
+  const h = $("#hist"); if (!h) return;
+  const { data, error } = await sb.rpc("team_recent");
+  if (!$("#hist")) return;
+  if (error) { h.innerHTML = `<div class="empty">Impossible de charger.</div>`; return }
+  const now = Date.now();
+  h.innerHTML = (data || []).length ? data.map(r => { const ago = (now - Date.parse(r.created_at)) / 6e4;
+    const when = new Date(r.created_at).toLocaleString("fr-BE", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+    return `<div><span class="t">${esc(r.client)} · ${esc(r.reason || "")}<small>${when} · par ${esc(r.by_name)}</small></span><span class="d ${r.delta > 0 ? "p" : "m"}">${r.delta > 0 ? "+" : ""}${r.delta}</span>${ago < 15 ? `<button data-undo="${r.id}">Annuler</button>` : ""}</div>` }).join("")
+    : `<div class="empty">Aucun mouvement ces 2 derniers jours.</div>`;
+  h.querySelectorAll("[data-undo]").forEach(b => b.onclick = async () => {
+    if (!b.dataset.c) { b.dataset.c = 1; b.textContent = "Sûr ?"; return }
+    const { error } = await sb.rpc("team_undo", { p_id: +b.dataset.undo }); if (error) return toast(errMsg(error), 1); toast("Mouvement annulé"); loadHist() });
+}
+
+/* ---------------- fiche client ---------------- */
+async function lookup(token) {
+  S.busy = true; app.innerHTML = top() + `<div class="spin"></div>`; bindTop();
+  const { data, error } = await sb.rpc("team_lookup", { p_token: token });
+  S.busy = false;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (error || !row) { toast(errMsg(error), 1); buzz([60, 40, 60]); return viewScan() }
+  S.token = token; S.client = { name: row.name, points: +row.points || 0 }; viewClient();
+}
+function viewClient() {
+  const c = S.client, n = c.points, ini = (c.name || "?").trim().charAt(0).toUpperCase();
+  app.innerHTML = top() + tabs() + `<div class="card cli"><span class="av">${esc(ini)}</span><span class="nm"><b>${esc(c.name)}</b><span>Client fidèle</span></span><span class="bal"><b>${n}</b><span>points</span></span></div>
+    <div class="lbl">Ajouter des points · montant payé</div>
+    <div class="amt"><input id="eu" inputmode="decimal" placeholder="0" autocomplete="off"><i>€</i></div>
+    <div class="quick">${[5, 10, 15, 20].map(v => `<button data-q="${v}">+${v} pts</button>`).join("")}</div>
+    <button class="btn" id="add" style="width:100%;margin-top:12px" disabled>Ajouter des points</button>
+    <div class="lbl">Offrir une récompense</div>
+    <div class="rw">${CFG.rewards.map((r, i) => `<button data-rw="${i}" ${n < r.pts ? "disabled" : ""}><i>${r.icon}</i><b>${esc(r.label)}</b><span>−${r.pts}</span></button>`).join("")}</div>
+    <div class="row"><button class="btn lt" id="bk">← Scanner un autre</button></div>`;
+  bindTop();
+  const eu = $("#eu"), add = $("#add");
+  const pts = () => Math.floor((parseFloat(eu.value.replace(",", ".")) || 0) * CFG.perEuro);
+  eu.oninput = () => { const p = pts(); add.disabled = p <= 0; add.textContent = p > 0 ? `Ajouter ${p} point${p > 1 ? "s" : ""}` : "Ajouter des points" };
+  add.onclick = () => { const p = pts(), v = (parseFloat(eu.value.replace(",", ".")) || 0).toFixed(2).replace(".", ","); if (p > 0) act(p, `Commande ${v} €`) };
+  document.querySelectorAll("[data-q]").forEach(b => b.onclick = () => act(+b.dataset.q, "Points ajoutés"));
+  document.querySelectorAll("[data-rw]").forEach(b => b.onclick = () => { const r = CFG.rewards[+b.dataset.rw];
+    if (!b.dataset.c) { b.dataset.c = 1; b.querySelector("b").textContent = `Confirmer : ${r.label.toLowerCase()} ?`; return }
+    act(-r.pts, r.label) });
+  $("#bk").onclick = viewScan;
+  setTimeout(() => eu.focus(), 250);
+}
+async function act(delta, reason) {
+  if (S.busy) return; S.busy = true;
+  const { data, error } = await sb.rpc("team_add_points", { p_token: S.token, p_delta: delta, p_reason: reason });
+  S.busy = false;
+  if (error) { toast(errMsg(error), 1); buzz([60, 40, 60]); return }
+  buzz(delta > 0 ? [20, 50, 20] : 40);
+  const nb = +data;
+  app.innerHTML = top() + tabs() + `<div class="done ${delta < 0 ? "m" : ""}"><span class="ck">${CHECK}</span><h2>${delta > 0 ? "+" : ""}${delta} pts</h2>
+    <p>${esc(reason)} · ${esc(S.client.name)}</p><div class="nb">Nouveau solde : <b>${nb} pts</b></div></div>
+    <button class="btn wh" id="nx">Scanner le client suivant</button>
+    ${delta > 0 ? `<button class="btn lt" id="more" style="margin-top:10px">Même client : offrir une récompense</button>` : ""}`;
+  bindTop();
+  S.client.points = nb;
+  $("#nx").onclick = viewScan; const m = $("#more"); if (m) m.onclick = viewClient;
+}
+
+/* ---------------- commandes ---------------- */
+const O = { list: [], filter: "all", sound: false, chan: null, seen: new Set(), open: null, loaded: false };
+const STEP = { new: ["prep", "Commencer"], prep: ["ready", "Prête"], ready: ["done", null] };
+const LBL = { new: "Nouvelles", prep: "En préparation", ready: "Prêtes" };
+const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` };
+const money = n => new Intl.NumberFormat("fr-BE", { style: "currency", currency: "EUR" }).format(+n || 0);
+const ago = ts => { const m = Math.round((Date.now() - Date.parse(ts)) / 6e4); return m < 1 ? "à l'instant" : m < 60 ? `il y a ${m} min` : `il y a ${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` };
+const slotKey = o => (o.day || "") + (o.slot === "ASAP" ? "00:00" : (o.slot || "99"));
+
+let actx = null;
+function beep() {
+  if (!O.sound) return;
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const t0 = actx.currentTime;
+    [0, .18, .36].forEach((d, i) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = "sine"; o.frequency.value = [880, 1175, 1568][i];
+      g.gain.setValueAtTime(.0001, t0 + d); g.gain.exponentialRampToValueAtTime(.4, t0 + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + d + .16);
+      o.connect(g).connect(actx.destination); o.start(t0 + d); o.stop(t0 + d + .18) }) } catch (e) {}
+}
+function alertNew(o) {
+  beep(); buzz([200, 100, 200]);
+  let el = $("#alertNew"); if (!el) { el = document.createElement("div"); el.id = "alertNew"; el.className = "alert-new"; document.body.appendChild(el) }
+  el.textContent = `🔔 Nouvelle commande #${o.num} · ${o.name}`; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 5000);
+}
+function titleBadge() { const n = O.list.filter(o => o.status === "new").length; document.title = (n ? `(${n}) ` : "") + "L'alchimie — Espace personnel" }
+
+async function loadOrders(silent) {
+  const { data, error } = await sb.rpc("team_orders");
+  if (error) { if (!silent) toast("Impossible de charger les commandes", 1); return }
+  const before = O.loaded ? new Set(O.list.map(o => o.id)) : null;
+  O.list = data || []; O.loaded = true;
+  if (before) O.list.filter(o => !before.has(o.id) && o.status === "new").forEach(alertNew);
+  titleBadge(); if (S.tab === "orders" && S.team && !O.open) viewOrders();
+}
+function startRealtime() {
+  if (O.chan || !sb.channel) return;
+  try {
+    O.chan = sb.channel("staff-orders").on("postgres_changes", { event: "*", schema: "public", table: "shop_orders" }, pl => {
+      const r = pl.new && pl.new.id ? pl.new : null; if (!r) return;
+      const i = O.list.findIndex(o => o.id === r.id);
+      if (i < 0) { O.list.push(r); if (pl.eventType === "INSERT" && r.status === "new") { alertNew(r); O.flash = r.id } }
+      else O.list[i] = r;
+      titleBadge(); if (S.tab === "orders") viewOrders(); else bindTopTabsOnly();
+    }).subscribe();
+  } catch (e) { console.warn(e) }
+}
+function bindTopTabsOnly() { const t = document.querySelector(".tabs"); if (t) { t.outerHTML = tabs(); bindTop() } }
+
+function cardHTML(o) {
+  const nx = STEP[o.status], liv = false, it = Array.isArray(o.items) ? o.items : [];
+  const doneLbl = liv ? "Livrée" : "Remise";
+  return `<div class="oc ${o.status}${O.flash === o.id ? " flash" : ""}" data-id="${o.id}">
+    <div class="oc-h"><span class="oc-n">#${esc(o.num)}</span>
+      <span class="oc-t">${o.slot === "ASAP" ? `<b class="asap">Dès que possible</b>` : `<b>${esc(o.slot || "")}</b>`}<small>${o.day !== todayISO() ? esc(o.when_label || o.day) + " · " : ""}reçue ${ago(o.created_at)}</small></span></div>
+    <div class="oc-tags"><span class="lv">${o.shop === "ixelles" ? "Ixelles" : "Waterloo"}</span>${o.gift ? `<span class="sp">🎁 Pour offrir</span>` : ""}${o.user_id ? `<span class="pts">⭐ Compte points</span>` : ""}</div>
+    <div class="oc-who"><b>${esc(o.name)}</b><a href="tel:${esc(o.phone)}">${esc(o.phone)}</a></div>
+    <div class="oc-it">${it.map(l => `<div><span class="q">${+l.qty}×</span><span><b>${esc(l.name)}</b>${l.opts ? `<span class="o">${esc(l.opts)}</span>` : ""}${l.note ? `<span class="nt">« ${esc(l.note)} »</span>` : ""}</span></div>`).join("")}</div>
+    ${o.note ? `<div class="oc-note">📝 ${esc(o.note)}</div>` : ""}
+    <div class="oc-f"><span class="tt">${money(o.total)}<small>à payer ${liv ? "à la livraison" : "au retrait"}</small></span>
+      ${nx ? `<button class="go" data-go="${o.id}" data-to="${nx[0]}">${nx[1] || doneLbl}</button>` : ""}
+      ${o.status !== "done" && o.status !== "cancelled" ? `<button class="mo" data-more="${o.id}" aria-label="Plus d'actions">⋯</button>` : `<button class="mo" data-more="${o.id}" aria-label="Plus d'actions">↺</button>`}</div>
+    ${O.open === o.id ? `<div class="oc-menu">${o.status === "done" || o.status === "cancelled" ? `<button data-go="${o.id}" data-to="ready">Remettre en « Prête »</button>` : `${o.status !== "new" ? `<button data-go="${o.id}" data-to="${o.status === "ready" ? "prep" : "new"}">← Étape précédente</button>` : ""}<button class="x" data-cancel="${o.id}">Annuler la commande</button>`}</div>` : ""}
+  </div>`;
+}
+function viewOrders() {
+  const today = todayISO();
+  let L = O.list.filter(o => O.filter === "later" ? o.day > today : o.day <= today || o.status !== "done");
+  if (O.filter === "waterloo" || O.filter === "ixelles") L = L.filter(o => o.shop === O.filter && o.day <= today);
+  if (O.filter === "all") L = L.filter(o => o.day <= today);
+  L.sort((a, b) => slotKey(a).localeCompare(slotKey(b)) || a.created_at.localeCompare(b.created_at));
+  const act = ["new", "prep", "ready"], fin = L.filter(o => o.status === "done" || o.status === "cancelled").reverse();
+  const later = O.list.filter(o => o.day > today && o.status !== "cancelled").length;
+  const caisse = O.list.filter(o => o.day === today && o.status === "done").reduce((t, o) => t + +o.total, 0);
+  app.innerHTML = top() + tabs() + `<div class="ob"><h1>Commandes</h1>
+      <button class="snd ${O.sound ? "" : "off"}" id="snd">${O.sound ? "🔔 Son activé" : "🔕 Activer le son"}</button></div>
+    <div class="ob">${[["all", "Aujourd'hui"], ["waterloo", "Waterloo"], ["ixelles", "Ixelles"], ["later", `À venir${later ? ` (${later})` : ""}`]].map(([k, l]) => `<button class="chip ${O.filter === k ? "on" : ""}" data-f="${k}">${l}</button>`).join("")}</div>
+    ${!O.loaded ? `<div class="spin"></div>` : `<div class="cols">${act.map(st => { const C = L.filter(o => o.status === st);
+      return `<div class="col ${st}"><h3><i></i>${LBL[st]}<em>${C.length}</em></h3>${C.length ? C.map(cardHTML).join("") : `<div class="none">${st === "new" ? "Aucune nouvelle commande" : "—"}</div>`}</div>` }).join("")}</div>
+    <details class="donel"${O.showDone ? " open" : ""}><summary>Terminées (${fin.length})${caisse ? ` · ${money(caisse)} encaissés aujourd'hui` : ""} ▾</summary>${fin.map(cardHTML).join("")}</details>`}`;
+  bindTop(); O.flash = null;
+  $("#snd").onclick = () => { O.sound = !O.sound; if (O.sound) { beep() } viewOrders() };
+  document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { O.filter = b.dataset.f; viewOrders() });
+  const dl = document.querySelector(".donel"); if (dl) dl.ontoggle = () => O.showDone = dl.open;
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => setStatus(+b.dataset.go, b.dataset.to));
+  document.querySelectorAll("[data-more]").forEach(b => b.onclick = () => { O.open = O.open === +b.dataset.more ? null : +b.dataset.more; viewOrders() });
+  document.querySelectorAll("[data-cancel]").forEach(b => b.onclick = () => { if (!b.dataset.c) { b.dataset.c = 1; b.textContent = "Sûr ? Toucher pour annuler"; return } setStatus(+b.dataset.cancel, "cancelled") });
+}
+async function setStatus(id, st) {
+  const { data, error } = await sb.rpc("team_set_status", { p_id: id, p_status: st });
+  if (error) return toast("Erreur, réessaie", 1);
+  const i = O.list.findIndex(o => o.id === id); if (i >= 0 && data) O.list[i] = Array.isArray(data) ? data[0] : data;
+  O.open = null; buzz(20);
+  const o = O.list[i];
+  if (st === "done" && o && o.user_id && !o.points_awarded) {
+    const pts = Math.floor(+o.total * CFG.perEuro);
+    if (pts > 0) { const r = await sb.rpc("team_award_order", { p_id: id, p_points: pts }); if (!r.error && r.data) { o.points_awarded = r.data; toast(`+${r.data} points ajoutés à ${o.name}`) } }
+  } else if (st === "ready") toast("Le client voit que c'est prêt");
+  titleBadge(); viewOrders();
+}
+
+/* ---------------- routeur ---------------- */
+function render() {
+  if (!S.user) return viewLogin();
+  if (!S.team) return viewNotTeam();
+  if (!O.loaded && !O.loading) { O.loading = true; loadOrders(true); startRealtime(); setInterval(() => loadOrders(true), 20000); setInterval(() => { if (S.tab === "orders" && !O.open && !document.querySelector("input:focus")) viewOrders() }, 60000) }
+  return S.tab === "scan" ? viewScan() : viewOrders();
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopCam(); else { if (S.team) loadOrders(true); if (S.team && $("#cam") && !stream) viewScan() } });
+const { data } = await sb.auth.getSession();
+await setUser(data?.session?.user || null);
+</script>
+</body>
+</html>

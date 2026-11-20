@@ -1,0 +1,220 @@
+/* =====================================================================
+   L'alchimie du chocolat — habillage (par-dessus la base Menzïli)
+   ===================================================================== */
+.dots i{background:var(--lime)}
+.hello h1,.offer h2,.mhead h1,.sec-h h2,.msec h2,.atl-card h3,.ph-h h2,.sh h3,.trk h4,.pfh b,.shopc h3,.ballo-h h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em}
+.hello h1{font-size:50px;line-height:.95}
+.hello h1 em{font-family:var(--script);font-weight:400;font-style:normal;color:var(--or);font-size:1.12em;letter-spacing:0;display:inline-block;margin-left:-2px}
+.mhead h1{font-size:44px}
+.sec-h h2{font-size:30px}
+.msec h2{font-size:30px}
+.sh h3{font-size:26px;line-height:1.05}
+.ph-h h2{font-size:28px}
+.offer h2{font-size:44px;line-height:.95}
+.atl-card h3{font-size:31px;line-height:1}
+.trk h4{font-size:30px}
+.pfh b{font-size:24px}
+.script{font-family:var(--script);font-weight:400}
+
+/* logo dans l'en-tête */
+.hdr .lg svg{height:38px;width:auto}
+.hdr .lg{display:flex;align-items:center}
+
+/* ---------- vignettes produits (détourés sur fond coloré) ---------- */
+.tile{position:relative;display:grid;place-items:center;overflow:hidden;background:var(--c,#e9dccb)}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#ffffff6b,#ffffff00 62%)}
+.tile img{position:relative;width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 6px 8px #2b1a0f40)}
+.tile.sq img{width:100%;height:100%;object-fit:cover;filter:none}
+.tile svg.box{position:relative;width:92%;height:auto}
+.ph .tile,.im .tile,.th .tile{width:100%;height:100%}
+.ph{background:transparent!important}
+
+/* ---------- offres (accueil) ---------- */
+.offer.art{background:var(--obg,#3d2717)}
+.offer.art::after{background:linear-gradient(180deg,#0000 38%,#1a0e06d9 100%)}
+.offer .collage{position:absolute;inset:0 0 34% 0;display:grid;place-items:center}
+.offer .collage img{position:absolute;width:44%;filter:drop-shadow(0 16px 20px #00000059)}
+.offer .collage svg.box{width:84%;height:auto;filter:drop-shadow(0 22px 26px #00000066);transform:rotate(-6deg)}
+.offer .collage .glow{position:absolute;width:80%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#ffffff2e,#fff0 65%)}
+.offer .kick{background:var(--lime);color:var(--ink)}
+.offer .kick .dots i{background:var(--ink)!important}
+.offer .kick.lt{color:#fff}
+
+/* ---------- catégories rondes ---------- */
+.cat .c{overflow:hidden}
+.cat .c .tile{width:100%;height:100%;border-radius:50%}
+
+/* ---------- atelier (carte d'accueil) ---------- */
+.atl-card{grid-template-columns:1fr 128px}
+.atl-card>svg.box{width:200px;height:auto;margin-left:-44px;transform:rotate(-12deg);filter:drop-shadow(0 18px 20px #0000004d)}
+.atl-card .go{background:var(--lime);color:var(--ink)}
+.atl-row .ar{background:var(--lime);color:var(--ink)}
+.atl-row svg.box{width:66px;height:auto;flex:none}
+
+/* ---------- carte « retrait en boutique » ---------- */
+.sp-card .ic{background:var(--or-soft);color:var(--or)}
+
+/* ---------- grille des pralines ---------- */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px;margin-top:12px}
+@media(min-width:460px){.pgrid{grid-template-columns:repeat(4,1fr)}}
+.pr-c{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;position:relative}
+.pr-c .tile{width:100%;aspect-ratio:1;border-radius:22px;transition:transform .2s var(--ease)}
+.pr-c:active .tile{transform:scale(.95)}
+.pr-c .ey{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);line-height:1.1}
+.pr-c b{font-family:var(--serif);font-size:18px;font-weight:600;line-height:1.02;color:var(--ink)}
+.pr-c .cvt{position:absolute;left:8px;top:8px;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:#fffdf9e6;color:var(--ink2);border-radius:20px;padding:3px 7px}
+.pr-c .cnt{position:absolute;right:6px;top:6px;min-width:26px;height:26px;border-radius:13px;background:var(--or);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;padding:0 6px;box-shadow:0 0 0 3px var(--bg);animation:pop .3s var(--ease)}
+.pr-c .rm{position:absolute;left:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#fffdf9;display:grid;place-items:center;box-shadow:0 2px 6px #2b1a0f2e;z-index:2}
+.pr-c .rm svg{width:12px;height:12px}
+@keyframes pop{from{transform:scale(.4)}to{transform:none}}
+.subpills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.subpills button{font-size:13px;font-weight:650;padding:7px 12px;border-radius:20px;background:var(--card);color:var(--ink2);box-shadow:0 0 0 1px var(--line)}
+.subpills button.on{background:var(--ink);color:#fff;box-shadow:none}
+
+/* ---------- fiche praline ---------- */
+.shimg .tile{position:absolute;inset:0}
+.shimg .tile img{width:62%;height:62%}
+.chipsI{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chipsI span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;background:var(--or-soft);color:var(--or-d)}
+.chipsI span.al{background:#fff1c2;color:#7a5a00}
+
+/* ---------- ballotin (SVG) ---------- */
+svg.box .cup{fill:url(#cupG)}
+svg.box .pc{transition:opacity .2s}
+svg.box .pc.drop{animation:pdrop .5s var(--ease) both;transform-box:fill-box;transform-origin:center}
+svg.box .pc.out{animation:pout .22s ease both;transform-box:fill-box;transform-origin:center}
+@keyframes pdrop{0%{transform:translateY(-26px) scale(1.5);opacity:0}60%{transform:translateY(2px) scale(.94);opacity:1}100%{transform:none}}
+@keyframes pout{to{transform:scale(.3);opacity:0}}
+svg.box .lid{transition:transform .8s cubic-bezier(.3,1.3,.5,1),opacity .4s;transform:translateY(-118%) rotate(-4deg);opacity:0;transform-box:view-box;transform-origin:50% 50%}
+svg.box.closed .lid{transform:none;opacity:1}
+.stage svg.box{width:min(88vw,46vh,440px);height:auto;max-height:100%;overflow:visible;filter:drop-shadow(0 18px 24px #2b1a0f33)}
+.stage svg.box .slot{cursor:pointer}
+.layers{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);display:flex;gap:6px;background:#fffdf9;border-radius:30px;padding:4px;box-shadow:0 2px 8px #2b1a0f1a}
+.layers button{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:20px;color:var(--mute)}
+.layers button.on{background:var(--ink);color:#fff}
+.layers button i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-left:5px;vertical-align:middle}
+
+/* panneau du compositeur */
+.ballo-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:16px 20px 0}
+.ballo-h h3{font-size:28px;line-height:1}
+.ballo-h small{font-size:13px;color:var(--mute)}
+.fillbar{height:8px;border-radius:8px;background:#e9dfd2;margin:10px 20px 0;overflow:hidden}
+.fillbar i{display:block;height:100%;background:linear-gradient(90deg,var(--or),#b97a45);border-radius:8px;transition:width .35s var(--ease)}
+.fillbar.full i{background:var(--lime)}
+.btools{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
+.btools::-webkit-scrollbar{display:none}
+.btools button{flex:none;font-size:13px;font-weight:700;padding:9px 13px;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line);display:inline-flex;gap:6px;align-items:center;color:var(--ink2)}
+.btools button.on{background:var(--ink);color:#fff;box-shadow:none}
+.btools button.mag{background:var(--lime);color:var(--ink);box-shadow:none}
+.btools .sep{flex:none;width:1px;background:var(--line2);margin:4px 2px}
+.bscroll{flex:1;min-height:0;overflow:auto;padding:0 20px 10px;-webkit-overflow-scrolling:touch}
+.bscroll .pgrid{grid-template-columns:repeat(4,1fr);gap:10px 8px}
+.bscroll .pr-c b{font-size:15.5px}
+.bscroll .pr-c .tile{border-radius:18px}
+.bcat{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);margin:16px 2px 0}
+#atlPanel{display:flex;flex-direction:column;max-height:58vh}
+#atlPanel.fill{height:58vh}
+.atl .stage{min-height:0}
+.atl.fillmode .stage{flex:0 0 auto;height:min(36vh,330px)}
+
+/* choix de la taille */
+.sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:14px 20px 4px;overflow:auto}
+.sz{background:var(--card);border-radius:22px;padding:12px 12px 13px;text-align:left;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;gap:2px;transition:.2s var(--ease)}
+.sz.sel{box-shadow:0 0 0 2.5px var(--or),0 8px 18px #8a4a2226}
+.sz svg.box{width:100%;height:auto;margin-bottom:6px}
+.sz b{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1}
+.sz span{font-size:12.5px;color:var(--mute)}
+.sz em{font-style:normal;font-weight:800;font-size:15px;margin-top:4px;color:var(--ink)}
+
+/* récap ballotin */
+.bcomp{padding:6px 20px 0;overflow:auto;flex:1;min-height:0}
+.bcomp .rl{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.bcomp .rl .tile{width:38px;height:38px;border-radius:12px;flex:none}
+.bcomp .rl b{margin-left:auto;font-weight:800}
+.bcomp .fld{margin-top:12px}
+
+/* ---------- panier / finaliser ---------- */
+.cl .th .tile{width:100%;height:100%;border-radius:inherit}
+.shopseg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.shopseg button{background:var(--card);border-radius:18px;padding:12px 13px;text-align:left;box-shadow:0 0 0 1px var(--line);transition:.2s var(--ease)}
+.shopseg button b{display:block;font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.05}
+.shopseg button small{display:block;font-size:12px;color:var(--mute);margin-top:2px;line-height:1.25}
+.shopseg button[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--or);background:#fff}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-20px;padding-inline:20px}
+.chips.scroll::-webkit-scrollbar{display:none}
+.chip.day{flex:none;display:flex;flex-direction:column;align-items:center;min-width:64px;padding:8px 10px;line-height:1.1}
+.chip.day small{font-size:11px;font-weight:600;opacity:.75}
+.chip.day b{font-size:19px;font-weight:800}
+.chip.day em{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#a33a2a;margin-top:2px}
+.chip.day[aria-pressed="true"] em{color:var(--lime)}
+.gift{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:13px 14px;margin-top:14px;box-shadow:0 0 0 1px var(--line)}
+.gift .ico{width:38px;height:38px;border-radius:12px;background:var(--or-soft);display:grid;place-items:center;font-size:19px;flex:none}
+.gift .t{flex:1}.gift .t b{display:block;font-size:15px}.gift .t span{font-size:12.5px;color:var(--mute)}
+.du-b .tile{position:absolute;inset:0;border-radius:16px}
+.du-b .tile img{width:88%;height:88%}
+.du-b .p,.du-b .q{z-index:2}
+
+/* ---------- boutiques ---------- */
+.shopc{margin:14px 20px 0;background:var(--card);border-radius:26px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.shopc .mp{height:150px;position:relative;background:#e6dccd}
+.shopc .mp iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none;filter:sepia(.25) saturate(.8)}
+.shopc .bd{padding:16px 18px 18px}
+.shopc h3{font-size:30px;line-height:1}
+.shopc .ad{font-size:14.5px;color:var(--ink2);margin-top:4px}
+.shopc .act{display:flex;gap:8px;margin-top:12px}
+.shopc .act a{flex:1;text-align:center;font-weight:700;font-size:14px;padding:11px;border-radius:14px;background:var(--or-soft);color:var(--or-d)}
+.shopc .act a.pri{background:var(--ink);color:#fff}
+.shopc ul{list-style:none;margin-top:12px;font-size:14px}
+.shopc li{display:flex;justify-content:space-between;padding:4px 0;color:var(--ink2)}
+.shopc li.today{font-weight:800;color:var(--ink)}
+.shopc li.off span:last-child{color:var(--mute)}
+
+/* ---------- carte de points (dessinée) ---------- */
+.pcard3{border-radius:22px;aspect-ratio:1.586;position:relative;overflow:hidden;color:#f3ece2;padding:6% 7%;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 85% 0%,#7a4524 0%,#3d2717 45%,#24150b 100%);container-type:inline-size;user-select:none;-webkit-user-select:none;touch-action:none}
+.pcard3::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,#ffffff05 0 2px,#0000 2px 9px)}
+.pcard3 .tp{display:flex;justify-content:space-between;align-items:flex-start;position:relative}
+.pcard3 .tp svg{width:46cqw;height:auto}
+.pcard3 .tp span{font-size:3cqw;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-top:2cqw}
+.pcard3 .md{position:relative;display:flex;align-items:flex-end;gap:4cqw}
+.pcard3 .n{font-family:var(--serif);font-size:17cqw;font-weight:600;line-height:.8}
+.pcard3 .n small{font-family:var(--font);font-size:4cqw;font-weight:700;margin-left:1.5cqw;opacity:.75}
+.pcard3 .trk2{flex:1;height:2.4cqw;border-radius:2cqw;background:#ffffff26;position:relative;margin-bottom:2.6cqw}
+.pcard3 .trk2>i{position:absolute;left:0;top:0;bottom:0;border-radius:2cqw;background:var(--lime)}
+.pcard3 .mk{position:absolute;top:50%;transform:translate(-50%,-50%);width:7cqw;height:7cqw;border-radius:50%;background:#3d2717;border:.6cqw solid #ffffff40;display:grid;place-items:center;font-size:3.6cqw}
+.pcard3 .mk.on{background:var(--lime);border-color:var(--lime)}
+.pcard3 .ft2{position:relative;display:flex;justify-content:space-between;font-size:3cqw;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.pcard3 .fglare{position:absolute;inset:0;background:radial-gradient(circle at var(--gx,30%) var(--gy,20%),#ffffff2b,#fff0 45%);pointer-events:none}
+
+/* ---------- démo ---------- */
+.demo{margin:12px 0 0;font-size:12.5px;line-height:1.35;background:#fff1c2;color:#6b4e00;border-radius:14px;padding:10px 12px}
+.demo b{font-weight:800}
+
+/* footer */
+.ft .lg2 svg{height:54px;width:auto}
+.ft .lg2 path[stroke="#4B2A00"],.ft .lg2 path[fill="#4B2A00"]{}
+
+.hdr{background:rgba(243,236,226,.88)}
+.legal table.alt{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.legal table.alt th{text-align:left;font-family:var(--serif);font-size:19px;font-weight:600;padding:14px 0 4px}
+.legal table.alt td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.legal table.alt td:last-child{text-align:right;color:var(--mute);white-space:nowrap;padding-left:10px}
+.pills{background:rgba(243,236,226,.9)}
+.to-atl svg.box{width:64px;height:auto;flex:none}
+.empty svg.box{width:130px;height:auto;margin:0 auto 10px;opacity:.9}
+.pick .im .tile{height:100%}
+.pick .im .tile svg.box{width:84%}
+.media .ph .tile svg.box{width:88%}
+.hdr{gap:8px;padding-left:14px;padding-right:12px}
+.hdr .lg svg{height:30px;width:auto;max-width:112px}
+.nav a{padding:7px 9px;font-size:13px}
+@media(max-width:380px){.hdr .lg svg{max-width:84px}.nav a{padding:7px 7px}}
+.offer .collage img{width:34%}
+.atl.fillmode .stage{height:min(30vh,270px)}
+.atl.fillmode .stage svg.box{height:calc(100% - 34px);width:auto;max-width:92vw}
+.atl.fillmode .livep{top:2px}
+.atl.fillmode #atlPanel{flex:1;max-height:none;height:auto;min-height:0}
+.sh .ey2{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+.atl.fillmode .stage{display:block;padding:6px 0 38px;overflow:hidden}
+.atl.fillmode #stageBox{height:100%;display:flex;justify-content:center;align-items:center}
+.atl.fillmode .stage svg.box{height:100%;width:auto;max-width:92vw}
