@@ -268,17 +268,18 @@ const lineThumb=l=>l.box?`<span class="tile" style="--c:${tint("#c9a27e",.5)}">$
 /* =====================================================================
    ROUTING
    ===================================================================== */
-const VIEWS=["accueil","menu","infos"];
+const VIEWS=["accueil","carte","menu","infos"];
 function route(){
   const h=(location.hash||"#accueil").slice(1);
   if(h==="atelier"){openAtelier();return}
   const fromAtl=$("#atl").classList.contains("on");closeAtelier();
-  const v=VIEWS.includes(h)?h:(h.startsWith("c-")?"menu":"accueil");
+  const v=VIEWS.includes(h)?h:h.startsWith("c-")?"menu":h.startsWith("carte-")?"carte":"accueil";
+  if(v==="carte")renderCarte(h.startsWith("carte-")?h.slice(6):null);
   const changed=!$("#v-"+v).classList.contains("on");
   VIEWS.forEach(x=>$("#v-"+x).classList.toggle("on",x===v));
   document.querySelectorAll(".nav a").forEach(t=>t.classList.toggle("on",t.dataset.n===v));
   if(h.startsWith("c-"))setTimeout(()=>scrollToCat(h.slice(2)),30);
-  else if(changed||!fromAtl)window.scrollTo(0,0);   // en revenant de l'atelier, on garde sa place
+  else if(changed||!fromAtl||v==="carte")window.scrollTo(0,0);   // en revenant de l'atelier, on garde sa place
 }
 window.addEventListener("hashchange",route);
 /* arrivée depuis La carte : ../?add=speculoos-noir#atelier */
@@ -298,7 +299,7 @@ function offerArt(f){
 /* Les nouveautés mises en avant sur l'accueil (identifiants des pralines) — à choisir avec la boutique */
 const NEWS=["curcuma","theobroma","basilic"];
 function hCard(o){
-  const pics=(o.pics||[]).map((k,i)=>`<img src="${prImg(k)}" alt="" style="${["right:40%;top:16%;width:31%","right:6%;top:10%;width:34%","right:20%;top:48%;width:38%"][i]}">`).join("");
+  const pics=(o.pics||[]).map((k,i)=>`<img src="${k.includes("/")?k:prImg(k)}" alt="" class="${o.round?"c":""}" style="${["right:40%;top:16%;width:31%","right:6%;top:10%;width:34%","right:20%;top:48%;width:38%"][i]}">`).join("");
   return `<a class="hc" ${o.href?`href="${o.href}"`:`href="#" data-act="${o.act}"`} style="--tile:${o.tile}"><span class="pics" aria-hidden="true">${o.art||pics}</span>
     <span class="txt"><span class="ey">${o.ey}</span><h2>${o.title}</h2><span class="cnt">${o.cnt} →</span></span></a>`;
 }
@@ -306,17 +307,82 @@ function renderHome(){
   const cards=[];
   if(live(ITEMS.x1))cards.push(hCard({act:"item:x1",tile:"#8f3b2c",ey:"le 6 décembre",title:"Saint-Nicolas",cnt:`Ballotin speculoos · ${fmt(ITEMS.x1.price)}`,pics:["speculoos-noir","manon-specu","speculoos-lait"]}));
   cards.push(hCard({act:"atelier",tile:"#3d2717",ey:"à votre façon",title:"Composer mon ballotin",cnt:"Ballotin, coffret ou sachet",art:`<span class="box-art">${boxSVG("b250",mixPieces(30,"all",5),{lid:false})}</span>`}));
-  cards.push(hCard({href:"carte/",tile:"#a9673f",ey:"la carte des",title:"Pralines &amp; Confiseries",cnt:"Toutes nos créations",pics:["Passion","manon-lait","craquentine-noir"]}));
+  cards.push(hCard({href:"#carte",tile:"#a9673f",ey:"la carte des",title:"Pralines &amp; Confiseries",cnt:"Toutes nos créations",pics:["Passion","manon-lait","craquentine-noir"]}));
   $("#hCards").innerHTML=cards.join("");
   $("#hCards").querySelectorAll("[data-act]").forEach(a=>a.onclick=e=>{e.preventDefault();const v=a.dataset.act;if(v.startsWith("item:"))openItem(v.slice(5));else go(v)});
   const news=NEWS.filter(k=>PRI[k]);
   $("#hNews").innerHTML=news.length?`<div class="h-head"><span class="kicker">à découvrir</span><h2>Les nouveautés</h2></div>
     <div class="h-news">${news.map(k=>{const p=PRI[k];return `<button class="nw" data-p="${k}" style="--tile:${p.color}"><img src="${prImg(k)}" alt=""><span class="ey">${esc(p.ey)}</span><b>${esc(p.title)}</b></button>`}).join("")}</div>
-    <a class="h-more" href="carte/catalogue-pralines.html">Voir toutes les pralines →</a>`:"";
+    <a class="h-more" href="#carte-pralines">Voir toutes les pralines →</a>`:"";
   $("#hNews").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>openPraline(b.dataset.p));
   $("#hShops").innerHTML=`<div class="h-head"><span class="kicker">venez nous voir</span><h2>Nos boutiques</h2></div>
     ${CONFIG.shops.map(sh=>{const st=openState(sh.id),h=sh.hours[2];return `<div class="hs"><div><b>${sh.name}</b><span>${esc(sh.address)}</span><span>Du mardi au samedi${h?`, ${h[0].replace(":","h")} – ${h[1].replace(":","h")}`:""}</span><small class="${st.open?"o":""}">${st.text}</small></div>
       <div class="hs-a"><a href="${mapsUrl(sh)}" target="_blank" rel="noopener">Itinéraire</a><a href="tel:+${sh.phone}">Appeler</a></div></div>`}).join("")}`;
+}
+
+/* =====================================================================
+   LA CARTE — le catalogue, intégré au site (même en-tête, même navigation)
+   ===================================================================== */
+const RANGES=[
+  {id:"pralines",ey:"la carte des",title:"Pralines &amp; Confiseries",tile:"#a9673f",cnt:()=>`${PR.reduce((n,c)=>n+c.items.length,0)} créations`,pics:["speculoos-noir","manon-lait","craquentine-noir"],
+   sub:"Touchez une praline pour la découvrir et l'ajouter à votre ballotin.",cats:()=>PR,img:i=>prImg(i.img),cv:true},
+  {id:"napolitains",ey:"voyage chocolat",title:"Napolitains",tile:"#9c4a34",cnt:()=>`${DATA.napo.length} origines`,pics:["assets/napo/tanzanie.webp","assets/napo/perou.webp"],
+   sub:"Six origines, du plus doux au plus intense."},
+  {id:"palets",ey:"palets chocolat",title:"Palets",tile:"#b5586b",cnt:()=>"14 palets",pics:["assets/palets/mandarine.webp","assets/palets/framboise.webp"],
+   sub:"Fins disques de chocolat relevés de fruits, d'épices ou de noix.",cats:()=>DATA.palets,img:i=>`assets/palets/${i.img}.webp`,cv:true},
+  {id:"macarons",ey:"sucrés &amp; salés",title:"Macarons",tile:"#66784a",cnt:()=>"13 parfums",pics:["assets/macarons/framboise.webp","assets/macarons/pistache-1.webp","assets/macarons/vanille.webp"],
+   sub:"Des classiques aux agrumes, et trois salés pour l'apéritif.",cats:()=>DATA.macarons,img:i=>`assets/macarons/${i.img}.webp`},
+  {id:"thes",ey:"thés &amp; tisanes",title:"Thés &amp; Infusions",tile:"#b8913a",cnt:()=>"23 références",round:true,pics:["assets/thes/the-de-chine-jasmin-pearl-150x150-1.webp","assets/thes/the-noir-noel-a-paris-150x150-1.webp","assets/thes/tisane-du-roy-150x150-1.webp"],
+   sub:"Thés Dammann en vrac, à emporter par 100 g.",cats:()=>DATA.thes,img:i=>`assets/thes/${i.img}.webp`,round:true},
+];
+const RG=Object.fromEntries(RANGES.map(r=>[r.id,r]));
+let carteCv="all";
+function renderCarte(rid){
+  const el=$("#carteBody"),r=RG[rid];
+  document.querySelectorAll(".nav a").forEach(t=>t.classList.toggle("on",t.dataset.n==="carte"));
+  if(!r){
+    el.innerHTML=`<div class="h-hero"><span class="kicker">la carte</span><h1>Nos créations</h1><p>Choisissez un univers pour découvrir nos chocolats.</p></div>
+      <nav class="h-cards">${RANGES.map((g,i)=>hCard({href:"#carte-"+g.id,tile:g.tile,ey:g.ey,title:g.title,cnt:g.cnt(),pics:g.pics,round:g.round})).join("")}</nav>
+      <div class="c-cta"><span class="kicker">envie d'en commander ?</span><a class="btn btn-or" href="#menu">Commander en ligne</a><a class="btn btn-light" href="#atelier">Composer un ballotin</a></div>`;
+    return;
+  }
+  const head=`<a class="c-back" href="#carte">‹ Toute la carte</a><div class="h-hero c-hero"><span class="kicker">${r.ey}</span><h1>${r.title}</h1><p>${r.sub}</p></div>`;
+  if(r.id==="napolitains"){
+    el.innerHTML=head+`<div class="napo-l">${[...DATA.napo].sort((a,b)=>a.pct-b.pct).map(n=>`<button class="np" data-n="${n.id}" style="--tile:${n.color}"><img src="assets/napo/${n.id}.webp" alt=""><span class="pct">${n.pct}<small>%</small></span><span class="t"><span class="ey">${n.type==="Lait"?"chocolat au lait":"chocolat noir"}</span><b>${esc(n.name)}</b><span class="d">${esc(n.desc)}</span></span></button>`).join("")}</div>
+      <div class="c-cta"><a class="btn btn-or" href="#" data-order="n1">Commander des napolitains</a></div>`;
+    el.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{const n=DATA.napo.find(x=>x.id===b.dataset.n);openItem("n1",{napo:[`${n.name} ${n.pct} %`]})});
+    el.querySelector("[data-order]").onclick=e=>{e.preventDefault();openItem("n1")};
+    return;
+  }
+  const cats=r.cats();
+  el.innerHTML=head+`<div class="c-tabs">${cats.map(c=>`<a href="#" data-sec="${c.id}">${c.name}<small>${c.items.length}</small></a>`).join("")}</div>
+    ${r.cv?`<div class="c-flt">${[["all","Tous"],["noir","Noir"],["lait","Lait"],["blanc","Blanc"]].filter(([k])=>k==="all"||cats.some(c=>c.items.some(i=>i.cv===k))).map(([k,l])=>`<button data-cv="${k}" class="${carteCv===k?"on":""}">${l}</button>`).join("")}</div>`:""}
+    <div id="cSecs"></div>`;
+  const draw=()=>{$("#cSecs").innerHTML=cats.map((c,ci)=>{const L=c.items.filter(i=>carteCv==="all"||!r.cv||i.cv===carteCv);if(!L.length)return"";
+    return `<section class="c-sec" id="sec-${c.id}"><div class="c-sh"><span class="n">0${ci+1}</span><h2>${c.name}</h2><span class="k">${L.length}</span></div>${c.sub?`<p class="c-sub">${c.sub}</p>`:""}
+      <div class="c-grid">${L.map(i=>`<button class="ct ${r.round?"rd":""}" data-r="${r.id}" data-k="${i.img}" style="--tile:${i.color||r.tile}">${i.cv?`<span class="cv">${i.cv}</span>`:""}<img src="${r.img(i)}" alt="" loading="lazy" decoding="async"><span class="ey">${esc(i.ey||"")}</span><b>${esc(i.title)}</b></button>`).join("")}</div></section>`}).join("")||`<div class="pempty">Aucune création avec ce filtre.</div>`;
+    $("#cSecs").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>openCarteItem(r.id,b.dataset.k))};
+  draw();
+  el.querySelectorAll("[data-sec]").forEach(a=>a.onclick=e=>{e.preventDefault();const t=document.getElementById("sec-"+a.dataset.sec);if(t)window.scrollTo({top:t.getBoundingClientRect().top+scrollY-$("#hdr").offsetHeight-12,behavior:"smooth"})});
+  el.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{carteCv=b.dataset.cv;el.querySelectorAll("[data-cv]").forEach(x=>x.classList.toggle("on",x===b));draw()});
+}
+/* fiche d'une création de la carte : praline → ballotin ; autres → la commande correspondante, déjà réglée */
+function openCarteItem(rid,k){
+  if(rid==="pralines"){openPraline(k);return}
+  const r=RG[rid];let it,cat;for(const c of r.cats())for(const i of c.items)if(i.img===k){it=i;cat=c}
+  const target=rid==="palets"?(cat.id==="lait"?["pa2",{pal:[it.title]}]:["pa1",{pal:[it.title]}])
+    :rid==="macarons"?(cat.id==="sales"?["m3",null]:["m1",{mac:[it.title]}])
+    :rid==="thes"?([{nature:"t1",aromatise:"t2",infusions:"t3"}[cat.id],{the:[it.title]}]):null;
+  view="praline";sheet.classList.add("prod");
+  sheet.innerHTML=heroHTML(r.round?`<span class="tile sq" style="--c:${tint(it.color,.4)}"><img src="${r.img(it)}" alt="" style="border-radius:50%;width:62%;height:auto;aspect-ratio:1;object-fit:cover;margin:auto"></span>`:tile(r.img(it),it.color,"",it.full),it.title)+`
+      <div class="sh inl"><div class="tt"><span class="tag">${esc(cat.name)}</span><div class="ey2">${esc(it.ey||"")}</div><h3>${esc(it.title)}</h3><p>${esc(it.full||"")}</p>
+      ${it.cv?`<div class="chipsI"><span>Chocolat ${it.cv==="lait"?"au lait":it.cv}</span></div>`:""}</div></div>
+      <p class="note pnote">Tous nos produits peuvent contenir des traces de gluten, fruits à coque ou lait. En cas d'allergie, demandez conseil en boutique.</p>
+    </div>
+    <div class="sf"><button class="btn btn-or" id="toOrder">Commander</button></div>`;
+  bindClose();bindMiniHead();
+  $("#toOrder").onclick=()=>{if(target&&ITEMS[target[0]])openItem(target[0],target[1]);else{closeSheet();go("menu")}};
+  openSheet();
 }
 
 /* =====================================================================
@@ -617,8 +683,8 @@ function openPraline(k){
   const tf=$("#toF");if(tf)tf.onclick=()=>{closeSheet();go("c-pdf")};
   openSheet();
 }
-function openItem(id){
-  const it=ITEMS[id];const sel={};let qty=1;(it.groups||[]).forEach(g=>sel[g.id]=g.defaults?[...g.defaults]:[]);view="item";
+function openItem(id,preset){
+  const it=ITEMS[id];const sel={};let qty=1;(it.groups||[]).forEach(g=>sel[g.id]=preset&&preset[g.id]&&g.options.some(o=>preset[g.id].includes(o.label))?[...preset[g.id]]:g.defaults?[...g.defaults]:[]);view="item";
   const sidOf=()=>{const sz=it.box&&sel.taille?SIZES.find(s=>s.label===sel.taille[0]&&s.fmt===SZ[it.box.s].fmt):null;return sz?sz.id:it.box&&it.box.s};
   const vis=()=>it.box?`<span class="tile" style="--c:${tint("#c9a27e",.45)}">${boxSVG(sidOf(),assort(sidOf(),it.box.mix,it.box.seed||1),{lid:false})}</span>`:media(it);
   sheet.classList.add("prod");

@@ -4,7 +4,7 @@ Site de commande de **L'alchimie du chocolat** (Waterloo · Ixelles), avec retra
 Même moteur que le site du Menzïli, habillé aux couleurs de la carte des pralines.
 
 - **Accueil épuré** (clientèle qui veut aller droit au but) : Saint-Nicolas, Composer mon ballotin, La carte, les nouveautés (`NEWS` dans `src/app.js`), les boutiques
-- **La carte** (`/carte/`) : le catalogue refait en octobre (pralines, napolitains, palets, macarons, thés). Sur la fiche d'une praline, « Ajouter à mon ballotin » ouvre l'Atelier avec la praline déjà placée ; sur les autres, « Commander » mène à la bonne section
+- **La carte** (`#carte`) : le catalogue refait en octobre, intégré au site (même en-tête et navigation) : pralines, napolitains, palets, macarons, thés. Sur une praline, « Ajouter à mon ballotin » ouvre l'Atelier avec la praline placée ; sur les autres, « Commander » ouvre le bon produit avec le parfum déjà choisi
 - **Commander** : ballotins, coffrets et gourmandises prêts à commander
 
 - **Carte** : fêtes et précommandes, ballotins, les 52 pralines (photos détourées de la carte), napolitains, palets, macarons, thés, pâtes de fruits

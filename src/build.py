@@ -30,6 +30,7 @@ html=f'''<!DOCTYPE html>
 {R('extra.css')}
 {R('atelier.css')}
 {R('home.css')}
+{R('carte.css')}
 </style>
 </head>
 <body>
