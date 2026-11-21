@@ -27,7 +27,7 @@ const CONFIG = {
     perEuro: 1,
     rewards: [
       { pts: 50,  label: "Un macaron offert",            icon: "✨" },
-      { pts: 150, label: "Un écrin de 9 pralines offert", icon: "🎁" },
+      { pts: 150, label: "Un coffret de 10 pralines offert", icon: "🎁" },
     ],
   },
   links: { instagram:"", facebook:"", googleReview:"" },   // "" = icône grisée « bientôt »
@@ -60,7 +60,12 @@ function layout(s){
   if(s.fmt==="coffret"){
     /* plateau réel : bande de rectangles couchés à gauche + grille de carrés (photos de la boutique) */
     const {cols,rows,band}=s.tray,gh=rows*12-2;
-    if(!band){for(let r=0;r<rows;r++)for(let k=0;k<cols;k++){const mid=k===1;c.push(mid?{x:3+k*12,y:4.5+r*12,w:10,h:7,rect:1}:{x:3+k*12,y:3+r*12,w:10,h:10})}return{W:6+cols*12-2,H:6+gh,cells:c}}
+    if(s.tray.mid){ /* petit coffret : 3 carrés | 4 rectangles au milieu | 3 carrés */
+      const m=s.tray.mid,rh=(gh-(m-1)*2)/m;
+      for(let r=0;r<rows;r++)c.push({x:3,y:3+r*12,w:10,h:10});
+      for(let i=0;i<m;i++)c.push({x:15,y:3+i*(rh+2),w:12,h:rh,rect:1});
+      for(let r=0;r<rows;r++)c.push({x:29,y:3+r*12,w:10,h:10});
+      return{W:42,H:6+gh,cells:c}}
     const rh=(gh-(band-1)*2)/band;
     for(let i=0;i<band;i++)c.push({x:3,y:3+i*(rh+2),w:12,h:rh,rect:1});
     for(let r=0;r<rows;r++)for(let k=0;k<cols;k++)c.push({x:17+k*12,y:3+r*12,w:10,h:10});
@@ -73,7 +78,7 @@ function layout(s){
 const FORMATS=[
   {id:"ballotin",label:"Ballotin",sub:"Boîte blanche, ruban rouge · au poids, 105 €/kg",sizes:[["b250","250 g",250,26.25],["b350","350 g",350,36.75],["b500","500 g",500,52.50],["b750","750 g",750,78.75],["b1000","1 kg",1000,105]]},
   {id:"coffret",label:"Coffret",sub:"Boîte bleu nuit, ruban doré · prix fixe",sizes:[
-    ["c9","9 pralines",{cols:3,rows:3,band:0},13.80],["c17","17 pralines",{cols:3,rows:4,band:5},21.30],["c27","27 pralines",{cols:4,rows:5,band:7},32.70],
+    ["c10","10 pralines",{cols:2,rows:3,mid:4},13.80],["c17","17 pralines",{cols:3,rows:4,band:5},21.30],["c27","27 pralines",{cols:4,rows:5,band:7},32.70],
     ["c38","38 pralines",{cols:5,rows:6,band:8},43.40],["c52","52 pralines",{cols:6,rows:7,band:10},59.30]]},
   {id:"sachet",label:"Sachet",sub:"Sur mesure, au poids · 105 €/kg",sizes:[["sachet","Sachet sur mesure",0,0]]},
 ];
@@ -81,12 +86,12 @@ const SIZES=[];
 FORMATS.forEach(f=>f.sizes.forEach(([id,label,v,price])=>{
   const s={id,fmt:f.id,label,price};
   if(f.id==="ballotin"){s.grams=v;s.layers=3;s.lay=layout(s);s.per=s.lay.cells.length;s.n=s.per*3;s.sub=`${s.n} pralines · 3 couches`}
-  if(f.id==="coffret"){s.tray=v;s.layers=1;s.lay=layout(s);s.per=s.n=s.lay.cells.length;s.shapes=s.lay.cells.map(c=>c.rect?"r":"s");s.sub=v.band?`${v.band} rectangles + ${v.cols}×${v.rows} carrés`:"Plateau de 3×3"}
+  if(f.id==="coffret"){s.tray=v;s.layers=1;s.lay=layout(s);s.per=s.n=s.lay.cells.length;s.shapes=s.lay.cells.map(c=>c.rect?"r":"s");s.sub=v.band?`${v.band} rectangles + ${v.cols}×${v.rows} carrés`:`${v.mid} rectangles + 6 carrés`}
   if(f.id==="sachet"){s.layers=1;s.n=0;s.sub=`De ${SACHET_MIN} à ${SACHET_MAX} pralines`}
   SIZES.push(s)}));
 const SZ=Object.fromEntries(SIZES.map(s=>[s.id,s]));
 /* anciens identifiants (paniers déjà enregistrés) */
-Object.assign(SZ,{c16:SZ.c17,c25:SZ.c27,c36:SZ.c38,c49:SZ.c52,e9:SZ.c9,g250:SZ.b250,g500:SZ.b500,g750:SZ.b750,g1000:SZ.b1000});
+Object.assign(SZ,{c16:SZ.c17,c25:SZ.c27,c36:SZ.c38,c49:SZ.c52,e9:SZ.c10,c9:SZ.c10,g250:SZ.b250,g500:SZ.b500,g750:SZ.b750,g1000:SZ.b1000});
 const sachetPrice=n=>Math.round(n*PRALINE_G/1000*PRICE_KG*20)/20;   // arrondi à 5 cents
 const o=(l,p=0)=>({label:l,price:p});
 const SIZEG=(from,fmt="ballotin")=>({id:"taille",label:fmt==="coffret"?"Format":"Poids",type:"single",required:true,defaults:[SZ[from].label],
@@ -110,7 +115,7 @@ const MENU=[
   ]},
   {id:"ballotins",title:"Ballotins",hint:"Ballotins au poids et coffrets : l'assortiment de la maison, ou le vôtre, composé à l'Atelier.",items:[
     {id:"b1",name:"Ballotin assorti",desc:"Le choix du chocolatier dans le ballotin blanc au ruban rouge. Vendu au poids, 105 €/kg.",price:26.25,tag:"Populaire",groups:[SIZEG("b250")],box:{s:"b250",mix:"all",seed:3}},
-    {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 9 à 52 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c9","coffret")],box:{s:"c9",mix:"all",seed:11}},
+    {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 10 à 52 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c10","coffret")],box:{s:"c10",mix:"all",seed:11}},
   ]},
   {id:"napolitains",title:"Napolitains",hint:"Carrés fins de chocolat d'origine, du plus doux au plus intense.",items:[
     {id:"n1",name:"Boîte de napolitains",desc:"Six origines, du Ghana lait 40 % au Pérou 92 %.",price:12,img:"assets/napo/tanzanie.webp",c:"#66764a",
@@ -150,7 +155,7 @@ const OFFERS=[
 const PICKS=["x1","b1","b2","m1","n1","pa1"];
 /* « Un petit plus ? » au moment de finaliser */
 const EXTRAS=[
-  {id:"b2",lab:"Coffret 9",opt:"9 pralines"},{id:"m1",lab:"6 macarons",opt:"Assortiment du chef"},
+  {id:"b2",lab:"Coffret 10",opt:"10 pralines"},{id:"m1",lab:"6 macarons",opt:"Assortiment du chef"},
   {id:"f1",lab:"Pâtes de fruits"},{id:"n1",lab:"Napolitains",opt:"Assortiment des 6 origines"},{id:"pa1",lab:"Palets yuzu",opt:"Yuzu"},
 ];
 
@@ -288,7 +293,7 @@ const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
 function offerArt(f){
   if(f.art.box)return `<div class="collage"><span class="glow"></span>${boxSVG("b250",mixPieces(30,"all",5),{lid:false})}</div>`;
   if(f.art.imgs)return `<div class="collage"><span class="glow"></span>${f.art.imgs.map((k,i)=>`<img src="${prImg(k)}" alt="" style="transform:translate(${[-62,0,62][i]}%,${[8,-14,10][i]}%) rotate(${[-14,4,16][i]}deg) scale(${[1,1.18,1][i]})">`).join("")}</div>`;
-  return `<div class="collage"><span class="glow"></span>${boxSVG("c9",assort("c9","all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
+  return `<div class="collage"><span class="glow"></span>${boxSVG("c10",assort("c10","all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
 }
 /* Les nouveautés mises en avant sur l'accueil (identifiants des pralines) — à choisir avec la boutique */
 const NEWS=["curcuma","theobroma","basilic"];
@@ -330,7 +335,7 @@ function bindPralines(root){
 function renderMenu(){
   $("#pills").innerHTML=MENU.map((c,i)=>`<a href="#c-${c.id}" data-c="${c.id}" class="${i?"":"on"}">${c.title.replace(" & précommandes","").replace("Thés & infusions","Thés")}</a>`).join("");
   $("#menuList").innerHTML=MENU.map(c=>`<section class="msec" id="c-${c.id}"><h2>${c.title}</h2>${c.hint?`<p class="hint">${c.hint}</p>`:""}
-    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("c9",assort("c9","all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
+    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("c10",assort("c10","all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
     ${c.special?`<div id="prWrap">${pralinesHTML()}</div>`:`<div class="list">${c.items.filter(live).map(i=>`<button class="row" data-i="${i.id}"><div class="txt"><h3>${i.name}${i.tag?`<span class="tag ${i.tag==="Populaire"?"":"ex"}">${i.tag}</span>`:""}</h3>${i.desc?`<p>${i.desc}</p>`:""}<div class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</div></div>
       <span class="media"><span class="ph">${media(i)}</span><span class="add" aria-hidden="true">${I.plus}</span></span></button>`).join("")}</div>`}</section>`).join("");
   $("#menuList").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
@@ -621,7 +626,7 @@ function openItem(id){
       <div class="sh inl"><div class="tt">${it.tag?`<span class="tag ${it.tag==="Populaire"?"":"ex"}">${it.tag}</span>`:""}<h3>${it.name}</h3>${it.desc?`<p>${it.desc}</p>`:""}<div class="pr" id="iPr"></div></div></div>
       ${(it.groups||[]).map(g=>`<div class="grp" data-grp="${g.id}"><div class="gh"><b>${g.label}</b><span class="st"></span></div>${g.sub?`<div class="gsub">${g.sub}</div>`:""}
         ${g.options.map(op=>`<label class="opt"><span class="l">${op.label}</span>${op.price?`<span class="pp">${op.price>0?"+":""}${fmt(op.price)}</span>`:""}<input type="${g.type==="single"?"radio":"checkbox"}" name="g-${g.id}" data-g="${g.id}" value="${esc(op.label)}" ${(sel[g.id]||[]).includes(op.label)?"checked":""}></label>`).join("")}</div>`).join("")}
-      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("c9",assort("c9","all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
+      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("c10",assort("c10","all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
       <div class="grp"><div class="gh"><b>Une précision ?</b><span>Optionnel</span></div><div class="fld" style="margin-top:8px"><div class="in"><label for="iNote">Note pour la boutique</label><input id="iNote" maxlength="80" placeholder="${it.box?"Ex. sans alcool, plutôt noir…":"Ex. pour offrir"}"></div></div></div>
     </div>
     <div class="sf"><div class="stepper"><button id="qm" aria-label="Moins">${I.minus}</button><span id="qv">1</span><button id="qp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="addBtn"></button></div>`;
@@ -661,7 +666,7 @@ function drawCart(){
   sheet.innerHTML=head("Votre panier",S.cart.length?`${t.count} article${t.count>1?"s":""}`:"")+`<div class="sb">
     ${S.cart.length?S.cart.map((l,i)=>`<div class="cl"><span class="th">${lineThumb(l)}</span><div class="d"><b>${esc(l.name)}</b>${l.opts?`<small>${esc(l.opts.length>140?l.opts.slice(0,140)+"…":l.opts)}</small>`:""}${l.note?`<small>${esc(l.note)}</small>`:""}<div class="p">${l.est?"≈ ":""}${fmt(l.unit*l.qty)}</div></div>
       <div class="qs"><button data-dec="${i}" aria-label="Retirer">${l.qty===1?I.x:I.minus}</button><span>${l.qty}</span><button data-inc="${i}" aria-label="Ajouter">${I.plus}</button></div></div>`).join("")
-      :`<div class="empty">${boxSVG("c9",[],{lid:false})}Votre panier est vide.<br><span style="font-size:13.5px">Une petite praline ?</span></div>`}
+      :`<div class="empty">${boxSVG("c10",[],{lid:false})}Votre panier est vide.<br><span style="font-size:13.5px">Une petite praline ?</span></div>`}
     ${S.cart.length?`<div class="mc-title">Retrait dans quelle boutique ?</div>${shopSegHTML()}<p class="note">Choisissez le jour et l'heure à l'étape suivante. Paiement en boutique.</p>`:""}
     ${S.cart.length?`<div class="sum" style="margin-top:8px"><div class="t"><span>Total${t.est?" estimé":""}</span><span>${t.est?"≈ ":""}${fmt(t.total)}</span></div></div>${t.est?`<p class="note">Les ballotins et sachets sont pesés en boutique (${PRICE_KG} €/kg) : le total exact peut varier légèrement.</p>`:""}`:""}
     ${S.cart.length&&PTS.enabled?`<div class="stamps-line"><i>${I.check}</i>${ACC.user?`+${Math.floor(t.total*PTS.perEuro)} points avec votre QR en boutique`:`Connectez-vous pour gagner ${Math.floor(t.total*PTS.perEuro)} points`}</div>`:""}
