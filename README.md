@@ -40,7 +40,7 @@ Tant que Supabase n'est pas branché, le site fonctionne en **mode démo** : on 
 1. Crée un projet sur supabase.com, région **Europe**.
 2. **SQL Editor** : exécute dans l'ordre `supabase/schema.sql`, `supabase/points.sql`, `supabase/commandes.sql`.
 3. **Authentication → Providers → Email** activé ; **Email Templates → Magic Link** : un message qui contient le code, ex. `Votre code L'alchimie : {{ .Token }}`.
-4. **Authentication → URL Configuration** : Site URL `https://kohdrare.github.io/Alchimie-Commande/` et Redirect URL `https://kohdrare.github.io/Alchimie-Commande/**`.
+4. **Authentication → URL Configuration** : Site URL `https://kohdrare.github.io/Alchimie-Du-Chocolat/` et Redirect URL `https://kohdrare.github.io/Alchimie-Du-Chocolat/**`.
 5. **Project Settings → API** : copie `Project URL` et la clé **publishable** dans `CONFIG.account` (`src/app.js`) **et** dans `CFG` en haut de `staff/index.html`, puis `python3 src/build.py`.
 6. Ajoute le personnel (chaque personne se connecte d'abord une fois sur le site) :
    ```sql
