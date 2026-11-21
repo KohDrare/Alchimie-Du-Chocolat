@@ -60,3 +60,16 @@ body{font-size:17px}
 .nav a{font-size:14px;padding:8px 10px}
 @media(max-width:400px){.hdr .lg svg{width:74px}.nav a{font-size:13.5px;padding:8px 8px}}
 @media(max-width:360px){.hdr .lg{display:none}}
+
+/* photo de produit dans une grande carte (Saint-Nicolas) */
+.hc .photo-art{position:absolute;right:0;top:0;bottom:0;width:58%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 42%);mask-image:linear-gradient(90deg,transparent,#000 42%)}
+.hc .photo-art img{width:100%;height:100%;object-fit:cover}
+/* collection Saint-Nicolas : vraies photos */
+.h-sn{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.snc{display:flex;flex-direction:column;gap:3px;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer}
+.snc .im{display:block;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#efe7dc;margin-bottom:7px}
+.snc .im img{width:100%;height:100%;object-fit:cover}
+.snc b{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.1}
+.snc span:last-child{font-size:15px;color:#7a6a5c;font-weight:600}
+.snc:active{transform:scale(.98)}
+@media(min-width:760px){.h-sn{grid-template-columns:repeat(4,1fr)}}

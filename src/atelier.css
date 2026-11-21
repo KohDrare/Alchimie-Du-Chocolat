@@ -181,3 +181,10 @@ svg.box.coffret{filter:drop-shadow(0 10px 14px #10142433)}
 .shp span.ok b{color:var(--green)}
 .shp i{display:inline-block;background:var(--ink2);border-radius:2px}
 .shp i.r{width:14px;height:8px}.shp i.s{width:10px;height:10px}
+
+/* couleur de la boîte (coffrets) */
+.tone{display:flex;gap:8px;margin:0 0 12px}
+.tone button{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;padding:12px 10px;border-radius:14px;border:1.5px solid #e2d8ca;background:#fff;font:inherit;font-weight:700;font-size:15px;color:#3a2a1e;cursor:pointer}
+.tone button.on{border-color:#3a2a1e;box-shadow:0 0 0 1px #3a2a1e inset}
+.tone i{width:20px;height:20px;border-radius:6px;border:1.5px solid #cfc4b4}
+.tone i.noire{background:#1b1b1d;border-color:#1b1b1d}.tone i.blanche{background:#fbfaf7}
