@@ -13,12 +13,11 @@ function renderFooter(){
   const L=CONFIG.legal,yr=new Date().getFullYear(),sh=SHOP(S.shop);
   const soc=Object.keys(SOC).map(k=>{const h=socialHref(k);return h?`<a href="${h}" target="_blank" rel="noopener" aria-label="${SOC[k][0]}" title="${SOC[k][0]}">${SOC[k][1]}</a>`:`<a class="off" aria-label="${SOC[k][0]} (bientôt)" title="${SOC[k][0]} — bientôt">${SOC[k][1]}</a>`}).join("");
   const missing=Object.keys(CONFIG.links).filter(k=>!CONFIG.links[k]).length;
-  $("#footer").innerHTML=`<div class="fshops">${CONFIG.shops.map(s=>{const st=openState(s.id);return `<a class="fshop" href="${mapsUrl(s)}" target="_blank" rel="noopener"><span class="pin">${SOC.maps[1]}</span><span class="t"><b>${s.name}</b><span>${esc(s.address)}</span><small class="${st.open?"o":""}">${st.text}</small></span><span class="go">${I.arrow}</span></a>`}).join("")}</div>
+  $("#footer").innerHTML=`
     <div class="lg2">${LOGO_LIGHT}</div>
     <p class="tg">Chocolaterie artisanale. Pralines, ganaches d'origine, macarons et thés, à Waterloo et Ixelles.</p>
     <div class="soc">${soc}</div>${missing?`<div class="soon">Certains réseaux arrivent bientôt.</div>`:""}
     <div class="cols">
-      ${CONFIG.shops.map(s=>`<div><h5>${s.name}</h5><a href="${mapsUrl(s)}" target="_blank" rel="noopener">${esc(s.address).replace(", ","<br>")}</a><a href="tel:+${s.phone}">${s.phoneDisplay}</a></div>`).join("")}
       <div><h5>Infos</h5><a href="#infos">Horaires & boutiques</a><button data-lg="allergenes">Allergènes</button><button data-lg="cgv">Conditions de vente</button></div>
       <div><h5>Légal</h5><button data-lg="mentions">Mentions légales</button><button data-lg="privacy">Confidentialité</button></div>
     </div>

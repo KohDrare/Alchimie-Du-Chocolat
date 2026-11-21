@@ -29,6 +29,7 @@ html=f'''<!DOCTYPE html>
 {R('base.css')}
 {R('extra.css')}
 {R('atelier.css')}
+{R('home.css')}
 </style>
 </head>
 <body>

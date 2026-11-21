@@ -1,0 +1,62 @@
+/* =====================================================================
+   ACCUEIL ÉPURÉ — même esprit que La carte (catalogue des pralines)
+   Pensé pour une clientèle qui veut aller droit au but : gros textes, peu de boutons.
+   ===================================================================== */
+body{font-size:17px}
+.kicker{display:block;font-family:var(--script);font-size:34px;line-height:.9;color:var(--or-d);opacity:.9}
+.h-hero{text-align:center;padding:26px 24px 8px}
+.h-hero .kicker{font-size:44px}
+.h-hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(44px,12vw,64px);line-height:.98;color:#4b2a00;margin-top:2px}
+.h-hero p{font-size:16.5px;color:var(--mute);margin:14px auto 0;max-width:30ch;line-height:1.45}
+.h-hero .status{margin-top:16px;display:inline-flex}
+
+.h-cards{display:grid;gap:14px;padding:22px 16px 0}
+.hc{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:200px;padding:20px 22px;border-radius:26px;overflow:hidden;color:#fffaf3;background:var(--tile);isolation:isolate;text-decoration:none;transition:transform .25s var(--ease)}
+.hc::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(80% 90% at 85% 40%,rgba(255,255,255,.18),transparent 60%),linear-gradient(90deg,rgba(0,0,0,.22),transparent 62%)}
+.hc:active{transform:scale(.98)}
+.hc .txt{position:relative;z-index:2;max-width:60%}
+.hc .ey{display:block;font-family:var(--script);font-size:28px;line-height:1;opacity:.95}
+.hc h2{font-family:var(--serif);font-weight:600;font-size:clamp(32px,8.6vw,42px);line-height:.98;margin:2px 0 0}
+.hc .cnt{display:inline-flex;margin-top:12px;font-size:14px;font-weight:700;background:rgba(255,255,255,.2);padding:7px 13px;border-radius:999px}
+.hc .pics{position:absolute;right:0;top:0;bottom:0;width:50%;z-index:1;pointer-events:none}
+.hc .pics img{position:absolute;filter:drop-shadow(0 12px 10px rgba(30,12,0,.32))}
+.hc .box-art{position:absolute;right:-6%;top:50%;width:68%;height:62%;transform:translateY(-55%) rotate(-8deg)}
+.hc .box-art svg{width:100%;height:100%;filter:drop-shadow(0 16px 18px rgba(0,0,0,.4))}
+
+.h-sec{padding:40px 16px 0}
+.h-head{padding:0 6px 14px}
+.h-head h2{font-family:var(--serif);font-weight:600;font-size:38px;line-height:1;color:#4b2a00}
+.h-news{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nw{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border-radius:20px;padding:12px 12px 14px;background:var(--tile);color:#fffaf3;position:relative;overflow:hidden;min-height:170px;isolation:isolate}
+.nw::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.28))}
+.nw img{width:92%;aspect-ratio:1;object-fit:contain;margin:0 auto 6px;filter:drop-shadow(0 8px 8px rgba(30,12,0,.3))}
+.nw .ey{font-family:var(--script);font-size:19px;line-height:1;opacity:.95}
+.nw b{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.02}
+.h-more{display:block;text-align:center;margin-top:16px;font-weight:700;font-size:16px;color:var(--or-d);padding:12px}
+
+.hs{display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--card);border-radius:22px;padding:18px 18px;margin-bottom:12px;box-shadow:0 0 0 1px var(--line)}
+.hs b{display:block;font-family:var(--serif);font-size:28px;font-weight:600;line-height:1}
+.hs span{display:block;font-size:15px;color:var(--ink2);margin-top:4px}
+.hs small{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#a3473a}
+.hs small.o{color:var(--green)}
+.hs-a{display:flex;flex-direction:column;gap:8px;flex:none}
+.hs-a a{font-weight:700;font-size:14.5px;padding:11px 14px;border-radius:14px;text-align:center;background:var(--or-soft);color:var(--or-d)}
+.hs-a a:first-child{background:var(--ink);color:#fff}
+
+/* page Commander : mêmes titres que La carte, textes plus grands */
+.mhead .kicker{font-size:32px}
+.mhead h1{color:#4b2a00}
+.mh-sub{font-size:16px;color:var(--mute);margin-top:6px}
+.row .txt h3{font-size:18px}
+.row .txt p{font-size:15px}
+.row .pr{font-size:16.5px}
+.nav a{font-size:14.5px}
+@media(max-width:380px){.nav a{font-size:13px;padding:7px 7px}}
+/* en-tête : tout tient sur un iPhone, même avec des textes plus grands */
+.hdr{gap:6px;padding-left:12px;padding-right:10px}
+.hdr .lg svg{width:92px;height:auto;max-width:none}
+.hdr .lg{flex:none;margin-right:auto}
+.nav{flex:0 1 auto;min-width:0}
+.nav a{font-size:14px;padding:8px 10px}
+@media(max-width:400px){.hdr .lg svg{width:74px}.nav a{font-size:13.5px;padding:8px 8px}}
+@media(max-width:360px){.hdr .lg{display:none}}

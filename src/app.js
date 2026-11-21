@@ -112,7 +112,6 @@ const MENU=[
     {id:"b1",name:"Ballotin assorti",desc:"Le choix du chocolatier dans le ballotin blanc au ruban rouge. Vendu au poids, 105 €/kg.",price:26.25,tag:"Populaire",groups:[SIZEG("b250")],box:{s:"b250",mix:"all",seed:3}},
     {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 9 à 52 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c9","coffret")],box:{s:"c9",mix:"all",seed:11}},
   ]},
-  {id:"pralines",title:"Nos pralines",hint:"Touchez une praline pour la découvrir et l'ajouter à votre ballotin.",special:true,items:[]},
   {id:"napolitains",title:"Napolitains",hint:"Carrés fins de chocolat d'origine, du plus doux au plus intense.",items:[
     {id:"n1",name:"Boîte de napolitains",desc:"Six origines, du Ghana lait 40 % au Pérou 92 %.",price:12,img:"assets/napo/tanzanie.webp",c:"#66764a",
      groups:[{id:"napo",label:"Votre boîte",type:"single",required:true,defaults:["Assortiment des 6 origines"],options:[o("Assortiment des 6 origines"),...DATA.napo.map(n=>o(`${n.name} ${n.pct} %`))]}]},
@@ -277,6 +276,10 @@ function route(){
   else if(changed||!fromAtl)window.scrollTo(0,0);   // en revenant de l'atelier, on garde sa place
 }
 window.addEventListener("hashchange",route);
+/* arrivée depuis La carte : ../?add=speculoos-noir#atelier */
+(()=>{const k=new URLSearchParams(location.search).get("add");if(!k)return;history.replaceState(null,"",location.pathname+location.hash);
+  if(!PRI[k])return;if(PRI[k].cat==="pdf"){location.hash="c-pdf";return}
+  setTimeout(()=>{bReset();B.step=1;location.hash==="#atelier"?openAtelier():go("atelier");setTimeout(()=>{addPiece(k,null);toast(`${prShort(k)} ajoutée`)},350)},200)})();
 const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
 
 /* =====================================================================
@@ -287,24 +290,28 @@ function offerArt(f){
   if(f.art.imgs)return `<div class="collage"><span class="glow"></span>${f.art.imgs.map((k,i)=>`<img src="${prImg(k)}" alt="" style="transform:translate(${[-62,0,62][i]}%,${[8,-14,10][i]}%) rotate(${[-14,4,16][i]}deg) scale(${[1,1.18,1][i]})">`).join("")}</div>`;
   return `<div class="collage"><span class="glow"></span>${boxSVG("c9",assort("c9","all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
 }
+/* Les nouveautés mises en avant sur l'accueil (identifiants des pralines) — à choisir avec la boutique */
+const NEWS=["curcuma","theobroma","basilic"];
+function hCard(o){
+  const pics=(o.pics||[]).map((k,i)=>`<img src="${prImg(k)}" alt="" style="${["right:40%;top:16%;width:31%","right:6%;top:10%;width:34%","right:20%;top:48%;width:38%"][i]}">`).join("");
+  return `<a class="hc" ${o.href?`href="${o.href}"`:`href="#" data-act="${o.act}"`} style="--tile:${o.tile}"><span class="pics" aria-hidden="true">${o.art||pics}</span>
+    <span class="txt"><span class="ey">${o.ey}</span><h2>${o.title}</h2><span class="cnt">${o.cnt} →</span></span></a>`;
+}
 function renderHome(){
-  const OF=OFFERS.filter(live);
-  $("#offers").innerHTML=OF.map((f,i)=>`<button class="offer art" style="--obg:${f.bg}" data-of="${i}">${offerArt(f)}
-    <div class="in"><span class="kick${f.light?" lt":""}"><span class="dots" style="margin:0"><i></i><i></i></span>${f.kick}</span>
-      <h2>${f.title}</h2><p>${f.sub}</p>
-      <div class="foot">${f.price?`<span class="price"><b>${fmtS(f.price)}</b></span>`:"<span></span>"}<span class="go">${f.go.view==="atelier"?"Composer":f.go.item?"Réserver":"Découvrir"} ${I.arrow}</span></div></div></button>`).join("");
-  $("#pager").innerHTML=OF.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("");
-  const off=$("#offers");off.onscroll=()=>{const i=Math.round(off.scrollLeft/(off.firstElementChild.offsetWidth+12));[...$("#pager").children].forEach((d,j)=>d.classList.toggle("on",i===j))};
-  off.querySelectorAll("[data-of]").forEach(b=>b.onclick=()=>{const g=OF[b.dataset.of].go;if(g.item)openItem(g.item);else if(g.cat)go("c-"+g.cat);else go(g.view)});
-  const catImg={fetes:media(ITEMS.x2),ballotins:media(ITEMS.b2),pralines:tile(prImg("speculoos-noir"),PRI["speculoos-noir"].color),napolitains:media(ITEMS.n1),palets:media(ITEMS.pa1),macarons:media(ITEMS.m1),thes:media(ITEMS.t2),pdf:media(ITEMS.f1)};
-  const short={fetes:"Fêtes",ballotins:"Ballotins",pralines:"Pralines",napolitains:"Napolitains",palets:"Palets",macarons:"Macarons",thes:"Thés",pdf:"Pâtes de fruits"};
-  $("#homeCats").innerHTML=MENU.map(c=>`<a class="cat" href="#c-${c.id}"><span class="c">${catImg[c.id]}</span>${short[c.id]}</a>`).join("");
-  $("#picks").innerHTML=PICKS.filter(id=>live(ITEMS[id])).map(id=>{const i=ITEMS[id];return `<button class="pick" data-i="${id}"><div class="im">${media(i)}${i.tag?`<span class="badge">${i.tag}</span>`:""}</div><div class="tx"><b>${i.name}</b><div class="row2"><span class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</span><span class="plus">${I.plus}</span></div></div></button>`}).join("");
-  $("#picks").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
-  $("#atlTeaser").innerHTML=boxSVG("c9",assort("c9","all",4),{lid:false});
-  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-  const n=BALLO_KEYS.length;
-  $("#proof").innerHTML=`<b>${n}</b><span>pralines faites maison, des pralinés aux ganaches d'origine.<br>Boutiques à Waterloo et Ixelles.</span>`;
+  const cards=[];
+  if(live(ITEMS.x1))cards.push(hCard({act:"item:x1",tile:"#8f3b2c",ey:"le 6 décembre",title:"Saint-Nicolas",cnt:`Ballotin speculoos · ${fmt(ITEMS.x1.price)}`,pics:["speculoos-noir","manon-specu","speculoos-lait"]}));
+  cards.push(hCard({act:"atelier",tile:"#3d2717",ey:"à votre façon",title:"Composer mon ballotin",cnt:"Ballotin, coffret ou sachet",art:`<span class="box-art">${boxSVG("b250",mixPieces(30,"all",5),{lid:false})}</span>`}));
+  cards.push(hCard({href:"carte/",tile:"#a9673f",ey:"la carte des",title:"Pralines &amp; Confiseries",cnt:"Toutes nos créations",pics:["Passion","manon-lait","craquentine-noir"]}));
+  $("#hCards").innerHTML=cards.join("");
+  $("#hCards").querySelectorAll("[data-act]").forEach(a=>a.onclick=e=>{e.preventDefault();const v=a.dataset.act;if(v.startsWith("item:"))openItem(v.slice(5));else go(v)});
+  const news=NEWS.filter(k=>PRI[k]);
+  $("#hNews").innerHTML=news.length?`<div class="h-head"><span class="kicker">à découvrir</span><h2>Les nouveautés</h2></div>
+    <div class="h-news">${news.map(k=>{const p=PRI[k];return `<button class="nw" data-p="${k}" style="--tile:${p.color}"><img src="${prImg(k)}" alt=""><span class="ey">${esc(p.ey)}</span><b>${esc(p.title)}</b></button>`}).join("")}</div>
+    <a class="h-more" href="carte/catalogue-pralines.html">Voir toutes les pralines →</a>`:"";
+  $("#hNews").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>openPraline(b.dataset.p));
+  $("#hShops").innerHTML=`<div class="h-head"><span class="kicker">venez nous voir</span><h2>Nos boutiques</h2></div>
+    ${CONFIG.shops.map(sh=>{const st=openState(sh.id),h=sh.hours[2];return `<div class="hs"><div><b>${sh.name}</b><span>${esc(sh.address)}</span><span>Du mardi au samedi${h?`, ${h[0].replace(":","h")} – ${h[1].replace(":","h")}`:""}</span><small class="${st.open?"o":""}">${st.text}</small></div>
+      <div class="hs-a"><a href="${mapsUrl(sh)}" target="_blank" rel="noopener">Itinéraire</a><a href="tel:+${sh.phone}">Appeler</a></div></div>`}).join("")}`;
 }
 
 /* =====================================================================
@@ -666,10 +673,7 @@ function drawCart(){
   const g=$("#goCo");if(g)g.onclick=openCheckout;const gm=$("#goMenu");if(gm)gm.onclick=()=>{closeSheet();go("menu")};
   sheet.querySelector(".sb").scrollTop=sc;
 }
-$("#qrBtn").onclick=()=>{
-  if(ACC.user&&PTS.enabled){openQR();return}
-  view="profile";drawProfile();openSheet();toast(accOn()?"Connectez-vous pour avoir votre QR":"Bientôt disponible",false);
-};
+
 $("#openCart").onclick=()=>{view="cart";drawCart();openSheet()};
 
 /* jours et créneaux de retrait */

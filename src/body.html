@@ -3,52 +3,30 @@
   <a class="lg" href="#accueil" aria-label="L'alchimie du chocolat — accueil">%%LOGO%%</a>
   <nav class="nav" aria-label="Navigation">
     <a href="#accueil" data-n="accueil" class="on">Accueil</a>
-    <a href="#menu" data-n="menu">Carte</a>
-    <a href="#atelier" data-n="atelier"><span class="nd"></span>Atelier</a>
+    <a href="carte/" data-n="carte">La carte</a>
+    <a href="#menu" data-n="menu">Commander</a>
   </nav>
-  <button class="pf qrb" id="qrBtn" aria-label="Ma carte de points"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button>
+  
   <button class="pf" id="pfBtn" aria-label="Mon profil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.4 7.5-5.4s6.3 1.8 7.5 5.4"/></svg><span class="on"></span></button>
 </header>
 
 <!-- ================= ACCUEIL ================= -->
 <section class="view on" id="v-accueil">
   <div id="liveOrder"></div>
-  <div class="hello">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><div class="eyebrow"><span class="dots"><i></i><i></i></span>Waterloo · Ixelles</div><span class="status" id="status"><i></i><span>…</span></span></div>
-    <h1>Le chocolat,<br><em>à votre façon.</em></h1>
-    <p>Commandez en ligne, composez votre ballotin praline par praline, et retirez-le en boutique à l'heure qui vous arrange.</p>
+  <div class="h-hero">
+    <span class="kicker">bienvenue</span>
+    <h1>L'alchimie<br>du chocolat</h1>
+    <p>Chocolaterie artisanale à Waterloo et Ixelles.<br>Commandez en ligne, retirez en boutique.</p>
+    <span class="status" id="status"><i></i><span>…</span></span>
   </div>
-  <div class="offers" id="offers"></div>
-  <div class="pager" id="pager"></div>
-
-  <div class="sec-h"><h2>La carte</h2><a href="#menu">Tout voir</a></div>
-  <div class="cats" id="homeCats"></div>
-
-  <div class="sec-h"><h2>Les incontournables</h2></div>
-  <div class="picks" id="picks"></div>
-
-  <button class="atl-card" data-go="atelier">
-    <div class="tx">
-      <div class="eyebrow"><span class="dots"><i></i><i></i></span>L'Atelier</div>
-      <h3>Votre ballotin,<br>praline par praline.</h3>
-      <p>Choisissez la taille, puis chaque praline parmi plus de 45 créations de la maison.</p>
-      <span class="go">Composer <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span>
-    </div>
-    <span id="atlTeaser"></span>
-  </button>
-
-  <button class="sp-card" data-go="infos">
-    <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l1.5-5h13L20 10"/><path d="M4 10v9h16v-9"/><path d="M4 10c0 1.4 1.1 2.5 2.7 2.5S9.3 11.4 9.3 10c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 11.4 20 10"/><path d="M10 19v-4h4v4"/></svg></span>
-    <span><h3>Retrait en boutique</h3><p>Commandez maintenant, on prépare tout. Vous passez, c'est prêt. Paiement sur place.</p>
-      <span class="chips"><span>Waterloo</span><span>Ixelles</span><span>Emballage cadeau offert</span></span></span>
-  </button>
-
-  <div class="proof" id="proof"></div>
+  <nav class="h-cards" id="hCards" aria-label="À découvrir"></nav>
+  <div class="h-sec" id="hNews"></div>
+  <div class="h-sec" id="hShops"></div>
 </section>
 
 <!-- ================= CARTE ================= -->
 <section class="view" id="v-menu">
-  <div class="mhead"><div class="eyebrow"><span class="dots"><i></i><i></i></span>L'alchimie du chocolat</div><h1>La carte</h1></div>
+  <div class="mhead"><span class="kicker">retrait en boutique</span><h1>Commander</h1><p class="mh-sub">Ballotins, coffrets et gourmandises, prêts à l'heure choisie.</p></div>
   <nav class="pills" id="pills"></nav>
   <div id="menuList"></div>
 </section>

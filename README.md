@@ -3,6 +3,10 @@
 Site de commande de **L'alchimie du chocolat** (Waterloo · Ixelles), avec retrait en boutique.
 Même moteur que le site du Menzïli, habillé aux couleurs de la carte des pralines.
 
+- **Accueil épuré** (clientèle qui veut aller droit au but) : Saint-Nicolas, Composer mon ballotin, La carte, les nouveautés (`NEWS` dans `src/app.js`), les boutiques
+- **La carte** (`/carte/`) : le catalogue refait en octobre (pralines, napolitains, palets, macarons, thés). Sur la fiche d'une praline, « Ajouter à mon ballotin » ouvre l'Atelier avec la praline déjà placée ; sur les autres, « Commander » mène à la bonne section
+- **Commander** : ballotins, coffrets et gourmandises prêts à commander
+
 - **Carte** : fêtes et précommandes, ballotins, les 52 pralines (photos détourées de la carte), napolitains, palets, macarons, thés, pâtes de fruits
 - **L'Atelier** : 3 formats, puis chaque praline (filtres noir / lait / blanc / sans fruits à coque, « Compléter pour moi », petit mot pour la carte)
   - Ballotins (blancs, ruban rouge) au poids, 105 €/kg : 250 g 26,25 € · 350 g 36,75 € · 500 g 52,50 € · 750 g 78,75 € · 1 kg 105 €. Rangement par couche d'après le croquis de la boutique (250 g et 350 g), extrapolé pour 500 g / 750 g / 1 kg (`LAY` dans `src/app.js`), 3 couches
