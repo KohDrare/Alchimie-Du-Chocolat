@@ -1048,6 +1048,24 @@ svg.box.closed .lid{transform:none;opacity:1}
 .opt{-webkit-user-select:none;user-select:none}
 .opt:active{background:#f6efe6}
 
+/* ---------- choix du format ---------- */
+.fmts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 0 2px}
+.fmt{background:var(--card);border-radius:16px;padding:11px 10px;text-align:left;box-shadow:0 0 0 1px var(--line);transition:box-shadow .2s,background .2s}
+.fmt b{display:block;font-family:var(--serif);font-size:20px;font-weight:600;line-height:1}
+.fmt span{display:block;font-size:11px;color:var(--mute);margin-top:4px;line-height:1.25}
+.fmt.on{background:var(--ink);box-shadow:none}.fmt.on b{color:#fff}.fmt.on span{color:#cdbfae}
+.sz .vis{height:104px}
+.sachet-c{display:flex;gap:14px;align-items:center;background:var(--card);border-radius:20px;padding:14px;margin-top:12px;box-shadow:0 0 0 1px var(--line)}
+.sachet-c .vis{width:110px;flex:none}.sachet-c .vis svg{width:100%;height:auto}
+.sachet-c b{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.05}
+.sachet-c p{font-size:13px;color:var(--mute);margin-top:4px;line-height:1.4}
+/* retirer une praline depuis la grille */
+.pr-c .rm{position:absolute;left:6px;bottom:6px;width:26px;height:26px;border-radius:50%;background:#fffdf9;color:var(--ink);display:grid;place-items:center;box-shadow:0 1px 4px #2b1a0f26;z-index:2}
+.pr-c .rm svg{width:11px;height:11px}
+.pr-c .imgw .cnt{position:absolute;right:6px;top:6px}
+svg.box.coffret{filter:drop-shadow(0 10px 14px #10142433)}
+.pr-c .imgw .rm{top:auto;left:6px;bottom:6px}
+
 </style>
 </head>
 <body>
@@ -1137,7 +1155,8 @@ svg.box.closed .lid{transform:none;opacity:1}
 
 <!-- dégradé partagé des alvéoles du ballotin -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
-  <radialGradient id="cupG" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#7a4a2a"/><stop offset=".72" stop-color="#5a321b"/><stop offset="1" stop-color="#3e2212"/></radialGradient>
+  <radialGradient id="cupG" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#c9a27e"/><stop offset=".75" stop-color="#b08560"/><stop offset="1" stop-color="#94694a"/></radialGradient>
+  <linearGradient id="cello" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".0"/><stop offset=".18" stop-color="#fff" stop-opacity=".45"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#fff" stop-opacity="0"/><stop offset=".9" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
 </defs></svg>
 
 <div class="cbar" id="cbar"><button id="openCart"><span class="n" id="cbN">0</span><span class="l">Voir le panier</span><span id="cbT"></span></button></div>
@@ -1196,17 +1215,51 @@ const CONFIG = {
 /* =====================================================================
    CARTE — prix PROVISOIRES, à valider
    ===================================================================== */
-const SIZES=[
-  {id:"e9",   label:"Écrin",  sub:"9 pralines",              n:9,  cols:3,rows:3,price:15},
-  {id:"g250", label:"250 g",  sub:"≈ 20 pralines",           n:20, cols:5,rows:4,price:22},
-  {id:"g500", label:"500 g",  sub:"≈ 40 pralines · 2 étages", n:40, cols:5,rows:4,price:42},
-  {id:"g750", label:"750 g",  sub:"≈ 60 pralines · 3 étages", n:60, cols:5,rows:4,price:62},
-  {id:"g1000",label:"1 kg",   sub:"≈ 80 pralines · 4 étages", n:80, cols:5,rows:4,price:80},
+/* ---------- Les formats de l'Atelier (tarifs de la boutique, nov. 2026) ----------
+   Ballotins : boîte blanche, ruban rouge, vendus au poids (105 €/kg), 3 couches.
+   Coffrets  : boîte bleu nuit, ruban doré, prix fixe, 1 plateau.
+   Sachet    : sur mesure, au poids ; le prix affiché est une estimation.          */
+const PRICE_KG=105;          // € / kg (ballotins et sachets)
+const PRALINE_G=9;           // poids moyen d'une praline, pour l'estimation (à ajuster)
+const SACHET_MIN=6, SACHET_MAX=120;
+/* rangement d'une couche de ballotin, en unités (1 carré = 10) — d'après le croquis de la boutique
+   cols×rows carrés · « side » rectangles debout à droite · « bars » barrettes couchées en haut */
+const LAY={
+  b250:{special:"250"},                                  // 4 carrés + 6 petits rectangles
+  b350:{cols:2,rows:4,side:3,bars:2},                    // croquis : 2 barrettes, 2×4 carrés, 3 rectangles
+  b500:{cols:3,rows:4,side:4,bars:3},
+  b750:{cols:4,rows:5,side:5,bars:4},
+  b1000:{cols:5,rows:5,side:5,bars:5},
+};
+function layout(s){
+  if(s.fmt==="coffret"){const N=s.grid,c=[];for(let r=0;r<N;r++)for(let k=0;k<N;k++)c.push({x:3+k*12,y:3+r*12,w:10,h:10});return{W:6+N*12-2,H:6+N*12-2,cells:c}}
+  const L=LAY[s.id],c=[];
+  if(L.special==="250"){for(let i=0;i<4;i++)c.push({x:3,y:3+i*12,w:10,h:10});for(let j=0;j<6;j++)c.push({x:15,y:3+j*8,w:10,h:6});return{W:28,H:52,cells:c}}
+  const gw=L.cols*12-2,gh=L.rows*12-2,top=L.bars?9:3,tw=gw+(L.side?7:0);
+  if(L.bars){const bw=(tw-(L.bars-1)*2)/L.bars;for(let i=0;i<L.bars;i++)c.push({x:3+i*(bw+2),y:3,w:bw,h:4})}
+  for(let r=0;r<L.rows;r++)for(let k=0;k<L.cols;k++)c.push({x:3+k*12,y:top+r*12,w:10,h:10});
+  if(L.side){const sh=(gh-(L.side-1)*2)/L.side;for(let i=0;i<L.side;i++)c.push({x:3+gw+2,y:top+i*(sh+2),w:5,h:sh})}
+  return{W:tw+6,H:top+gh+3,cells:c};
+}
+const FORMATS=[
+  {id:"ballotin",label:"Ballotin",sub:"Boîte blanche, ruban rouge · au poids, 105 €/kg",sizes:[["b250","250 g",250,26.25],["b350","350 g",350,36.75],["b500","500 g",500,52.50],["b750","750 g",750,78.75],["b1000","1 kg",1000,105]]},
+  {id:"coffret",label:"Coffret",sub:"Boîte bleu nuit, ruban doré · prix fixe",sizes:[["c9","9 pralines",3,13.80],["c16","16 pralines",4,21.30],["c25","25 pralines",5,32.70],["c36","36 pralines",6,43.40],["c49","49 pralines",7,59.30]]},
+  {id:"sachet",label:"Sachet",sub:"Sur mesure, au poids · 105 €/kg",sizes:[["sachet","Sachet sur mesure",0,0]]},
 ];
-const o=(l,p=0)=>({label:l,price:p});
+const SIZES=[];
+FORMATS.forEach(f=>f.sizes.forEach(([id,label,v,price])=>{
+  const s={id,fmt:f.id,label,price};
+  if(f.id==="ballotin"){s.grams=v;s.layers=3;s.lay=layout(s);s.per=s.lay.cells.length;s.n=s.per*3;s.sub=`${s.n} pralines · 3 couches`}
+  if(f.id==="coffret"){s.grid=v;s.layers=1;s.lay=layout(s);s.per=s.n=v*v;s.sub=`Plateau de ${v}×${v}`}
+  if(f.id==="sachet"){s.layers=1;s.n=0;s.sub=`De ${SACHET_MIN} à ${SACHET_MAX} pralines`}
+  SIZES.push(s)}));
 const SZ=Object.fromEntries(SIZES.map(s=>[s.id,s]));
-const SIZEG=(from)=>({id:"taille",label:"Taille",type:"single",required:true,defaults:[SZ[from].label],
-  options:SIZES.filter(s=>s.id!=="e9").map(s=>o(s.label,s.price-SZ[from].price))});
+/* anciens identifiants (paniers déjà enregistrés) */
+Object.assign(SZ,{e9:SZ.c9,g250:SZ.b250,g500:SZ.b500,g750:SZ.b750,g1000:SZ.b1000});
+const sachetPrice=n=>Math.round(n*PRALINE_G/1000*PRICE_KG*20)/20;   // arrondi à 5 cents
+const o=(l,p=0)=>({label:l,price:p});
+const SIZEG=(from,fmt="ballotin")=>({id:"taille",label:fmt==="coffret"?"Format":"Poids",type:"single",required:true,defaults:[SZ[from].label],
+  options:SIZES.filter(s=>s.fmt===fmt).map(s=>o(s.label,Math.round((s.price-SZ[from].price)*100)/100))});
 const PR=DATA.pralines, PRI={};PR.forEach(c=>c.items.forEach(i=>PRI[i.img]={...i,cat:c.id}));
 const BALLO_CATS=PR.filter(c=>c.id!=="pdf");
 const BALLO_KEYS=BALLO_CATS.flatMap(c=>c.items.map(i=>i.img));
@@ -1218,15 +1271,15 @@ const opts=(cat,ids)=>DATA[cat].filter(c=>!ids||ids.includes(c.id)).flatMap(c=>c
 
 const MENU=[
   {id:"fetes",title:"Fêtes & précommandes",hint:"Réservez maintenant, on prépare tout pour le jour choisi.",items:[
-    {id:"x1",name:"Ballotin Saint-Nicolas",desc:"Pralinés speculoos noir et lait, Manon speculoos et craquentine. Environ 250 g.",price:22,tag:"6 décembre",until:"12-06",
-     box:{s:"g250",mix:["speculoos-noir","speculoos-lait","manon-specu","craquentine-noir","craquentine-lait"]}},
-    {id:"x2",name:"Ballotin des fêtes",desc:"L'assortiment de la maison, noué de son ruban de fêtes.",price:42,tag:"Noël",groups:[SIZEG("g500")],box:{s:"g500",mix:"all",seed:7}},
+    {id:"x1",name:"Ballotin Saint-Nicolas",desc:"Pralinés speculoos noir et lait, Manon speculoos et craquentine. Environ 250 g.",price:26.25,tag:"6 décembre",until:"12-06",
+     box:{s:"b250",mix:["speculoos-noir","speculoos-lait","manon-specu","craquentine-noir","craquentine-lait"]}},
+    {id:"x2",name:"Coffret des fêtes",desc:"L'assortiment de la maison dans son coffret bleu nuit, ruban doré.",price:32.70,tag:"Noël",groups:[SIZEG("c25","coffret")],box:{s:"c25",mix:"all",seed:7}},
     {id:"x3",name:"Thé de Noël",desc:"Les éditions de fin d'année, en vrac. 100 g.",price:9.5,img:"assets/thes/the-noir-noel-a-paris-150x150-1.webp",sq:true,
      groups:[{id:"the",label:"Votre thé",type:"single",required:true,options:["Rooibos de Noël","Christmas tea vert","Noël à Pékin","Noël à Paris","Noël à St Pétersbourg","Christmas tea noir","Tisane de Noël"].map(l=>o(l))}]},
   ]},
-  {id:"ballotins",title:"Ballotins",hint:"L'assortiment de la maison, ou le vôtre, composé à l'Atelier.",items:[
-    {id:"b1",name:"Assortiment de la maison",desc:"Le choix du chocolatier : pralinés, ganaches, crème fraîche et confiseries.",price:22,tag:"Populaire",groups:[SIZEG("g250")],box:{s:"g250",mix:"all",seed:3}},
-    {id:"b2",name:"Écrin découverte",desc:"9 pralines pour découvrir la maison. Idéal à offrir.",price:15,box:{s:"e9",mix:"all",seed:11}},
+  {id:"ballotins",title:"Ballotins",hint:"Ballotins au poids et coffrets : l'assortiment de la maison, ou le vôtre, composé à l'Atelier.",items:[
+    {id:"b1",name:"Ballotin assorti",desc:"Le choix du chocolatier dans le ballotin blanc au ruban rouge. Vendu au poids, 105 €/kg.",price:26.25,tag:"Populaire",groups:[SIZEG("b250")],box:{s:"b250",mix:"all",seed:3}},
+    {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 9 à 49 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c9","coffret")],box:{s:"c9",mix:"all",seed:11}},
   ]},
   {id:"pralines",title:"Nos pralines",hint:"Touchez une praline pour la découvrir et l'ajouter à votre ballotin.",special:true,items:[]},
   {id:"napolitains",title:"Napolitains",hint:"Carrés fins de chocolat d'origine, du plus doux au plus intense.",items:[
@@ -1260,14 +1313,14 @@ const MENU=[
 ];
 /* Offres en grand sur l'accueil */
 const OFFERS=[
-  {kick:"Précommande",title:"Saint-Nicolas",sub:"Le ballotin speculoos, à retirer jusqu'au 6 décembre.",price:22,bg:"#6d2a1c",art:{imgs:["speculoos-noir","manon-specu","speculoos-lait"]},until:"12-06",go:{item:"x1"}},
+  {kick:"Précommande",title:"Saint-Nicolas",sub:"Le ballotin speculoos, à retirer jusqu'au 6 décembre.",price:26.25,bg:"#6d2a1c",art:{imgs:["speculoos-noir","manon-specu","speculoos-lait"]},until:"12-06",go:{item:"x1"}},
   {kick:"L'Atelier",title:"Composez votre ballotin",sub:"Praline par praline, parmi plus de 45 créations.",bg:"#2b1a0f",art:{box:true},go:{view:"atelier"}},
   {kick:"Noël",title:"Les fêtes se préparent",sub:"Ballotins et thés de Noël : réservez votre jour de retrait.",bg:"#34452b",art:{fetes:true},until:"12-31",light:true,go:{cat:"fetes"}},
 ];
 const PICKS=["x1","b1","b2","m1","n1","pa1"];
 /* « Un petit plus ? » au moment de finaliser */
 const EXTRAS=[
-  {id:"b2",lab:"Écrin 9"},{id:"m1",lab:"6 macarons",opt:"Assortiment du chef"},
+  {id:"b2",lab:"Coffret 9",opt:"9 pralines"},{id:"m1",lab:"6 macarons",opt:"Assortiment du chef"},
   {id:"f1",lab:"Pâtes de fruits"},{id:"n1",lab:"Napolitains",opt:"Assortiment des 6 origines"},{id:"pa1",lab:"Palets yuzu",opt:"Yuzu"},
 ];
 
@@ -1305,18 +1358,40 @@ function mixPieces(n,pool,seed=1,skip){const r=rnd(seed*7919+n),P=(pool==="all"|
   if(pool&&pool!=="all"){for(let i=0;i<n;i++)out.push(P[i%P.length]);return out.sort(()=>r()-.5)}
   const bag=[...P].sort(()=>r()-.5);for(let i=0;i<n;i++)out.push(bag[i%bag.length]);return out}
 const presetPieces=it=>{const s=SZ[it.box.s];return mixPieces(s.n,it.box.mix,it.box.seed||1)};
+/* ---------- dessin des boîtes ----------
+   Chaque alvéole : <g class="slot" data-i data-b="x,y,w,h"> pour ajouter / retirer une praline sans tout redessiner */
+const U=5;
+const pcImg=(k,b,cls)=>`<image class="pc${cls||""}" href="${prImg(k)}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" preserveAspectRatio="xMidYMid meet"/>`;
 function boxSVG(sid,pieces,o={}){
-  const s=SZ[sid],C=s.cols,R=s.rows,cell=56,pad=16,W=C*cell+pad*2,H=R*cell+pad*2,per=C*R,L=o.layer||0;
-  let cells="";
-  for(let j=0;j<per;j++){const idx=L*per+j;if(idx>=s.n)break;const cx=pad+cell/2+(j%C)*cell,cy=pad+cell/2+Math.floor(j/C)*cell,k=pieces&&pieces[idx];
-    cells+=`<g class="slot" data-i="${idx}"><circle cx="${cx}" cy="${cy}" r="24.5" fill="url(#cupG)"/><circle cx="${cx}" cy="${cy}" r="25.5" fill="none" stroke="#cfb18b" stroke-width="2.6" stroke-dasharray="1.6 2.1"/>${k?`<image class="pc${o.drop===idx?" drop":""}" href="${prImg(k)}" x="${cx-23}" y="${cy-23}" width="46" height="46" preserveAspectRatio="xMidYMid meet"/>`:""}</g>`}
-  const bow=`<g transform="translate(${W/2} ${H/2})"><path d="M0 0c-14-14-36-16-38-4s22 12 38 4z" fill="#b5c11a"/><path d="M0 0c14-14 36-16 38-4s-22 12-38 4z" fill="#b5c11a"/><path d="M-3 2l-14 22M3 2l14 22" stroke="#c6d41f" stroke-width="7" stroke-linecap="round"/><circle r="7.5" fill="#d4e03c"/></g>`;
-  return `<svg class="box${o.closed?" closed":""}" viewBox="-4 -4 ${W+8} ${H+8}" ${o.id?`id="${o.id}"`:""} aria-hidden="true">
-    <rect x="0" y="0" width="${W}" height="${H}" rx="16" fill="#4b2a00"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="11" fill="#f6efe4" stroke="#c9a46a" stroke-width="1.5"/>
-    ${cells}
-    ${o.lid!==false?`<g class="lid"><rect x="0" y="0" width="${W}" height="${H}" rx="16" fill="#3d2717"/><rect x="8" y="8" width="${W-16}" height="${H-16}" rx="10" fill="none" stroke="#c9a46a" stroke-width="1.2" opacity=".7"/>
-      <rect x="${W/2-8}" y="0" width="16" height="${H}" fill="#c6d41f"/><rect x="0" y="${H/2-8}" width="${W}" height="16" fill="#c6d41f"/>${bow}
-      <text x="${W-18}" y="${H-16}" text-anchor="end" font-family="Allura,cursive" font-size="${Math.min(30,W/9)}" fill="#f3ece2">L'alchimie</text></g>`:""}
+  const s=SZ[sid];if(!s)return"";
+  if(s.fmt==="sachet")return sachetSVG(pieces||[],o);
+  const {W:w,H:h,cells}=s.lay,W=w*U,H=h*U,L=o.layer||0,per=cells.length,nav=s.fmt==="coffret";
+  let out="";
+  cells.forEach((c,j)=>{const idx=L*per+j,k=pieces&&pieces[idx],x=c.x*U,y=c.y*U,cw=c.w*U,ch=c.h*U,i=Math.min(cw,ch)*.06,b=[x+i,y+i,cw-2*i,ch-2*i];
+    out+=`<g class="slot" data-i="${idx}" data-b="${b.join(",")}"><rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="${Math.min(cw,ch)*.16}" fill="${nav?"#232326":"url(#cupG)"}" stroke="${nav?"#3a3a40":"#cfb18b"}" stroke-width="${nav?1.4:1.6}"/>${k?pcImg(k,b,o.drop===idx?" drop":""):""}</g>`});
+  const lid=o.lid===false?"":nav?
+    `<g class="lid"><rect width="${W}" height="${H}" rx="10" fill="#1f2840"/><rect x="5" y="5" width="${W-10}" height="${H-10}" rx="7" fill="none" stroke="#2c3757" stroke-width="2"/>
+      <rect x="${W*.3}" y="0" width="${Math.max(10,W*.07)}" height="${H}" fill="#e3c27d"/>${bow(W*.3+Math.max(10,W*.07)/2,H*.2,W/180,"#e9cc8c","#d4ad62")}
+      <text x="${W*.67}" y="${H*.6}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${W*.06}" letter-spacing="1" fill="#e3c27d">L'ALCHIMIE</text><text x="${W*.67}" y="${H*.6+W*.06}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${W*.04}" letter-spacing="2" fill="#e3c27d">DU CHOCOLAT</text></g>`:
+    `<g class="lid"><rect width="${W}" height="${H}" rx="10" fill="#fbfaf7" stroke="#e1dace" stroke-width="2"/>
+      <rect x="${W*.26}" y="0" width="${Math.max(12,W*.11)}" height="${H}" fill="#a3181f"/>${bow(W*.26+Math.max(12,W*.11)/2,H*.12,W/170,"#b8232a","#8c1218")}
+      <g transform="translate(${W*.7} ${H*.66})"><circle r="${W*.09}" fill="#a9c43c"/><text y="${W*.16}" text-anchor="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${W*.065}" fill="#4a4a42">L'ALCHIMIE</text>
+      <text y="${W*.225}" text-anchor="middle" font-family="Manrope,sans-serif" font-size="${W*.045}" fill="#6b6b60">du chocolat</text></g></g>`;
+  return `<svg class="box ${s.fmt}${o.closed?" closed":""}" viewBox="-3 -3 ${W+6} ${H+6}" ${o.id?`id="${o.id}"`:""} aria-hidden="true">
+    ${nav?`<rect width="${W}" height="${H}" rx="10" fill="#1f2840"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="6" fill="#121214"/>`
+         :`<rect width="${W}" height="${H}" rx="10" fill="#fbfaf7" stroke="#ddd5c7" stroke-width="2"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="6" fill="#efe7da"/>`}
+    ${out}${lid}</svg>`;
+}
+function bow(cx,cy,k,c1,c2){return `<g transform="translate(${cx} ${cy}) scale(${Math.max(.6,k)})"><path d="M0 0c-12-13-32-15-34-4s20 11 34 4z" fill="${c1}"/><path d="M0 0c12-13 32-15 34-4s-20 11-34 4z" fill="${c1}"/><path d="M-3 2l-12 20M3 2l12 20" stroke="${c2}" stroke-width="6" stroke-linecap="round"/><circle r="6.5" fill="${c2}"/></g>`}
+/* le sachet : on voit les 12 premières pralines à travers le cellophane */
+const SACHET_SPOTS=[[66,150],[106,156],[146,150],[78,186],[120,190],[160,184],[62,118],[104,122],[144,116],[86,90],[126,86],[104,58]];
+function sachetSVG(pieces,o={}){
+  const sp=SACHET_SPOTS.map((p,i)=>{const k=pieces[i],b=[p[0]-21,p[1]-21,42,42];return `<g class="slot" data-i="${i}" data-b="${b.join(",")}">${k?pcImg(k,b,o.drop===i?" drop":""):""}</g>`}).join("");
+  return `<svg class="box sachet" viewBox="0 0 210 240" ${o.id?`id="${o.id}"`:""} aria-hidden="true">
+    <path d="M44 34h122l14 176c1 12-8 22-20 22H50c-12 0-21-10-20-22z" fill="#ffffff8c" stroke="#d9cfc1" stroke-width="2"/>
+    ${sp}
+    <path d="M44 34h122l14 176c1 12-8 22-20 22H50c-12 0-21-10-20-22z" fill="url(#cello)" stroke="none" pointer-events="none"/>
+    <path d="M62 30c14 8 72 8 86 0l-6 16c-12 6-62 6-74 0z" fill="#e3c27d"/>${bow(105,34,1.05,"#e9cc8c","#c99d4e")}
   </svg>`;
 }
 const boxMini=(sid,pieces)=>boxSVG(sid,pieces,{lid:false});
@@ -1339,7 +1414,7 @@ function openState(shop){
   return{open:false,text:"Fermé"};
 }
 function unitPrice(it,sel){let p=it.price;(it.groups||[]).forEach(g=>(sel[g.id]||[]).forEach(l=>{const x=g.options.find(o=>o.label===l);if(x)p+=x.price}));return p}
-function totals(){const sub=S.cart.reduce((s,l)=>s+l.unit*l.qty,0);return{sub,total:sub,count:S.cart.reduce((s,l)=>s+l.qty,0)}}
+function totals(){const sub=Math.round(S.cart.reduce((s,l)=>s+l.unit*l.qty,0)*100)/100;return{sub,total:sub,count:S.cart.reduce((s,l)=>s+l.qty,0),est:S.cart.some(l=>l.est||(l.box&&SZ[l.box.s]&&SZ[l.box.s].fmt!=="coffret"))}}
 let tt;function toast(m,ok=true){const el=$("#toast");el.innerHTML=(ok?I.check:"")+esc(m);el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),1800)}
 const lineThumb=l=>l.box?`<span class="tile" style="--c:${tint("#c9a27e",.5)}">${boxMini(l.box.s,l.box.p)}</span>`:(ITEMS[l.id]?media(ITEMS[l.id]):"");
 
@@ -1365,9 +1440,9 @@ const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
    ACCUEIL
    ===================================================================== */
 function offerArt(f){
-  if(f.art.box)return `<div class="collage"><span class="glow"></span>${boxSVG("g250",mixPieces(20,"all",5),{lid:false})}</div>`;
+  if(f.art.box)return `<div class="collage"><span class="glow"></span>${boxSVG("b250",mixPieces(30,"all",5),{lid:false})}</div>`;
   if(f.art.imgs)return `<div class="collage"><span class="glow"></span>${f.art.imgs.map((k,i)=>`<img src="${prImg(k)}" alt="" style="transform:translate(${[-62,0,62][i]}%,${[8,-14,10][i]}%) rotate(${[-14,4,16][i]}deg) scale(${[1,1.18,1][i]})">`).join("")}</div>`;
-  return `<div class="collage"><span class="glow"></span>${boxSVG("e9",mixPieces(9,"all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
+  return `<div class="collage"><span class="glow"></span>${boxSVG("c9",mixPieces(9,"all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
 }
 function renderHome(){
   const OF=OFFERS.filter(live);
@@ -1383,7 +1458,7 @@ function renderHome(){
   $("#homeCats").innerHTML=MENU.map(c=>`<a class="cat" href="#c-${c.id}"><span class="c">${catImg[c.id]}</span>${short[c.id]}</a>`).join("");
   $("#picks").innerHTML=PICKS.filter(id=>live(ITEMS[id])).map(id=>{const i=ITEMS[id];return `<button class="pick" data-i="${id}"><div class="im">${media(i)}${i.tag?`<span class="badge">${i.tag}</span>`:""}</div><div class="tx"><b>${i.name}</b><div class="row2"><span class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</span><span class="plus">${I.plus}</span></div></div></button>`}).join("");
   $("#picks").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
-  $("#atlTeaser").innerHTML=boxSVG("e9",mixPieces(9,"all",4),{lid:false});
+  $("#atlTeaser").innerHTML=boxSVG("c9",mixPieces(9,"all",4),{lid:false});
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
   const n=BALLO_KEYS.length;
   $("#proof").innerHTML=`<b>${n}</b><span>pralines faites maison, des pralinés aux ganaches d'origine.<br>Boutiques à Waterloo et Ixelles.</span>`;
@@ -1405,7 +1480,7 @@ function bindPralines(root){
 function renderMenu(){
   $("#pills").innerHTML=MENU.map((c,i)=>`<a href="#c-${c.id}" data-c="${c.id}" class="${i?"":"on"}">${c.title.replace(" & précommandes","").replace("Thés & infusions","Thés")}</a>`).join("");
   $("#menuList").innerHTML=MENU.map(c=>`<section class="msec" id="c-${c.id}"><h2>${c.title}</h2>${c.hint?`<p class="hint">${c.hint}</p>`:""}
-    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("e9",mixPieces(9,"all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
+    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("c9",mixPieces(9,"all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
     ${c.special?`<div id="prWrap">${pralinesHTML()}</div>`:`<div class="list">${c.items.filter(live).map(i=>`<button class="row" data-i="${i.id}"><div class="txt"><h3>${i.name}${i.tag?`<span class="tag ${i.tag==="Populaire"?"":"ex"}">${i.tag}</span>`:""}</h3>${i.desc?`<p>${i.desc}</p>`:""}<div class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</div></div>
       <span class="media"><span class="ph">${media(i)}</span><span class="add" aria-hidden="true">${I.plus}</span></span></button>`).join("")}</div>`}</section>`).join("");
   $("#menuList").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
@@ -1454,35 +1529,52 @@ function renderStatus(){const s=openState();$("#status").classList.toggle("close
    ATELIER — ballotin sur mesure (3 étapes : taille → pralines → récap)
    ===================================================================== */
 let B;
-const STEPS=["La taille","Les pralines","Votre ballotin"];
-const bReset=()=>{B={step:0,size:"g250",pieces:new Array(20).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",busy:false}};bReset();
+const STEPS=["Le format","Les pralines","Votre création"];
+const bReset=(fmt="ballotin",size)=>{const sid=size||FORMATS.find(f=>f.id===fmt).sizes[0][0];B={step:0,fmt:SZ[sid].fmt,size:sid,pieces:SZ[sid].fmt==="sachet"?[]:new Array(SZ[sid].n).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",busy:false}};bReset();
 const bSize=()=>SZ[B.size];
-const bCount=()=>B.pieces.filter(Boolean).length;
-const bFull=()=>bCount()>=bSize().n;
-const perLayer=()=>bSize().cols*bSize().rows;
-const nLayers=()=>Math.ceil(bSize().n/perLayer());
+const isSachet=()=>bSize().fmt==="sachet";
+const bCount=()=>isSachet()?B.pieces.length:B.pieces.filter(Boolean).length;
+const bFull=()=>!isSachet()&&bCount()>=bSize().n;
+const bReady=()=>isSachet()?bCount()>=SACHET_MIN:bFull();
+const bPrice=()=>isSachet()?sachetPrice(bCount()):bSize().price;
+const bGrams=()=>isSachet()?bCount()*PRALINE_G:bSize().grams||bSize().n*PRALINE_G;
+const perLayer=()=>isSachet()?SACHET_SPOTS.length:bSize().per;
+const nLayers=()=>bSize().layers||1;
 const layerDone=i=>B.pieces.slice(i*perLayer(),(i+1)*perLayer()).every(Boolean);
 const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const cvOk=k=>{const p=PRI[k];return(B.cv==="all"||p.cv===B.cv)&&(!B.nonut||!/N/.test(p.al||""))};
 const BACK_IC='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>';
-function setSize(id){const old=B.pieces.filter(Boolean);B.size=id;const n=SZ[id].n;B.pieces=new Array(n).fill(null);old.slice(0,n).forEach((k,i)=>B.pieces[i]=k);B.layer=0}
+function setSize(id){const old=B.pieces.filter(Boolean),s=SZ[id];B.size=id;B.fmt=s.fmt;B.layer=0;
+  if(s.fmt==="sachet"){B.pieces=old.slice(0,SACHET_MAX);return}
+  B.pieces=new Array(s.n).fill(null);old.slice(0,s.n).forEach((k,i)=>B.pieces[i]=k)}
 
 function openAtelier(){const a=$("#atl");if(!a.classList.contains("on")){a.classList.add("on");a.setAttribute("aria-hidden","false");document.documentElement.style.overflow="hidden"}renderAtl()}
 function closeAtelier(){const a=$("#atl");if(!a.classList.contains("on"))return;a.classList.remove("on");a.setAttribute("aria-hidden","true");document.documentElement.style.overflow=""}
 $("#atlBack").onclick=()=>{if(B.step>0){B.step--;renderAtl()}else go("accueil")};
-$("#atlReset").onclick=()=>{if(!bCount()&&B.step===0)return;bReset();renderAtl();toast("On recommence",false)};
+$("#atlReset").onclick=()=>{if(!bCount()&&B.step===0)return;bReset(B.fmt);renderAtl();toast("On recommence",false)};
 
+const fmtLabel=s=>s.fmt==="ballotin"?`Ballotin ${s.label}`:s.fmt==="coffret"?`Coffret ${s.label}`:"Sachet sur mesure";
+function sizeCards(){
+  const f=FORMATS.find(x=>x.id===B.fmt);
+  if(f.id==="sachet")return `<div class="sachet-c"><div class="vis">${sachetSVG(mixPieces(12,"all",6))}</div>
+    <div><b>Vous choisissez le nombre</b><p>De ${SACHET_MIN} à ${SACHET_MAX} pralines, une par une. Le sachet est pesé en boutique à ${PRICE_KG} €/kg : nous affichons une estimation (≈ ${fmt(sachetPrice(1))} la praline).</p></div></div>`;
+  return `<div class="sizes">${f.sizes.map(([id])=>{const s=SZ[id];return `<button class="sz ${id===B.size?"sel":""}" data-sz="${id}" aria-pressed="${id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxSVG(id,[],{lid:false})}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`}).join("")}</div>`;
+}
 function renderAtl(){
   $("#atlStep").textContent=`Étape ${B.step+1} sur 3 · ${STEPS[B.step]}`;
   [...$("#atlDots").children].forEach((d,i)=>d.className=i<B.step?"is-done":i===B.step?"is-cur":"");
   const body=$("#atlBody"),foot=$("#atlFoot");body.className="atl-body"+(B.step===1?" fill":"");
   if(B.step===0){
-    body.innerHTML=`<div class="scrl"><div class="lead"><h2>Quelle taille ?</h2><p>Vous choisirez ensuite chaque praline.</p></div>
-      <div class="sizes">${SIZES.map(s=>`<button class="sz ${s.id===B.size?"sel":""}" data-sz="${s.id}" aria-pressed="${s.id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxMini(s.id,[])}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`).join("")}</div>
-      <p class="note-s">Poids indicatif : environ 12 g par praline. Le prix final est confirmé en boutique.</p></div>`;
+    body.innerHTML=`<div class="scrl"><div class="lead"><h2>Votre écrin</h2><p>Choisissez le format, puis chaque praline.</p></div>
+      <div class="fmts">${FORMATS.map(f=>`<button class="fmt ${f.id===B.fmt?"on":""}" data-fmt="${f.id}" aria-pressed="${f.id===B.fmt}"><b>${f.label}</b><span>${f.sub}</span></button>`).join("")}</div>
+      <div id="szWrap">${sizeCards()}</div>
+      <p class="note-s">${B.fmt==="coffret"?"Prix fixe, quel que soit votre choix de pralines.":"Vendu au poids : le prix indiqué est une estimation, le montant exact est donné à la pesée en boutique."}</p></div>`;
     foot.innerHTML=`<button class="btn btn-dark" id="atlNext">Choisir mes pralines ${I.arrow}</button>`;
-    body.querySelectorAll("[data-sz]").forEach(b=>b.onclick=()=>{if(b.dataset.sz===B.size)return;setSize(b.dataset.sz);
+    const bindSz=()=>body.querySelectorAll("[data-sz]").forEach(b=>b.onclick=()=>{if(b.dataset.sz===B.size)return;setSize(b.dataset.sz);
       body.querySelectorAll("[data-sz]").forEach(x=>{const on=x===b;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})});
+    body.querySelectorAll("[data-fmt]").forEach(b=>b.onclick=()=>{if(b.dataset.fmt===B.fmt)return;const keep=B.pieces.filter(Boolean);
+      B.fmt=b.dataset.fmt;setSize(FORMATS.find(f=>f.id===B.fmt).sizes[0][0]);if(isSachet())B.pieces=keep.slice(0,SACHET_MAX);renderAtl()});
+    bindSz();
     $("#atlNext").onclick=()=>{B.step=1;renderAtl()};
     return;
   }
@@ -1491,34 +1583,34 @@ function renderAtl(){
         <div class="count"><b id="cntT"></b><span id="cntS"></span></div><div class="fillbar" id="fbar"><i></i></div></div>
       <div class="tools" id="tools"></div>
       <div class="scrl" id="bsc"></div>`;
-    foot.innerHTML=`<button class="ic-b back" id="atlPrev" aria-label="Changer de taille">${BACK_IC}</button><button class="btn" id="atlNext"></button>`;
+    foot.innerHTML=`<button class="ic-b back" id="atlPrev" aria-label="Changer de format">${BACK_IC}</button><button class="btn" id="atlNext"></button>`;
     $("#atlPrev").onclick=()=>{B.step=0;renderAtl()};
-    $("#atlNext").onclick=()=>{if(!bFull()){const r=bSize().n-bCount();toast(`Encore ${r} praline${r>1?"s":""} à choisir`,false);return}B.step=2;renderAtl();vib(14)};
+    $("#atlNext").onclick=()=>{if(!bReady()){toast(isSachet()?`Au moins ${SACHET_MIN} pralines pour un sachet`:`Encore ${bSize().n-bCount()} praline${bSize().n-bCount()>1?"s":""} à choisir`,false);return}B.step=2;renderAtl();vib(14)};
     drawBox();drawTools();drawGrid();updateFill();
-    /* la boîte se fait plus petite quand on parcourt les pralines */
     const sc=$("#bsc"),top=body.querySelector(".fill-top");let cp=false;
     sc.addEventListener("scroll",()=>{const c=sc.scrollTop>24;if(c!==cp){cp=c;top.classList.toggle("compact",c)}},{passive:true});
     return;
   }
   /* récap */
-  const g={};B.pieces.forEach(k=>{if(k)g[k]=(g[k]||0)+1});
+  const g={};B.pieces.forEach(k=>{if(k)g[k]=(g[k]||0)+1});const sz=bSize(),est=sz.fmt!=="coffret";
   body.innerHTML=`<div class="scrl"><div class="recap-box">${boxSVG(B.size,B.pieces,{id:"bxR"})}</div>
-    <div class="lead" style="padding-top:6px"><h2>Ballotin ${bSize().label}</h2><p>${bSize().n} pralines · ${fmt(bSize().price)}</p></div>
+    <div class="lead" style="padding-top:6px"><h2>${fmtLabel(sz)}</h2><p>${bCount()} pralines · ${est?`≈ ${bGrams()} g · ≈ `:""}${fmt(bPrice())}</p></div>
+    ${est?`<p class="note-s" style="margin-top:2px">Pesé en boutique à ${PRICE_KG} €/kg : le montant exact peut varier de quelques centimes.</p>`:""}
     <div class="rlist">${Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="rl">${tile(prImg(k),PRI[k].color)}<span>${esc(PRI[k].full)}</span><b>×${n}</b></div>`).join("")}</div>
     <div class="fld msg"><div class="in"><label for="bMsg">Un petit mot sur la carte ? (optionnel)</label><input id="bMsg" maxlength="140" placeholder="Ex. Joyeux anniversaire Maman !" value="${esc(B.msg)}"></div></div></div>`;
   foot.innerHTML=`<div class="stepper"><button id="aqm" aria-label="Moins">${I.minus}</button><span id="aqv">${B.qty}</span><button id="aqp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="atlAdd"></button>`;
-  const lbl=()=>{$("#aqv").textContent=B.qty;$("#atlAdd").textContent=`Ajouter · ${fmt(bSize().price*B.qty)}`};lbl();
+  const lbl=()=>{$("#aqv").textContent=B.qty;$("#atlAdd").textContent=`Ajouter · ${est?"≈ ":""}${fmt(bPrice()*B.qty)}`};lbl();
   $("#aqm").onclick=()=>{if(B.qty>1){B.qty--;lbl()}};$("#aqp").onclick=()=>{B.qty++;lbl()};
   $("#bMsg").oninput=e=>B.msg=e.target.value;$("#atlAdd").onclick=addBallotin;
   requestAnimationFrame(()=>setTimeout(()=>{const x=$("#bxR");x&&x.classList.add("closed")},120));
 }
-/* la boîte : dessinée une fois par étage, puis mise à jour alvéole par alvéole */
+/* la boîte : dessinée une fois par couche, puis mise à jour alvéole par alvéole */
 function drawBox(){
   $("#bbox").innerHTML=boxSVG(B.size,B.pieces,{layer:B.layer,lid:false,id:"bx"});
   $("#bbox").querySelectorAll(".slot").forEach(g=>g.onclick=()=>removePiece(+g.dataset.i));
   const L=nLayers(),t=$("#lytabs");
   t.style.display=L>1?"":"none";
-  t.innerHTML=L>1?Array.from({length:L},(_,i)=>`<button data-ly="${i}" class="${i===B.layer?"on":""} ${layerDone(i)?"ok":""}">Étage ${i+1}</button>`).join(""):"";
+  t.innerHTML=L>1?Array.from({length:L},(_,i)=>`<button data-ly="${i}" class="${i===B.layer?"on":""} ${layerDone(i)?"ok":""}">Couche ${i+1}</button>`).join(""):"";
   t.querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{B.layer=+b.dataset.ly;drawBox()});
 }
 function setSlot(i,k,anim){
@@ -1526,81 +1618,100 @@ function setSlot(i,k,anim){
   const old=g.querySelector(".pc");
   if(!k){if(old){old.classList.add("out");setTimeout(()=>old.remove(),200)}return}
   if(old)old.remove();
-  const c=g.querySelector("circle"),cx=+c.getAttribute("cx"),cy=+c.getAttribute("cy");
+  const b=g.dataset.b.split(",").map(Number);
   const im=document.createElementNS("http://www.w3.org/2000/svg","image");
-  im.setAttribute("class","pc"+(anim?" drop":""));im.setAttribute("href",prImg(k));
-  im.setAttribute("x",cx-23);im.setAttribute("y",cy-23);im.setAttribute("width",46);im.setAttribute("height",46);
+  im.setAttribute("class","pc"+(anim?" drop":""));im.setAttribute("href",prImg(k));im.setAttribute("preserveAspectRatio","xMidYMid meet");
+  im.setAttribute("x",b[0]);im.setAttribute("y",b[1]);im.setAttribute("width",b[2]);im.setAttribute("height",b[3]);
   g.appendChild(im);
 }
 function drawTools(){
   const t=$("#tools");
   t.innerHTML=`${[["all","Tous"],["noir","Noir"],["lait","Lait"],["blanc","Blanc"]].map(([k,l])=>`<button data-cv="${k}" class="${B.cv===k?"on":""}">${l}</button>`).join("")}
     <button id="nonut" class="${B.nonut?"on":""}">Sans fruits à coque</button><span class="sep"></span>
-    <button class="mag" id="bAuto">${I.spark}Compléter pour moi</button><button id="bClear">Vider</button>`;
+    <button class="mag" id="bAuto">${I.spark}${isSachet()?"+10 au choix du chocolatier":"Compléter pour moi"}</button><button id="bClear">Vider</button>`;
   t.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{B.cv=b.dataset.cv;drawTools();drawGrid()});
   $("#nonut").onclick=()=>{B.nonut=!B.nonut;drawTools();drawGrid()};
   $("#bAuto").onclick=autoFill;
-  $("#bClear").onclick=()=>{if(!bCount())return;B.pieces=B.pieces.map(()=>null);B.layer=0;drawBox();updateFill()};
+  $("#bClear").onclick=()=>{if(!bCount())return;B.pieces=isSachet()?[]:B.pieces.map(()=>null);B.layer=0;drawBox();updateFill()};
 }
 function drawGrid(){
   const sc=$("#bsc"),y=sc.scrollTop;
   const html=BALLO_CATS.map(c=>{const L=c.items.filter(i=>cvOk(i.img));return L.length?`<div class="bcat">${c.name}</div><div class="pgrid sm">${L.map(i=>pickCard(i.img)).join("")}</div>`:""}).join("");
   sc.innerHTML=html||`<div class="pempty">Aucune praline avec ces filtres.</div>`;
   sc.scrollTop=y;
-  sc.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>addPiece(b.dataset.p,b));
+  sc.querySelectorAll("[data-p]").forEach(b=>b.onclick=e=>{if(e.target.closest(".rm")){removeOne(b.dataset.p);return}addPiece(b.dataset.p,b)});
 }
 function pickCard(k){const p=PRI[k];return `<button class="pr-c" data-p="${k}" aria-label="Ajouter ${esc(p.full)}"><span class="imgw">${tile(prImg(k),p.color,"",p.full)}<span class="add1">${I.plus}</span></span>${p.cv?`<span class="cvt">${p.cv}</span>`:""}<span class="ey">${esc(p.ey)}</span><b>${esc(p.title)}</b></button>`}
 function updateFill(){
   if(B.step!==1)return;
-  const n=bCount(),N=bSize().n,full=n===N;
-  $("#cntT").textContent=full?"C'est complet !":`Ballotin ${bSize().label}`;
-  $("#cntS").innerHTML=`<strong>${n}</strong> / ${N} pralines · ${fmt(bSize().price)}`;
-  $("#fbar").classList.toggle("full",full);$("#fbar i").style.width=(n/N*100)+"%";
-  const nx=$("#atlNext");nx.className="btn "+(full?"btn-or":"btn-dark");nx.innerHTML=full?`Fermer le ballotin ${I.arrow}`:`Encore ${N-n} praline${N-n>1?"s":""}`;
+  const n=bCount(),sz=bSize(),sach=isSachet(),full=!sach&&n===sz.n,ready=bReady();
+  if(sach){
+    $("#cntT").textContent=n?`${n} praline${n>1?"s":""}`:"Votre sachet";
+    $("#cntS").innerHTML=n?`≈ ${bGrams()} g · <strong>≈ ${fmt(bPrice())}</strong>`:`de ${SACHET_MIN} à ${SACHET_MAX} pralines`;
+    $("#fbar i").style.width=Math.min(100,n/SACHET_MIN*100)+"%";$("#fbar").classList.toggle("full",ready);
+  }else{
+    $("#cntT").textContent=full?"C'est complet !":fmtLabel(sz);
+    $("#cntS").innerHTML=`<strong>${n}</strong> / ${sz.n} · ${sz.fmt==="ballotin"?"≈ ":""}${fmt(sz.price)}`;
+    $("#fbar").classList.toggle("full",full);$("#fbar i").style.width=(n/sz.n*100)+"%";
+  }
+  const nx=$("#atlNext");nx.className="btn "+(ready?"btn-or":"btn-dark");
+  nx.innerHTML=ready?`${sach?"Fermer le sachet":sz.fmt==="coffret"?"Fermer le coffret":"Fermer le ballotin"} ${I.arrow}`:sach?`Encore ${SACHET_MIN-n} au minimum`:`Encore ${sz.n-n} praline${sz.n-n>1?"s":""}`;
   const cnt={};B.pieces.forEach(k=>{if(k)cnt[k]=(cnt[k]||0)+1});
-  $("#bsc").querySelectorAll("[data-p]").forEach(b=>{const q=cnt[b.dataset.p]||0,c=b.querySelector(".cnt");b.classList.toggle("full",full);
-    if(q){if(!c)b.querySelector(".imgw").insertAdjacentHTML("beforeend",`<span class="cnt">${q}</span>`);else if(c.textContent!=q)c.textContent=q}else if(c)c.remove()});
+  $("#bsc").querySelectorAll("[data-p]").forEach(b=>{const q=cnt[b.dataset.p]||0,w=b.querySelector(".imgw"),c=w.querySelector(".cnt"),r=w.querySelector(".rm");
+    b.classList.toggle("full",full||(sach&&n>=SACHET_MAX));
+    if(q){if(!c)w.insertAdjacentHTML("beforeend",`<span class="cnt">${q}</span><span class="rm" role="button" aria-label="Retirer une">${I.minus}</span>`);else if(c.textContent!=q)c.textContent=q}
+    else{if(c)c.remove();if(r)r.remove()}});
   $("#lytabs").querySelectorAll("[data-ly]").forEach((b,i)=>b.classList.toggle("ok",layerDone(i)));
 }
 function addPiece(k,btn){
   if(B.busy)return;
-  const idx=B.pieces.indexOf(null);
-  if(idx<0){toast("Ballotin complet : touchez une praline dans la boîte pour la retirer",false);return}
-  B.pieces[idx]=k;vib(8);
-  const ly=Math.floor(idx/perLayer());if(ly!==B.layer){B.layer=ly;drawBox();setSlot(idx,null);}
-  const tgt=$(`#bx .slot[data-i="${idx}"] circle`),src=btn&&btn.querySelector(".tile");
-  const done=()=>{setSlot(idx,k,true);updateFill()};
+  let idx;
+  if(isSachet()){if(B.pieces.length>=SACHET_MAX){toast(`${SACHET_MAX} pralines maximum par sachet`,false);return}B.pieces.push(k);idx=B.pieces.length-1}
+  else{idx=B.pieces.indexOf(null);if(idx<0){toast("C'est complet : touchez une praline dans la boîte pour la retirer",false);return}B.pieces[idx]=k;
+    const ly=Math.floor(idx/perLayer());if(ly!==B.layer){B.layer=ly;drawBox();setSlot(idx,null)}}
+  vib(8);
+  const tgtSlot=$(`#bx .slot[data-i="${idx}"]`),tgt=tgtSlot||$("#bx"),src=btn&&btn.querySelector(".tile");
+  const done=()=>{if(tgtSlot)setSlot(idx,k,true);updateFill()};
   if(src&&tgt&&document.documentElement.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches)fly(src,tgt,k,done);else done();
 }
-function removePiece(i){if(!B.pieces[i])return;B.pieces[i]=null;setSlot(i,null);updateFill();vib(6)}
+function removePiece(i){
+  if(isSachet()){if(i>=B.pieces.length)return;B.pieces.splice(i,1);drawBox();updateFill();vib(6);return}
+  if(!B.pieces[i])return;B.pieces[i]=null;setSlot(i,null);updateFill();vib(6)}
+function removeOne(k){const i=B.pieces.lastIndexOf(k);if(i<0)return;
+  if(!isSachet()){const ly=Math.floor(i/perLayer());if(ly!==B.layer){B.layer=ly;drawBox()}}removePiece(i)}
 function autoFill(){
-  const pool=BALLO_KEYS.filter(cvOk);if(!pool.length)return;
-  const free=B.pieces.map((k,i)=>k?null:i).filter(i=>i!==null);if(!free.length){toast("Le ballotin est déjà complet",false);return}
-  const r=rnd(Date.now()%100000),bag=[];free.forEach((i,j)=>{if(j%pool.length===0)bag.push(...[...pool].sort(()=>r()-.5));B.pieces[i]=bag[j]});
+  const pool=BALLO_KEYS.filter(cvOk);if(!pool.length)return;const r=rnd(Date.now()%100000);
+  if(isSachet()){const add=Math.min(10,SACHET_MAX-B.pieces.length);if(add<=0){toast(`${SACHET_MAX} pralines maximum`,false);return}
+    const bag=[...pool].sort(()=>r()-.5);for(let j=0;j<add;j++)B.pieces.push(bag[j%bag.length]);drawBox();updateFill();toast(`${add} pralines ajoutées par le chocolatier`);return}
+  const free=B.pieces.map((k,i)=>k?null:i).filter(i=>i!==null);if(!free.length){toast("C'est déjà complet",false);return}
+  const bag=[];free.forEach((i,j)=>{if(j%pool.length===0)bag.push(...[...pool].sort(()=>r()-.5));B.pieces[i]=bag[j]});
   drawBox();updateFill();toast(`${free.length} praline${free.length>1?"s":""} choisie${free.length>1?"s":""} par le chocolatier`)}
 function fly(fromEl,toEl,k,done){
   B.busy=true;
-  const a=fromEl.getBoundingClientRect(),b=toEl.getBoundingClientRect(),sz=Math.min(a.width,a.height)*.8;
+  const a=fromEl.getBoundingClientRect(),bb=toEl.getBoundingClientRect(),sz=Math.min(a.width,a.height)*.8;
+  const b=toEl.tagName==="svg"?{left:bb.left+bb.width*.35,top:bb.top+bb.height*.45,width:bb.width*.3,height:bb.width*.3}:bb;
   const el=document.createElement("img");el.src=prImg(k);el.className="fly";el.alt="";
   el.style.cssText=`left:${a.left+(a.width-sz)/2}px;top:${a.top+(a.height-sz)/2}px;width:${sz}px;height:${sz}px`;
   document.body.appendChild(el);
-  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),sc=b.width/sz;
-  const an=el.animate([{transform:"translate(0,0) scale(1)"},{transform:`translate(${dx*.55}px,${dy*.55-40}px) scale(${(1+sc)/2})`,offset:.6},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:380,easing:"cubic-bezier(.45,0,.25,1)"});
+  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),sc=Math.max(.2,Math.min(b.width,b.height)/sz);
+  const an=el.animate([{transform:"translate(0,0) scale(1)"},{transform:`translate(${dx*.55}px,${dy*.55-40}px) scale(${(1+sc)/2})`,offset:.6},{transform:`translate(${dx}px,${dy}px) scale(${sc})`,opacity:toEl.tagName==="svg"?0:1}],{duration:380,easing:"cubic-bezier(.45,0,.25,1)"});
   const end=()=>{el.remove();B.busy=false;done()};an.onfinish=end;an.oncancel=end;
 }
 function compText(pieces){const g={};pieces.forEach(k=>{if(k)g[k]=(g[k]||0)+1});return Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${n}× ${prShort(k)}`).join(", ")}
 function addBallotin(){
   if(B.busy)return;B.busy=true;
-  const s=bSize();
-  S.cart.push({id:"atelier",name:`Ballotin ${s.label} · sur mesure`,opts:compText(B.pieces),note:B.msg.trim()?`Carte : « ${B.msg.trim()} »`:"",unit:s.price,qty:B.qty,box:{s:s.id,p:[...B.pieces]}});
-  update();toast(`${B.qty>1?B.qty+"× ":""}Ballotin ajouté au panier`);
-  bReset();go("accueil");setTimeout(()=>{view="cart";drawCart();openSheet()},320);
+  const s=bSize(),est=s.fmt!=="coffret",n=bCount();
+  const name=s.fmt==="sachet"?`Sachet sur mesure · ${n} pralines (≈ ${bGrams()} g)`:`${fmtLabel(s)} · sur mesure`;
+  const notes=[est?`Prix estimé, pesé en boutique (${PRICE_KG} €/kg)`:"",B.msg.trim()?`Carte : « ${B.msg.trim()} »`:""].filter(Boolean).join(" · ");
+  S.cart.push({id:"atelier",name,opts:compText(B.pieces),note:notes,unit:bPrice(),qty:B.qty,est,box:{s:s.id,p:[...B.pieces]}});
+  update();toast(`${B.qty>1?B.qty+"× ":""}${s.fmt==="sachet"?"Sachet":s.fmt==="coffret"?"Coffret":"Ballotin"} ajouté au panier`);
+  bReset(B.fmt);go("accueil");setTimeout(()=>{view="cart";drawCart();openSheet()},320);
 }
 /* depuis la fiche d'une praline */
 function pralineToBallotin(k){
   if(B.step!==1)B.step=1;
   closeSheet();go("atelier");
-  setTimeout(()=>{if(bFull()){toast("Votre ballotin est complet",false);return}addPiece(k,null);toast(`${prShort(k)} ajoutée au ballotin`)},330);
+  setTimeout(()=>{if(bFull()){toast("C'est complet",false);return}addPiece(k,null);toast(`${prShort(k)} ajoutée`)},330);
 }
 
 /* =====================================================================
@@ -1644,14 +1755,14 @@ function openPraline(k){
 }
 function openItem(id){
   const it=ITEMS[id];const sel={};let qty=1;(it.groups||[]).forEach(g=>sel[g.id]=g.defaults?[...g.defaults]:[]);view="item";
-  const sidOf=()=>{const sz=it.box&&sel.taille?SIZES.find(s=>s.label===sel.taille[0]):null;return sz?sz.id:it.box&&it.box.s};
+  const sidOf=()=>{const sz=it.box&&sel.taille?SIZES.find(s=>s.label===sel.taille[0]&&s.fmt===SZ[it.box.s].fmt):null;return sz?sz.id:it.box&&it.box.s};
   const vis=()=>it.box?`<span class="tile" style="--c:${tint("#c9a27e",.45)}">${boxSVG(sidOf(),mixPieces(SZ[sidOf()].n,it.box.mix,it.box.seed||1),{lid:false})}</span>`:media(it);
   sheet.classList.add("prod");
   sheet.innerHTML=heroHTML(`<div id="iVis" style="display:contents">${vis()}</div>`,it.name)+`
       <div class="sh inl"><div class="tt">${it.tag?`<span class="tag ${it.tag==="Populaire"?"":"ex"}">${it.tag}</span>`:""}<h3>${it.name}</h3>${it.desc?`<p>${it.desc}</p>`:""}<div class="pr" id="iPr"></div></div></div>
       ${(it.groups||[]).map(g=>`<div class="grp" data-grp="${g.id}"><div class="gh"><b>${g.label}</b><span class="st"></span></div>${g.sub?`<div class="gsub">${g.sub}</div>`:""}
         ${g.options.map(op=>`<label class="opt"><span class="l">${op.label}</span>${op.price?`<span class="pp">${op.price>0?"+":""}${fmt(op.price)}</span>`:""}<input type="${g.type==="single"?"radio":"checkbox"}" name="g-${g.id}" data-g="${g.id}" value="${esc(op.label)}" ${(sel[g.id]||[]).includes(op.label)?"checked":""}></label>`).join("")}</div>`).join("")}
-      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("e9",mixPieces(9,"all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
+      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("c9",mixPieces(9,"all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
       <div class="grp"><div class="gh"><b>Une précision ?</b><span>Optionnel</span></div><div class="fld" style="margin-top:8px"><div class="in"><label for="iNote">Note pour la boutique</label><input id="iNote" maxlength="80" placeholder="${it.box?"Ex. sans alcool, plutôt noir…":"Ex. pour offrir"}"></div></div></div>
     </div>
     <div class="sf"><div class="stepper"><button id="qm" aria-label="Moins">${I.minus}</button><span id="qv">1</span><button id="qp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="addBtn"></button></div>`;
@@ -1672,7 +1783,7 @@ function openItem(id){
     sel[g.id]=g.type==="single"?[inp.value]:(inp.checked?[...sel[g.id],inp.value]:sel[g.id].filter(v=>v!==inp.value));
     if(g.id==="taille")$("#iVis").innerHTML=vis();refresh()});
   $("#qm").onclick=()=>{if(qty>1){qty--;refresh()}};$("#qp").onclick=()=>{qty++;refresh()};
-  const ta=$("#toAtl");if(ta)ta.onclick=()=>{const sid=sidOf();closeSheet();bReset();if(sid&&sid!=="e9")setSize(sid);go("atelier")};
+  const ta=$("#toAtl");if(ta)ta.onclick=()=>{const sid=sidOf();closeSheet();bReset(SZ[sid].fmt,sid);go("atelier")};
   $("#addBtn").onclick=()=>{
     const missing=(it.groups||[]).find(g=>g.required&&!(sel[g.id]||[]).length);
     if(missing){const box=sheet.querySelector(`[data-grp="${missing.id}"]`);box.scrollIntoView({behavior:"smooth",block:"start"});box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake");return}
@@ -1689,13 +1800,13 @@ function shopSegHTML(){return `<div class="shopseg">${CONFIG.shops.map(s=>`<butt
 function drawCart(){
   const sc=sheet.querySelector(".sb")?.scrollTop||0;const t=totals();
   sheet.innerHTML=head("Votre panier",S.cart.length?`${t.count} article${t.count>1?"s":""}`:"")+`<div class="sb">
-    ${S.cart.length?S.cart.map((l,i)=>`<div class="cl"><span class="th">${lineThumb(l)}</span><div class="d"><b>${esc(l.name)}</b>${l.opts?`<small>${esc(l.opts.length>140?l.opts.slice(0,140)+"…":l.opts)}</small>`:""}${l.note?`<small>${esc(l.note)}</small>`:""}<div class="p">${fmt(l.unit*l.qty)}</div></div>
+    ${S.cart.length?S.cart.map((l,i)=>`<div class="cl"><span class="th">${lineThumb(l)}</span><div class="d"><b>${esc(l.name)}</b>${l.opts?`<small>${esc(l.opts.length>140?l.opts.slice(0,140)+"…":l.opts)}</small>`:""}${l.note?`<small>${esc(l.note)}</small>`:""}<div class="p">${l.est?"≈ ":""}${fmt(l.unit*l.qty)}</div></div>
       <div class="qs"><button data-dec="${i}" aria-label="Retirer">${l.qty===1?I.x:I.minus}</button><span>${l.qty}</span><button data-inc="${i}" aria-label="Ajouter">${I.plus}</button></div></div>`).join("")
-      :`<div class="empty">${boxSVG("e9",[],{lid:false})}Votre panier est vide.<br><span style="font-size:13.5px">Une petite praline ?</span></div>`}
+      :`<div class="empty">${boxSVG("c9",[],{lid:false})}Votre panier est vide.<br><span style="font-size:13.5px">Une petite praline ?</span></div>`}
     ${S.cart.length?`<div class="mc-title">Retrait dans quelle boutique ?</div>${shopSegHTML()}<p class="note">Choisissez le jour et l'heure à l'étape suivante. Paiement en boutique.</p>`:""}
-    ${S.cart.length?`<div class="sum" style="margin-top:8px"><div class="t"><span>Total</span><span>${fmt(t.total)}</span></div></div>`:""}
+    ${S.cart.length?`<div class="sum" style="margin-top:8px"><div class="t"><span>Total${t.est?" estimé":""}</span><span>${t.est?"≈ ":""}${fmt(t.total)}</span></div></div>${t.est?`<p class="note">Les ballotins et sachets sont pesés en boutique (${PRICE_KG} €/kg) : le total exact peut varier légèrement.</p>`:""}`:""}
     ${S.cart.length&&PTS.enabled?`<div class="stamps-line"><i>${I.check}</i>${ACC.user?`+${Math.floor(t.total*PTS.perEuro)} points avec votre QR en boutique`:`Connectez-vous pour gagner ${Math.floor(t.total*PTS.perEuro)} points`}</div>`:""}
-  </div><div class="sf">${S.cart.length?`<button class="btn btn-or" id="goCo">Continuer · ${fmt(t.total)}</button>`:`<button class="btn btn-dark" id="goMenu">Voir la carte</button>`}</div>`;
+  </div><div class="sf">${S.cart.length?`<button class="btn btn-or" id="goCo">Continuer · ${t.est?"≈ ":""}${fmt(t.total)}</button>`:`<button class="btn btn-dark" id="goMenu">Voir la carte</button>`}</div>`;
   bindClose();
   sheet.querySelectorAll("[data-shop]").forEach(b=>b.onclick=()=>{S.shop=b.dataset.shop;update();renderStatus();renderFooter()});
   sheet.querySelectorAll("[data-inc]").forEach(b=>b.onclick=()=>{S.cart[b.dataset.inc].qty++;update()});
@@ -1750,10 +1861,10 @@ function openCheckout(){
       <div class="fld"><div class="in" id="w-cName"><label for="cName">Nom</label><input id="cName" autocomplete="name" value="${esc(vals.cName)}"></div>
         <div class="in" id="w-cTel"><label for="cTel">Téléphone</label><input id="cTel" type="tel" inputmode="tel" autocomplete="tel" placeholder="04xx xx xx xx" value="${esc(vals.cTel)}"></div>
         <div class="in"><label for="cNote">Note pour la boutique (optionnel)</label><textarea id="cNote" rows="2" placeholder="Ex. je passerai un peu plus tard">${esc(vals.cNote)}</textarea></div></div>
-      <div class="recap"><div><span>${t.count} article${t.count>1?"s":""}</span><span>${fmt(t.sub)}</span></div><div class="t"><span>À payer au retrait</span><span>${fmt(t.total)}</span></div></div>
+      <div class="recap"><div><span>${t.count} article${t.count>1?"s":""}</span><span>${fmt(t.sub)}</span></div><div class="t"><span>À payer au retrait${t.est?" (estimé)":""}</span><span>${t.est?"≈ ":""}${fmt(t.total)}</span></div></div>
       <p class="note">${CONFIG.payment}. Votre commande arrive directement en boutique : vous suivez sa préparation en direct.</p>
       ${accOn()?"":`<div class="demo"><b>Mode démonstration.</b> Les commandes en ligne ne sont pas encore branchées : rien ne sera envoyé à la boutique.</div>`}
-    </div><div class="sf"><button class="btn btn-or ${co.s?"":"dis"}" id="send">Envoyer la commande · ${fmt(t.total)}</button></div>`;
+    </div><div class="sf"><button class="btn btn-or ${co.s?"":"dis"}" id="send">Envoyer la commande · ${t.est?"≈ ":""}${fmt(t.total)}</button></div>`;
     bindClose();
     const dc=$("#dayChips"),on=dc&&dc.querySelector('[aria-pressed="true"]');if(on)dc.scrollLeft=dayScroll??Math.max(0,on.offsetLeft-20);
     dc&&dc.addEventListener("scroll",()=>dayScroll=dc.scrollLeft,{passive:true});

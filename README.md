@@ -4,7 +4,10 @@ Site de commande de **L'alchimie du chocolat** (Waterloo · Ixelles), avec retra
 Même moteur que le site du Menzïli, habillé aux couleurs de la carte des pralines.
 
 - **Carte** : fêtes et précommandes, ballotins, les 52 pralines (photos détourées de la carte), napolitains, palets, macarons, thés, pâtes de fruits
-- **L'Atelier** : le client choisit la taille (écrin 9, 250 g, 500 g, 750 g, 1 kg) puis chaque praline ; filtres noir / lait / blanc / sans fruits à coque, « Compléter pour moi », petit mot pour la carte
+- **L'Atelier** : 3 formats, puis chaque praline (filtres noir / lait / blanc / sans fruits à coque, « Compléter pour moi », petit mot pour la carte)
+  - Ballotins (blancs, ruban rouge) au poids, 105 €/kg : 250 g 26,25 € · 350 g 36,75 € · 500 g 52,50 € · 750 g 78,75 € · 1 kg 105 €. Rangement par couche d'après le croquis de la boutique (250 g et 350 g), extrapolé pour 500 g / 750 g / 1 kg (`LAY` dans `src/app.js`), 3 couches
+  - Coffrets (bleu nuit, ruban doré), prix fixe : 9 → 13,80 € · 16 → 21,30 € · 25 → 32,70 € · 36 → 43,40 € · 49 → 59,30 €
+  - Sachet sur mesure au poids : estimation avec 9 g par praline (`PRALINE_G`), arrondie à 5 cents
 - **Retrait en boutique** : Waterloo ou Ixelles, jour (jusqu'à 45 jours à l'avance, dates de fêtes mises en avant) et heure, option « C'est pour offrir »
 - **Suivi en direct** côté client, **espace personnel** (`/staff/`) côté boutique, **points fidélité** avec QR
 
@@ -12,7 +15,8 @@ Même moteur que le site du Menzïli, habillé aux couleurs de la carte des pral
 
 Tout est dans le début du script de `src/app.js` (`CONFIG`, `SIZES`, `MENU`, `OFFERS`) :
 
-- **Tous les prix sont provisoires** (ballotins, boîtes, thés…)
+- Les prix des ballotins et coffrets sont les vrais tarifs ; ceux des autres produits (macarons, thés, palets…) sont encore provisoires
+- Le nombre de pralines par ballotin (30 / 39 / 57 / 87 / 105) et le poids moyen d'une praline (9 g)
 - Horaires d'Ixelles (repris de ceux de Waterloo : mardi → samedi 10:00–18:30), jours de fermeture exceptionnelle (`closedDates`)
 - Les produits de fêtes (ballotin Saint-Nicolas, ballotin des fêtes) et les récompenses de points
 - Nom de la société et numéro BCE (`CONFIG.legal`), liens Instagram / Facebook / avis Google
