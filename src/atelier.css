@@ -156,3 +156,21 @@ svg.box.closed .lid{transform:none;opacity:1}
 .pr-c .imgw .cnt{position:absolute;right:6px;top:6px}
 svg.box.coffret{filter:drop-shadow(0 10px 14px #10142433)}
 .pr-c .imgw .rm{top:auto;left:6px;bottom:6px}
+
+/* Safari iPhone : un SVG doit avoir une largeur ET une hauteur définies */
+.sz .vis svg,.bbox svg,.recap-box svg,.fmt .fv svg,.sachet-c .vis svg{width:100%;height:100%;max-width:none;max-height:none}
+.sz .vis{height:96px}
+.bbox{height:clamp(120px,24dvh,220px)}
+.fill-top.compact .bbox{height:clamp(80px,13dvh,120px)}
+.recap-box{height:clamp(140px,28dvh,240px)}
+.sachet-c .vis{height:130px}
+.fmt .fv{display:block;height:42px;margin-bottom:8px}
+.fmt .fv svg{filter:none}
+.fmt.on .fv{opacity:.95}
+@media (max-height:700px){.bbox{height:clamp(100px,20dvh,170px)}}
+.tile svg.box{width:90%;height:90%}
+.shero .tile svg.box{width:84%;height:72%;max-width:none}
+.offer .collage svg.box{width:100%;height:100%;max-width:none}
+.atl-card>svg.box{height:170px}
+.atl-row svg.box,.to-atl svg.box{height:54px}
+.empty svg.box{height:110px}

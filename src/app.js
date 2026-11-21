@@ -52,24 +52,16 @@ const CONFIG = {
 const PRICE_KG=105;          // € / kg (ballotins et sachets)
 const PRALINE_G=9;           // poids moyen d'une praline, pour l'estimation (à ajuster)
 const SACHET_MIN=6, SACHET_MAX=120;
-/* rangement d'une couche de ballotin, en unités (1 carré = 10) — d'après le croquis de la boutique
-   cols×rows carrés · « side » rectangles debout à droite · « bars » barrettes couchées en haut */
-const LAY={
-  b250:{special:"250"},                                  // 4 carrés + 6 petits rectangles
-  b350:{cols:2,rows:4,side:3,bars:2},                    // croquis : 2 barrettes, 2×4 carrés, 3 rectangles
-  b500:{cols:3,rows:4,side:4,bars:3},
-  b750:{cols:4,rows:5,side:5,bars:4},
-  b1000:{cols:5,rows:5,side:5,bars:5},
-};
+/* nombre de pralines par couche de ballotin (3 couches) — à confirmer avec la boutique */
+const PER_LAYER={b250:10,b350:13,b500:19,b750:29,b1000:35};
+/* disposition : coffret = plateau carré à alvéoles ; ballotin = boîte en longueur, pralines rangées en lignes */
 function layout(s){
-  if(s.fmt==="coffret"){const N=s.grid,c=[];for(let r=0;r<N;r++)for(let k=0;k<N;k++)c.push({x:3+k*12,y:3+r*12,w:10,h:10});return{W:6+N*12-2,H:6+N*12-2,cells:c}}
-  const L=LAY[s.id],c=[];
-  if(L.special==="250"){for(let i=0;i<4;i++)c.push({x:3,y:3+i*12,w:10,h:10});for(let j=0;j<6;j++)c.push({x:15,y:3+j*8,w:10,h:6});return{W:28,H:52,cells:c}}
-  const gw=L.cols*12-2,gh=L.rows*12-2,top=L.bars?9:3,tw=gw+(L.side?7:0);
-  if(L.bars){const bw=(tw-(L.bars-1)*2)/L.bars;for(let i=0;i<L.bars;i++)c.push({x:3+i*(bw+2),y:3,w:bw,h:4})}
-  for(let r=0;r<L.rows;r++)for(let k=0;k<L.cols;k++)c.push({x:3+k*12,y:top+r*12,w:10,h:10});
-  if(L.side){const sh=(gh-(L.side-1)*2)/L.side;for(let i=0;i<L.side;i++)c.push({x:3+gw+2,y:top+i*(sh+2),w:5,h:sh})}
-  return{W:tw+6,H:top+gh+3,cells:c};
+  const c=[];
+  if(s.fmt==="coffret"){const N=s.grid;for(let r=0;r<N;r++)for(let k=0;k<N;k++)c.push({x:3+k*12,y:3+r*12,w:10,h:10});return{W:6+N*12-2,H:6+N*12-2,cells:c}}
+  const per=PER_LAYER[s.id],cols=Math.max(4,Math.ceil(Math.sqrt(per*2.2))),rows=Math.ceil(per/cols);
+  for(let i=0;i<per;i++){const r=Math.floor(i/cols),inRow=r<rows-1?cols:per-cols*(rows-1),k=i-r*cols,off=(cols-inRow)*6;
+    c.push({x:4+off+k*12,y:4+r*12,w:10,h:10})}
+  return{W:8+cols*12-2,H:8+rows*12-2,cells:c,open:true};
 }
 const FORMATS=[
   {id:"ballotin",label:"Ballotin",sub:"Boîte blanche, ruban rouge · au poids, 105 €/kg",sizes:[["b250","250 g",250,26.25],["b350","350 g",350,36.75],["b500","500 g",500,52.50],["b750","750 g",750,78.75],["b1000","1 kg",1000,105]]},
@@ -198,18 +190,18 @@ function boxSVG(sid,pieces,o={}){
   const {W:w,H:h,cells}=s.lay,W=w*U,H=h*U,L=o.layer||0,per=cells.length,nav=s.fmt==="coffret";
   let out="";
   cells.forEach((c,j)=>{const idx=L*per+j,k=pieces&&pieces[idx],x=c.x*U,y=c.y*U,cw=c.w*U,ch=c.h*U,i=Math.min(cw,ch)*.06,b=[x+i,y+i,cw-2*i,ch-2*i];
-    out+=`<g class="slot" data-i="${idx}" data-b="${b.join(",")}"><rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="${Math.min(cw,ch)*.16}" fill="${nav?"#232326":"url(#cupG)"}" stroke="${nav?"#3a3a40":"#cfb18b"}" stroke-width="${nav?1.4:1.6}"/>${k?pcImg(k,b,o.drop===idx?" drop":""):""}</g>`});
+    out+=`<g class="slot" data-i="${idx}" data-b="${b.join(",")}">${nav?`<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="${Math.min(cw,ch)*.16}" fill="#232326" stroke="#3a3a40" stroke-width="1.4"/>`:""}${k?pcImg(k,b,o.drop===idx?" drop":""):""}</g>`});
   const lid=o.lid===false?"":nav?
     `<g class="lid"><rect width="${W}" height="${H}" rx="10" fill="#1f2840"/><rect x="5" y="5" width="${W-10}" height="${H-10}" rx="7" fill="none" stroke="#2c3757" stroke-width="2"/>
       <rect x="${W*.3}" y="0" width="${Math.max(10,W*.07)}" height="${H}" fill="#e3c27d"/>${bow(W*.3+Math.max(10,W*.07)/2,H*.2,W/180,"#e9cc8c","#d4ad62")}
       <text x="${W*.67}" y="${H*.6}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${W*.06}" letter-spacing="1" fill="#e3c27d">L'ALCHIMIE</text><text x="${W*.67}" y="${H*.6+W*.06}" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="${W*.04}" letter-spacing="2" fill="#e3c27d">DU CHOCOLAT</text></g>`:
     `<g class="lid"><rect width="${W}" height="${H}" rx="10" fill="#fbfaf7" stroke="#e1dace" stroke-width="2"/>
-      <rect x="${W*.26}" y="0" width="${Math.max(12,W*.11)}" height="${H}" fill="#a3181f"/>${bow(W*.26+Math.max(12,W*.11)/2,H*.12,W/170,"#b8232a","#8c1218")}
-      <g transform="translate(${W*.7} ${H*.66})"><circle r="${W*.09}" fill="#a9c43c"/><text y="${W*.16}" text-anchor="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${W*.065}" fill="#4a4a42">L'ALCHIMIE</text>
-      <text y="${W*.225}" text-anchor="middle" font-family="Manrope,sans-serif" font-size="${W*.045}" fill="#6b6b60">du chocolat</text></g></g>`;
+      <rect x="${W*.22}" y="0" width="${Math.max(12,H*.13)}" height="${H}" fill="#a3181f"/>${bow(W*.22+Math.max(12,H*.13)/2,H*.16,H/150,"#b8232a","#8c1218")}
+      <g transform="translate(${W*.66} ${H*.42})"><circle r="${H*.13}" fill="#a9c43c"/><text y="${H*.27}" text-anchor="middle" font-family="Manrope,sans-serif" font-weight="800" font-size="${H*.1}" fill="#4a4a42">L'ALCHIMIE</text>
+      <text y="${H*.37}" text-anchor="middle" font-family="Manrope,sans-serif" font-size="${H*.07}" fill="#6b6b60">du chocolat</text></g></g>`;
   return `<svg class="box ${s.fmt}${o.closed?" closed":""}" viewBox="-3 -3 ${W+6} ${H+6}" ${o.id?`id="${o.id}"`:""} aria-hidden="true">
     ${nav?`<rect width="${W}" height="${H}" rx="10" fill="#1f2840"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="6" fill="#121214"/>`
-         :`<rect width="${W}" height="${H}" rx="10" fill="#fbfaf7" stroke="#ddd5c7" stroke-width="2"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="6" fill="#efe7da"/>`}
+         :`<rect width="${W}" height="${H}" rx="10" fill="#fbfaf7" stroke="#ddd5c7" stroke-width="2"/><rect x="7" y="7" width="${W-14}" height="${H-14}" rx="6" fill="url(#paperG)"/><rect x="7" y="7" width="${W-14}" height="${H-14}" rx="6" fill="none" stroke="#d9cbb5" stroke-width="1"/>`}
     ${out}${lid}</svg>`;
 }
 function bow(cx,cy,k,c1,c2){return `<g transform="translate(${cx} ${cy}) scale(${Math.max(.6,k)})"><path d="M0 0c-12-13-32-15-34-4s20 11 34 4z" fill="${c1}"/><path d="M0 0c12-13 32-15 34-4s-20 11-34 4z" fill="${c1}"/><path d="M-3 2l-12 20M3 2l12 20" stroke="${c2}" stroke-width="6" stroke-linecap="round"/><circle r="6.5" fill="${c2}"/></g>`}
@@ -388,7 +380,7 @@ function sizeCards(){
   const f=FORMATS.find(x=>x.id===B.fmt);
   if(f.id==="sachet")return `<div class="sachet-c"><div class="vis">${sachetSVG(mixPieces(12,"all",6))}</div>
     <div><b>Vous choisissez le nombre</b><p>De ${SACHET_MIN} à ${SACHET_MAX} pralines, une par une. Le sachet est pesé en boutique à ${PRICE_KG} €/kg : nous affichons une estimation (≈ ${fmt(sachetPrice(1))} la praline).</p></div></div>`;
-  return `<div class="sizes">${f.sizes.map(([id])=>{const s=SZ[id];return `<button class="sz ${id===B.size?"sel":""}" data-sz="${id}" aria-pressed="${id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxSVG(id,[],{lid:false})}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`}).join("")}</div>`;
+  return `<div class="sizes">${f.sizes.map(([id])=>{const s=SZ[id];return `<button class="sz ${id===B.size?"sel":""}" data-sz="${id}" aria-pressed="${id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxSVG(id,mixPieces(s.per,"all",4),{lid:false})}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`}).join("")}</div>`;
 }
 function renderAtl(){
   $("#atlStep").textContent=`Étape ${B.step+1} sur 3 · ${STEPS[B.step]}`;
@@ -396,7 +388,7 @@ function renderAtl(){
   const body=$("#atlBody"),foot=$("#atlFoot");body.className="atl-body"+(B.step===1?" fill":"");
   if(B.step===0){
     body.innerHTML=`<div class="scrl"><div class="lead"><h2>Votre écrin</h2><p>Choisissez le format, puis chaque praline.</p></div>
-      <div class="fmts">${FORMATS.map(f=>`<button class="fmt ${f.id===B.fmt?"on":""}" data-fmt="${f.id}" aria-pressed="${f.id===B.fmt}"><b>${f.label}</b><span>${f.sub}</span></button>`).join("")}</div>
+      <div class="fmts">${FORMATS.map(f=>{const id=f.sizes[0][0];return `<button class="fmt ${f.id===B.fmt?"on":""}" data-fmt="${f.id}" aria-pressed="${f.id===B.fmt}"><span class="fv">${boxSVG(id,id==="sachet"?mixPieces(12,"all",2):[],{closed:id!=="sachet"})}</span><b>${f.label}</b><span>${f.sub}</span></button>`}).join("")}</div>
       <div id="szWrap">${sizeCards()}</div>
       <p class="note-s">${B.fmt==="coffret"?"Prix fixe, quel que soit votre choix de pralines.":"Vendu au poids : le prix indiqué est une estimation, le montant exact est donné à la pesée en boutique."}</p></div>`;
     foot.innerHTML=`<button class="btn btn-dark" id="atlNext">Choisir mes pralines ${I.arrow}</button>`;
