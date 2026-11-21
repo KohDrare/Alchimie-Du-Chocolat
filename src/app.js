@@ -81,7 +81,7 @@ const SIZES=[];
 FORMATS.forEach(f=>f.sizes.forEach(([id,label,v,price])=>{
   const s={id,fmt:f.id,label,price};
   if(f.id==="ballotin"){s.grams=v;s.layers=3;s.lay=layout(s);s.per=s.lay.cells.length;s.n=s.per*3;s.sub=`${s.n} pralines · 3 couches`}
-  if(f.id==="coffret"){s.tray=v;s.layers=1;s.lay=layout(s);s.per=s.n=s.lay.cells.length;s.sub=v.band?`${v.band} rectangles + ${v.cols}×${v.rows} carrés`:"Plateau de 3×3"}
+  if(f.id==="coffret"){s.tray=v;s.layers=1;s.lay=layout(s);s.per=s.n=s.lay.cells.length;s.shapes=s.lay.cells.map(c=>c.rect?"r":"s");s.sub=v.band?`${v.band} rectangles + ${v.cols}×${v.rows} carrés`:"Plateau de 3×3"}
   if(f.id==="sachet"){s.layers=1;s.n=0;s.sub=`De ${SACHET_MIN} à ${SACHET_MAX} pralines`}
   SIZES.push(s)}));
 const SZ=Object.fromEntries(SIZES.map(s=>[s.id,s]));
@@ -188,7 +188,19 @@ function mixPieces(n,pool,seed=1,skip){const r=rnd(seed*7919+n),P=(pool==="all"|
   if(!P.length)return out;
   if(pool&&pool!=="all"){for(let i=0;i<n;i++)out.push(P[i%P.length]);return out.sort(()=>r()-.5)}
   const bag=[...P].sort(()=>r()-.5);for(let i=0;i<n;i++)out.push(bag[i%bag.length]);return out}
-const presetPieces=it=>{const s=SZ[it.box.s];return mixPieces(s.n,it.box.mix,it.box.seed||1)};
+/* forme d'une praline : "r" rectangle, "s" carré (mesurée sur les photos) ; alvéole d'un coffret : idem */
+const shapeOf=k=>(PRI[k]&&PRI[k].shape)||"s";
+const cellShape=(sid,i)=>{const s=SZ[sid];return s&&s.shapes?s.shapes[i]:null};
+/* assortiment pour une boîte : dans un coffret, rectangles et carrés vont chacun à leur place */
+function assort(sid,pool="all",seed=1){
+  const s=SZ[sid];if(!s)return[];
+  if(s.fmt!=="coffret")return mixPieces(s.n||12,pool,seed);
+  const P=(pool==="all"||!pool?BALLO_KEYS:pool),r=rnd(seed*7919+s.n);
+  const by={r:P.filter(k=>shapeOf(k)==="r"),s:P.filter(k=>shapeOf(k)==="s")};
+  ["r","s"].forEach(t=>{if(!by[t].length)by[t]=BALLO_KEYS.filter(k=>shapeOf(k)===t);by[t]=[...by[t]].sort(()=>r()-.5)});
+  const n={r:0,s:0};return s.shapes.map(t=>by[t][n[t]++%by[t].length]);
+}
+const presetPieces=it=>assort(it.box.s,it.box.mix,it.box.seed||1);
 /* ---------- dessin des boîtes ----------
    Chaque alvéole : <g class="slot" data-i data-b="x,y,w,h"> pour ajouter / retirer une praline sans tout redessiner */
 const U=5;
@@ -273,7 +285,7 @@ const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
 function offerArt(f){
   if(f.art.box)return `<div class="collage"><span class="glow"></span>${boxSVG("b250",mixPieces(30,"all",5),{lid:false})}</div>`;
   if(f.art.imgs)return `<div class="collage"><span class="glow"></span>${f.art.imgs.map((k,i)=>`<img src="${prImg(k)}" alt="" style="transform:translate(${[-62,0,62][i]}%,${[8,-14,10][i]}%) rotate(${[-14,4,16][i]}deg) scale(${[1,1.18,1][i]})">`).join("")}</div>`;
-  return `<div class="collage"><span class="glow"></span>${boxSVG("c9",mixPieces(9,"all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
+  return `<div class="collage"><span class="glow"></span>${boxSVG("c9",assort("c9","all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
 }
 function renderHome(){
   const OF=OFFERS.filter(live);
@@ -289,7 +301,7 @@ function renderHome(){
   $("#homeCats").innerHTML=MENU.map(c=>`<a class="cat" href="#c-${c.id}"><span class="c">${catImg[c.id]}</span>${short[c.id]}</a>`).join("");
   $("#picks").innerHTML=PICKS.filter(id=>live(ITEMS[id])).map(id=>{const i=ITEMS[id];return `<button class="pick" data-i="${id}"><div class="im">${media(i)}${i.tag?`<span class="badge">${i.tag}</span>`:""}</div><div class="tx"><b>${i.name}</b><div class="row2"><span class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</span><span class="plus">${I.plus}</span></div></div></button>`}).join("");
   $("#picks").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
-  $("#atlTeaser").innerHTML=boxSVG("c9",mixPieces(9,"all",4),{lid:false});
+  $("#atlTeaser").innerHTML=boxSVG("c9",assort("c9","all",4),{lid:false});
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
   const n=BALLO_KEYS.length;
   $("#proof").innerHTML=`<b>${n}</b><span>pralines faites maison, des pralinés aux ganaches d'origine.<br>Boutiques à Waterloo et Ixelles.</span>`;
@@ -311,7 +323,7 @@ function bindPralines(root){
 function renderMenu(){
   $("#pills").innerHTML=MENU.map((c,i)=>`<a href="#c-${c.id}" data-c="${c.id}" class="${i?"":"on"}">${c.title.replace(" & précommandes","").replace("Thés & infusions","Thés")}</a>`).join("");
   $("#menuList").innerHTML=MENU.map(c=>`<section class="msec" id="c-${c.id}"><h2>${c.title}</h2>${c.hint?`<p class="hint">${c.hint}</p>`:""}
-    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("c9",mixPieces(9,"all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
+    ${c.id==="ballotins"?`<button class="atl-row" data-go="atelier">${boxSVG("c9",assort("c9","all",8),{lid:false})}<span><b>Composez le vôtre</b><span>L'Atelier : choisissez chaque praline</span></span><span class="ar">${I.arrow}</span></button>`:""}
     ${c.special?`<div id="prWrap">${pralinesHTML()}</div>`:`<div class="list">${c.items.filter(live).map(i=>`<button class="row" data-i="${i.id}"><div class="txt"><h3>${i.name}${i.tag?`<span class="tag ${i.tag==="Populaire"?"":"ex"}">${i.tag}</span>`:""}</h3>${i.desc?`<p>${i.desc}</p>`:""}<div class="pr">${i.groups&&i.groups[0].id==="taille"?"dès ":""}${fmt(i.price)}</div></div>
       <span class="media"><span class="ph">${media(i)}</span><span class="add" aria-hidden="true">${I.plus}</span></span></button>`).join("")}</div>`}</section>`).join("");
   $("#menuList").querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>openItem(b.dataset.i));
@@ -361,7 +373,7 @@ function renderStatus(){const s=openState();$("#status").classList.toggle("close
    ===================================================================== */
 let B;
 const STEPS=["Le format","Les pralines","Votre création"];
-const bReset=(fmt="ballotin",size)=>{const sid=size||FORMATS.find(f=>f.id===fmt).sizes[0][0];B={step:0,fmt:SZ[sid].fmt,size:sid,pieces:SZ[sid].fmt==="sachet"?[]:new Array(SZ[sid].n).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",busy:false}};bReset();
+const bReset=(fmt="ballotin",size)=>{const sid=size||FORMATS.find(f=>f.id===fmt).sizes[0][0];B={step:0,shape:"all",fmt:SZ[sid].fmt,size:sid,pieces:SZ[sid].fmt==="sachet"?[]:new Array(SZ[sid].n).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",busy:false}};bReset();
 const bSize=()=>SZ[B.size];
 const isSachet=()=>bSize().fmt==="sachet";
 const bCount=()=>isSachet()?B.pieces.length:B.pieces.filter(Boolean).length;
@@ -373,7 +385,11 @@ const perLayer=()=>isSachet()?SACHET_SPOTS.length:bSize().per;
 const nLayers=()=>bSize().layers||1;
 const layerDone=i=>B.pieces.slice(i*perLayer(),(i+1)*perLayer()).every(Boolean);
 const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
-const cvOk=k=>{const p=PRI[k];return(B.cv==="all"||p.cv===B.cv)&&(!B.nonut||!/N/.test(p.al||""))};
+const cvOk=k=>{const p=PRI[k];return(B.cv==="all"||p.cv===B.cv)&&(!B.nonut||!/N/.test(p.al||""))&&(B.shape==="all"||!isCoffret()||p.shape===B.shape)};
+const isCoffret=()=>bSize().fmt==="coffret";
+/* place libre pour une praline : dans un coffret, uniquement une alvéole de la même forme */
+const freeFor=k=>B.pieces.findIndex((x,i)=>!x&&(!isCoffret()||cellShape(B.size,i)===shapeOf(k)));
+const shapeStat=t=>{const sh=bSize().shapes||[];let tot=0,used=0;sh.forEach((x,i)=>{if(x===t){tot++;if(B.pieces[i])used++}});return{tot,used}};
 const BACK_IC='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>';
 function setSize(id){const old=B.pieces.filter(Boolean),s=SZ[id];B.size=id;B.fmt=s.fmt;B.layer=0;
   if(s.fmt==="sachet"){B.pieces=old.slice(0,SACHET_MAX);return}
@@ -389,7 +405,7 @@ function sizeCards(){
   const f=FORMATS.find(x=>x.id===B.fmt);
   if(f.id==="sachet")return `<div class="sachet-c"><div class="vis">${sachetSVG(mixPieces(12,"all",6))}</div>
     <div><b>Vous choisissez le nombre</b><p>De ${SACHET_MIN} à ${SACHET_MAX} pralines, une par une. Le sachet est pesé en boutique à ${PRICE_KG} €/kg : nous affichons une estimation (≈ ${fmt(sachetPrice(1))} la praline).</p></div></div>`;
-  return `<div class="sizes">${f.sizes.map(([id])=>{const s=SZ[id];return `<button class="sz ${id===B.size?"sel":""}" data-sz="${id}" aria-pressed="${id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxSVG(id,mixPieces(s.per,"all",4),{lid:false})}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`}).join("")}</div>`;
+  return `<div class="sizes">${f.sizes.map(([id])=>{const s=SZ[id];return `<button class="sz ${id===B.size?"sel":""}" data-sz="${id}" aria-pressed="${id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxSVG(id,s.fmt==="coffret"?assort(id,"all",4):mixPieces(s.per,"all",4),{lid:false})}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`}).join("")}</div>`;
 }
 function renderAtl(){
   $("#atlStep").textContent=`Étape ${B.step+1} sur 3 · ${STEPS[B.step]}`;
@@ -411,7 +427,7 @@ function renderAtl(){
   }
   if(B.step===1){
     body.innerHTML=`<div class="fill-top"><div class="bbox" id="bbox"></div><div class="lytabs" id="lytabs"></div>
-        <div class="count"><b id="cntT"></b><span id="cntS"></span></div><div class="fillbar" id="fbar"><i></i></div></div>
+        <div class="count"><b id="cntT"></b><span id="cntS"></span></div><div class="fillbar" id="fbar"><i></i></div><div class="shp" id="shp"></div></div>
       <div class="tools" id="tools"></div>
       <div class="scrl" id="bsc"></div>`;
     foot.innerHTML=`<button class="ic-b back" id="atlPrev" aria-label="Changer de format">${BACK_IC}</button><button class="btn" id="atlNext"></button>`;
@@ -458,10 +474,11 @@ function setSlot(i,k,anim){
 function drawTools(){
   const t=$("#tools");
   t.innerHTML=`${[["all","Tous"],["noir","Noir"],["lait","Lait"],["blanc","Blanc"]].map(([k,l])=>`<button data-cv="${k}" class="${B.cv===k?"on":""}">${l}</button>`).join("")}
-    <button id="nonut" class="${B.nonut?"on":""}">Sans fruits à coque</button><span class="sep"></span>
+    <button id="nonut" class="${B.nonut?"on":""}">Sans fruits à coque</button>${isCoffret()?`<span class="sep"></span><button data-sh="r" class="${B.shape==="r"?"on":""}">▭ Rectangles</button><button data-sh="s" class="${B.shape==="s"?"on":""}">◻ Carrés</button>`:""}<span class="sep"></span>
     <button class="mag" id="bAuto">${I.spark}${isSachet()?"+10 au choix du chocolatier":"Compléter pour moi"}</button><button id="bClear">Vider</button>`;
   t.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{B.cv=b.dataset.cv;drawTools();drawGrid()});
   $("#nonut").onclick=()=>{B.nonut=!B.nonut;drawTools();drawGrid()};
+  t.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>{B.shape=B.shape===b.dataset.sh?"all":b.dataset.sh;drawTools();drawGrid()});
   $("#bAuto").onclick=autoFill;
   $("#bClear").onclick=()=>{if(!bCount())return;B.pieces=isSachet()?[]:B.pieces.map(()=>null);B.layer=0;drawBox();updateFill()};
 }
@@ -485,11 +502,13 @@ function updateFill(){
     $("#cntS").innerHTML=`<strong>${n}</strong> / ${sz.n} · ${sz.fmt==="ballotin"?"≈ ":""}${fmt(sz.price)}`;
     $("#fbar").classList.toggle("full",full);$("#fbar i").style.width=(n/sz.n*100)+"%";
   }
+  const shp=$("#shp");if(isCoffret()){const R=shapeStat("r"),Q=shapeStat("s");
+    shp.innerHTML=`<span class="${R.used===R.tot?"ok":""}"><i class="r"></i>Rectangles <b>${R.used}/${R.tot}</b></span><span class="${Q.used===Q.tot?"ok":""}"><i class="s"></i>Carrés <b>${Q.used}/${Q.tot}</b></span>`;shp.style.display=""}else shp.style.display="none";
   const nx=$("#atlNext");nx.className="btn "+(ready?"btn-or":"btn-dark");
   nx.innerHTML=ready?`${sach?"Fermer le sachet":sz.fmt==="coffret"?"Fermer le coffret":"Fermer le ballotin"} ${I.arrow}`:sach?`Encore ${SACHET_MIN-n} au minimum`:`Encore ${sz.n-n} praline${sz.n-n>1?"s":""}`;
   const cnt={};B.pieces.forEach(k=>{if(k)cnt[k]=(cnt[k]||0)+1});
   $("#bsc").querySelectorAll("[data-p]").forEach(b=>{const q=cnt[b.dataset.p]||0,w=b.querySelector(".imgw"),c=w.querySelector(".cnt"),r=w.querySelector(".rm");
-    b.classList.toggle("full",full||(sach&&n>=SACHET_MAX));
+    b.classList.toggle("full",full||(sach&&n>=SACHET_MAX)||(isCoffret()&&freeFor(b.dataset.p)<0));
     if(q){if(!c)w.insertAdjacentHTML("beforeend",`<span class="cnt">${q}</span><span class="rm" role="button" aria-label="Retirer une">${I.minus}</span>`);else if(c.textContent!=q)c.textContent=q}
     else{if(c)c.remove();if(r)r.remove()}});
   $("#lytabs").querySelectorAll("[data-ly]").forEach((b,i)=>b.classList.toggle("ok",layerDone(i)));
@@ -498,7 +517,7 @@ function addPiece(k,btn){
   if(B.busy)return;
   let idx;
   if(isSachet()){if(B.pieces.length>=SACHET_MAX){toast(`${SACHET_MAX} pralines maximum par sachet`,false);return}B.pieces.push(k);idx=B.pieces.length-1}
-  else{idx=B.pieces.indexOf(null);if(idx<0){toast("C'est complet : touchez une praline dans la boîte pour la retirer",false);return}B.pieces[idx]=k;
+  else{idx=freeFor(k);if(idx<0){toast(bFull()?"C'est complet : touchez une praline dans la boîte pour la retirer":`Plus de place pour les ${shapeOf(k)==="r"?"pralines rectangulaires":"pralines carrées"} dans ce coffret`,false);return}B.pieces[idx]=k;
     const ly=Math.floor(idx/perLayer());if(ly!==B.layer){B.layer=ly;drawBox();setSlot(idx,null)}}
   vib(8);
   const tgtSlot=$(`#bx .slot[data-i="${idx}"]`),tgt=tgtSlot||$("#bx"),src=btn&&btn.querySelector(".tile");
@@ -515,7 +534,9 @@ function autoFill(){
   if(isSachet()){const add=Math.min(10,SACHET_MAX-B.pieces.length);if(add<=0){toast(`${SACHET_MAX} pralines maximum`,false);return}
     const bag=[...pool].sort(()=>r()-.5);for(let j=0;j<add;j++)B.pieces.push(bag[j%bag.length]);drawBox();updateFill();toast(`${add} pralines ajoutées par le chocolatier`);return}
   const free=B.pieces.map((k,i)=>k?null:i).filter(i=>i!==null);if(!free.length){toast("C'est déjà complet",false);return}
-  const bag=[];free.forEach((i,j)=>{if(j%pool.length===0)bag.push(...[...pool].sort(()=>r()-.5));B.pieces[i]=bag[j]});
+  const bags={},cnt={};
+  free.forEach(i=>{const t=isCoffret()?cellShape(B.size,i):"*";let P=bags[t];if(!P){P=bags[t]=pool.filter(k=>t==="*"||shapeOf(k)===t);if(!P.length)P=bags[t]=BALLO_KEYS.filter(k=>t==="*"||shapeOf(k)===t);P.sort(()=>r()-.5);cnt[t]=0}
+    B.pieces[i]=P[cnt[t]++%P.length]});
   drawBox();updateFill();toast(`${free.length} praline${free.length>1?"s":""} choisie${free.length>1?"s":""} par le chocolatier`)}
 function fly(fromEl,toEl,k,done){
   B.busy=true;
@@ -542,7 +563,7 @@ function addBallotin(){
 function pralineToBallotin(k){
   if(B.step!==1)B.step=1;
   closeSheet();go("atelier");
-  setTimeout(()=>{if(bFull()){toast("C'est complet",false);return}addPiece(k,null);toast(`${prShort(k)} ajoutée`)},330);
+  setTimeout(()=>{if(bFull()){toast("C'est complet",false);return}if(!isSachet()&&freeFor(k)<0){addPiece(k,null);return}addPiece(k,null);toast(`${prShort(k)} ajoutée`)},330);
 }
 
 /* =====================================================================
@@ -587,13 +608,13 @@ function openPraline(k){
 function openItem(id){
   const it=ITEMS[id];const sel={};let qty=1;(it.groups||[]).forEach(g=>sel[g.id]=g.defaults?[...g.defaults]:[]);view="item";
   const sidOf=()=>{const sz=it.box&&sel.taille?SIZES.find(s=>s.label===sel.taille[0]&&s.fmt===SZ[it.box.s].fmt):null;return sz?sz.id:it.box&&it.box.s};
-  const vis=()=>it.box?`<span class="tile" style="--c:${tint("#c9a27e",.45)}">${boxSVG(sidOf(),mixPieces(SZ[sidOf()].n,it.box.mix,it.box.seed||1),{lid:false})}</span>`:media(it);
+  const vis=()=>it.box?`<span class="tile" style="--c:${tint("#c9a27e",.45)}">${boxSVG(sidOf(),assort(sidOf(),it.box.mix,it.box.seed||1),{lid:false})}</span>`:media(it);
   sheet.classList.add("prod");
   sheet.innerHTML=heroHTML(`<div id="iVis" style="display:contents">${vis()}</div>`,it.name)+`
       <div class="sh inl"><div class="tt">${it.tag?`<span class="tag ${it.tag==="Populaire"?"":"ex"}">${it.tag}</span>`:""}<h3>${it.name}</h3>${it.desc?`<p>${it.desc}</p>`:""}<div class="pr" id="iPr"></div></div></div>
       ${(it.groups||[]).map(g=>`<div class="grp" data-grp="${g.id}"><div class="gh"><b>${g.label}</b><span class="st"></span></div>${g.sub?`<div class="gsub">${g.sub}</div>`:""}
         ${g.options.map(op=>`<label class="opt"><span class="l">${op.label}</span>${op.price?`<span class="pp">${op.price>0?"+":""}${fmt(op.price)}</span>`:""}<input type="${g.type==="single"?"radio":"checkbox"}" name="g-${g.id}" data-g="${g.id}" value="${esc(op.label)}" ${(sel[g.id]||[]).includes(op.label)?"checked":""}></label>`).join("")}</div>`).join("")}
-      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("c9",mixPieces(9,"all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
+      ${it.box?`<button class="to-atl" id="toAtl">${boxSVG("c9",assort("c9","all",9),{lid:false})}<span><b>Envie de choisir vous-même ?</b><span>Composez votre ballotin à l'Atelier</span></span><span class="ar">${I.arrow}</span></button>`:""}
       <div class="grp"><div class="gh"><b>Une précision ?</b><span>Optionnel</span></div><div class="fld" style="margin-top:8px"><div class="in"><label for="iNote">Note pour la boutique</label><input id="iNote" maxlength="80" placeholder="${it.box?"Ex. sans alcool, plutôt noir…":"Ex. pour offrir"}"></div></div></div>
     </div>
     <div class="sf"><div class="stepper"><button id="qm" aria-label="Moins">${I.minus}</button><span id="qv">1</span><button id="qp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="addBtn"></button></div>`;
@@ -620,7 +641,7 @@ function openItem(id){
     if(missing){const box=sheet.querySelector(`[data-grp="${missing.id}"]`);box.scrollIntoView({behavior:"smooth",block:"start"});box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake");return}
     const o=(it.groups||[]).map(g=>{const v=sel[g.id]||[];if(g.id==="mac"&&!v.length)return"Assortiment du chef";return v.join(", ")}).filter(Boolean).join(" · ");
     const n=$("#iNote").value.trim(),sid=sidOf();const same=S.cart.find(l=>l.id===it.id&&l.opts===o&&l.note===n);
-    const box=it.box?{s:sid,p:mixPieces(SZ[sid].n,it.box.mix,it.box.seed||1)}:null;
+    const box=it.box?{s:sid,p:assort(sid,it.box.mix,it.box.seed||1)}:null;
     if(same)same.qty+=qty;else S.cart.push({id:it.id,name:it.name,opts:o,note:n,unit:unitPrice(it,sel),qty,...(box?{box}:{})});
     closeSheet();update();toast(`${qty>1?qty+"× ":""}${it.name} ajouté`);
   };

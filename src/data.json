@@ -13,7 +13,8 @@
       "full": "Praliné au speculoos — chocolat noir",
       "cv": "noir",
       "al": "NG",
-      "color": "#a9673f"
+      "color": "#a9673f",
+      "shape": "s"
      },
      {
       "img": "speculoos-lait",
@@ -22,7 +23,8 @@
       "full": "Praliné au speculoos — chocolat au lait",
       "cv": "lait",
       "al": "NG",
-      "color": "#c99766"
+      "color": "#c99766",
+      "shape": "s"
      },
      {
       "img": "craquentine-noir",
@@ -31,7 +33,8 @@
       "full": "Praliné craquentine — chocolat noir",
       "cv": "noir",
       "al": "NG",
-      "color": "#9c5b3d"
+      "color": "#9c5b3d",
+      "shape": "s"
      },
      {
       "img": "craquentine-lait",
@@ -40,7 +43,8 @@
       "full": "Praliné craquentine — chocolat au lait",
       "cv": "lait",
       "al": "N",
-      "color": "#c6a07b"
+      "color": "#c6a07b",
+      "shape": "s"
      },
      {
       "img": "feuilletine",
@@ -49,7 +53,8 @@
       "full": "Praliné feuilletine",
       "cv": "",
       "al": "NG",
-      "color": "#b88b63"
+      "color": "#b88b63",
+      "shape": "s"
      },
      {
       "img": "riz-lait",
@@ -58,7 +63,8 @@
       "full": "Gianduja riz soufflé — chocolat au lait",
       "cv": "lait",
       "al": "NG",
-      "color": "#bf9a76"
+      "color": "#bf9a76",
+      "shape": "s"
      },
      {
       "img": "riz-souffle-blanc",
@@ -67,7 +73,8 @@
       "full": "Gianduja riz soufflé — chocolat blanc",
       "cv": "blanc",
       "al": "NG",
-      "color": "#a77d5c"
+      "color": "#a77d5c",
+      "shape": "s"
      },
      {
       "img": "ancien-lait",
@@ -76,7 +83,8 @@
       "full": "Praline amande et noisette",
       "cv": "lait",
       "al": "NG",
-      "color": "#b9875e"
+      "color": "#b9875e",
+      "shape": "s"
      },
      {
       "img": "pra-pistache",
@@ -85,7 +93,8 @@
       "full": "Praliné pistache",
       "cv": "",
       "al": "N",
-      "color": "#9ba46f"
+      "color": "#9ba46f",
+      "shape": "s"
      },
      {
       "img": "amande-coco",
@@ -94,7 +103,8 @@
       "full": "Praliné amande et noix de coco",
       "cv": "",
       "al": "N",
-      "color": "#c9b79c"
+      "color": "#c9b79c",
+      "shape": "s"
      },
      {
       "img": "Pra-noisette",
@@ -103,7 +113,8 @@
       "full": "Praliné noisette",
       "cv": "",
       "al": "N",
-      "color": "#b0835c"
+      "color": "#b0835c",
+      "shape": "s"
      },
      {
       "img": "pyramide-lait",
@@ -112,7 +123,8 @@
       "full": "Praliné craquentine et coulis de fruits rouges",
       "cv": "lait",
       "al": "NG",
-      "color": "#a54a52"
+      "color": "#a54a52",
+      "shape": "s"
      },
      {
       "img": "decouverte",
@@ -121,7 +133,8 @@
       "full": "Gianduja",
       "cv": "",
       "al": "N",
-      "color": "#a27350"
+      "color": "#a27350",
+      "shape": "s"
      },
      {
       "img": "candisee",
@@ -130,7 +143,8 @@
       "full": "Truffe candisée",
       "cv": "",
       "al": "N",
-      "color": "#8f6047"
+      "color": "#8f6047",
+      "shape": "s"
      }
     ]
    },
@@ -146,7 +160,8 @@
       "full": "EVOCAO — ganache noire 100% pur fruit cacao",
       "cv": "noir",
       "al": "",
-      "color": "#8e5c42"
+      "color": "#8e5c42",
+      "shape": "r"
      },
      {
       "img": "85",
@@ -155,7 +170,8 @@
       "full": "Ganache noire intense 85%",
       "cv": "noir",
       "al": "",
-      "color": "#7f5d4b"
+      "color": "#7f5d4b",
+      "shape": "r"
      },
      {
       "img": "tanzanie",
@@ -164,7 +180,8 @@
       "full": "Ganache noire d'origine Tanzanie",
       "cv": "noir",
       "al": "",
-      "color": "#9a7d52"
+      "color": "#9a7d52",
+      "shape": "r"
      },
      {
       "img": "belize",
@@ -173,7 +190,8 @@
       "full": "Ganache noire d'origine Venezuela",
       "cv": "noir",
       "al": "",
-      "color": "#bf9a48"
+      "color": "#bf9a48",
+      "shape": "r"
      },
      {
       "img": "orange-3",
@@ -182,7 +200,8 @@
       "full": "Ganache noire d'origine Papouasie",
       "cv": "noir",
       "al": "",
-      "color": "#b56c4e"
+      "color": "#b56c4e",
+      "shape": "r"
      },
      {
       "img": "rouge",
@@ -191,7 +210,8 @@
       "full": "Ganache noire d'origine Pérou",
       "cv": "noir",
       "al": "",
-      "color": "#a14c3f"
+      "color": "#a14c3f",
+      "shape": "r"
      },
      {
       "img": "basilic",
@@ -200,7 +220,8 @@
       "full": "Ganache noire infusée au basilic",
       "cv": "noir",
       "al": "",
-      "color": "#7e9473"
+      "color": "#7e9473",
+      "shape": "r"
      },
      {
       "img": "violette",
@@ -209,7 +230,8 @@
       "full": "Ganache noire à la violette",
       "cv": "noir",
       "al": "",
-      "color": "#8b7899"
+      "color": "#8b7899",
+      "shape": "r"
      },
      {
       "img": "earl-grey",
@@ -218,7 +240,8 @@
       "full": "Ganache noire infusée au thé earl grey",
       "cv": "noir",
       "al": "",
-      "color": "#8a8b9c"
+      "color": "#8a8b9c",
+      "shape": "r"
      },
      {
       "img": "curcuma",
@@ -227,7 +250,8 @@
       "full": "Ganache noire infusée au spicy curcuma",
       "cv": "noir",
       "al": "",
-      "color": "#c8923b"
+      "color": "#c8923b",
+      "shape": "r"
      },
      {
       "img": "orange-2",
@@ -236,7 +260,8 @@
       "full": "Ganache noire à l'orange",
       "cv": "noir",
       "al": "",
-      "color": "#c2632f"
+      "color": "#c2632f",
+      "shape": "s"
      },
      {
       "img": "Passion",
@@ -245,7 +270,8 @@
       "full": "Ganache noire et coulis de passion",
       "cv": "noir",
       "al": "",
-      "color": "#d19a42"
+      "color": "#d19a42",
+      "shape": "s"
      },
      {
       "img": "citron-2",
@@ -254,7 +280,8 @@
       "full": "Ganache au citron",
       "cv": "",
       "al": "",
-      "color": "#c4ac4c"
+      "color": "#c4ac4c",
+      "shape": "s"
      },
      {
       "img": "pyramide-noir-3",
@@ -263,7 +290,8 @@
       "full": "Ganache noire infusée à la verveine et coulis de citron vert",
       "cv": "noir",
       "al": "",
-      "color": "#8fa06b"
+      "color": "#8fa06b",
+      "shape": "s"
      },
      {
       "img": "Alice",
@@ -272,7 +300,8 @@
       "full": "Alice — ganache blanche infusée au thé vert et coulis de fruits rouges",
       "cv": "blanc",
       "al": "",
-      "color": "#b0646e"
+      "color": "#b0646e",
+      "shape": "s"
      }
     ]
    },
@@ -288,7 +317,8 @@
       "full": "Manon crème café",
       "cv": "",
       "al": "",
-      "color": "#8b6a52"
+      "color": "#8b6a52",
+      "shape": "s"
      },
      {
       "img": "manon-noisette",
@@ -297,7 +327,8 @@
       "full": "Manon crème noisette",
       "cv": "",
       "al": "N",
-      "color": "#a37c5a"
+      "color": "#a37c5a",
+      "shape": "s"
      },
      {
       "img": "manon-specu",
@@ -306,7 +337,8 @@
       "full": "Manon speculoos",
       "cv": "",
       "al": "G",
-      "color": "#b17f55"
+      "color": "#b17f55",
+      "shape": "s"
      },
      {
       "img": "manon-vanille",
@@ -315,7 +347,8 @@
       "full": "Manon crème vanille",
       "cv": "",
       "al": "",
-      "color": "#bfa070"
+      "color": "#bfa070",
+      "shape": "s"
      },
      {
       "img": "manon-lait",
@@ -324,7 +357,8 @@
       "full": "Manon mousse caramel et fleur de sel",
       "cv": "",
       "al": "",
-      "color": "#b98a5c"
+      "color": "#b98a5c",
+      "shape": "s"
      }
     ]
    },
@@ -340,7 +374,8 @@
       "full": "Crème confiseur à la framboise",
       "cv": "",
       "al": "",
-      "color": "#b5586b"
+      "color": "#b5586b",
+      "shape": "s"
      },
      {
       "img": "caramel-noir",
@@ -349,7 +384,8 @@
       "full": "Caramel au beurre salé, couverture chocolat noir",
       "cv": "noir",
       "al": "",
-      "color": "#a5734b"
+      "color": "#a5734b",
+      "shape": "s"
      },
      {
       "img": "caramel",
@@ -358,7 +394,8 @@
       "full": "Caramel au beurre salé, couverture chocolat au lait",
       "cv": "lait",
       "al": "",
-      "color": "#c99c6b"
+      "color": "#c99c6b",
+      "shape": "s"
      },
      {
       "img": "massepain",
@@ -367,7 +404,8 @@
       "full": "Massepain, couverture chocolat noir",
       "cv": "noir",
       "al": "NL",
-      "color": "#b49a7b"
+      "color": "#b49a7b",
+      "shape": "r"
      },
      {
       "img": "pistache",
@@ -376,7 +414,8 @@
       "full": "Massepain pistache",
       "cv": "",
       "al": "NL",
-      "color": "#9fa672"
+      "color": "#9fa672",
+      "shape": "r"
      },
      {
       "img": "mendiants-lait",
@@ -385,7 +424,8 @@
       "full": "Mendiant chocolat au lait",
       "cv": "lait",
       "al": "N",
-      "color": "#c29d77"
+      "color": "#c29d77",
+      "shape": "s"
      },
      {
       "img": "mendiant-noir",
@@ -394,7 +434,8 @@
       "full": "Mendiant chocolat noir",
       "cv": "noir",
       "al": "NL",
-      "color": "#9d7757"
+      "color": "#9d7757",
+      "shape": "s"
      },
      {
       "img": "liqueurs",
@@ -403,7 +444,8 @@
       "full": "Assortiment liqueurs, couverture chocolat noir",
       "cv": "noir",
       "al": "L",
-      "color": "#8f6e4d"
+      "color": "#8f6e4d",
+      "shape": "s"
      },
      {
       "img": "cerisette",
@@ -412,7 +454,8 @@
       "full": "Cerise au kirsch, couverture chocolat noir",
       "cv": "noir",
       "al": "L",
-      "color": "#984450"
+      "color": "#984450",
+      "shape": "s"
      },
      {
       "img": "gingembre",
@@ -421,7 +464,8 @@
       "full": "Gingembre confit, couverture chocolat noir",
       "cv": "noir",
       "al": "L",
-      "color": "#c49b5f"
+      "color": "#c49b5f",
+      "shape": "s"
      },
      {
       "img": "orangette-citronette-1",
@@ -430,7 +474,8 @@
       "full": "Écorce d'orange confite, couverture chocolat noir",
       "cv": "noir",
       "al": "L",
-      "color": "#cf7b3b"
+      "color": "#cf7b3b",
+      "shape": "r"
      },
      {
       "img": "orangette-citronette",
@@ -439,7 +484,8 @@
       "full": "Écorce de citron confite, couverture chocolat noir",
       "cv": "noir",
       "al": "L",
-      "color": "#c9b052"
+      "color": "#c9b052",
+      "shape": "r"
      }
     ]
    },
@@ -455,7 +501,8 @@
       "full": "Pâte de fruits abricot",
       "cv": "",
       "al": "",
-      "color": "#efdcc0"
+      "color": "#efdcc0",
+      "shape": "s"
      },
      {
       "img": "groseille",
@@ -464,7 +511,8 @@
       "full": "Pâte de fruits groseille",
       "cv": "",
       "al": "",
-      "color": "#ecd5d2"
+      "color": "#ecd5d2",
+      "shape": "s"
      },
      {
       "img": "pomme",
@@ -473,7 +521,8 @@
       "full": "Pâte de fruits poire",
       "cv": "",
       "al": "",
-      "color": "#e4e0c4"
+      "color": "#e4e0c4",
+      "shape": "s"
      },
      {
       "img": "pdf-framboise",
@@ -482,7 +531,8 @@
       "full": "Pâte de fruits framboise",
       "cv": "",
       "al": "",
-      "color": "#efd7da"
+      "color": "#efd7da",
+      "shape": "s"
      },
      {
       "img": "cassis",
@@ -491,7 +541,8 @@
       "full": "Pâte de fruits cassis",
       "cv": "",
       "al": "",
-      "color": "#e2d6e4"
+      "color": "#e2d6e4",
+      "shape": "s"
      },
      {
       "img": "pdf-passion",
@@ -500,7 +551,8 @@
       "full": "Pâte de fruits fruits exotiques",
       "cv": "",
       "al": "",
-      "color": "#f1dfb6"
+      "color": "#f1dfb6",
+      "shape": "s"
      }
     ]
    }
