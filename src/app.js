@@ -145,7 +145,7 @@ const I={
 };
 /* teinte claire pour les fonds des vignettes */
 const tint=(hex,k=.62)=>{const n=parseInt((hex||"#c9a27e").slice(1),16),c=[n>>16,n>>8&255,n&255],b=[246,239,230];return"#"+c.map((v,i)=>Math.round(v*(1-k)+b[i]*k).toString(16).padStart(2,"0")).join("")};
-const tile=(src,c,cls="",alt="")=>`<span class="tile ${cls}" style="--c:${tint(c)}"><img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async"></span>`;
+const tile=(src,c,cls="",alt="")=>`<span class="tile ${cls}" style="--c:${tint(c)}"><img src="${src}" alt="${esc(alt)}" decoding="async" draggable="false"></span>`;
 
 /* ---------- le ballotin, en SVG ---------- */
 let rs=1;const rnd=s=>{rs=s;return()=>(rs=(rs*16807)%2147483647)/2147483647};
@@ -161,7 +161,6 @@ function boxSVG(sid,pieces,o={}){
     cells+=`<g class="slot" data-i="${idx}"><circle cx="${cx}" cy="${cy}" r="24.5" fill="url(#cupG)"/><circle cx="${cx}" cy="${cy}" r="25.5" fill="none" stroke="#cfb18b" stroke-width="2.6" stroke-dasharray="1.6 2.1"/>${k?`<image class="pc${o.drop===idx?" drop":""}" href="${prImg(k)}" x="${cx-23}" y="${cy-23}" width="46" height="46" preserveAspectRatio="xMidYMid meet"/>`:""}</g>`}
   const bow=`<g transform="translate(${W/2} ${H/2})"><path d="M0 0c-14-14-36-16-38-4s22 12 38 4z" fill="#b5c11a"/><path d="M0 0c14-14 36-16 38-4s-22 12-38 4z" fill="#b5c11a"/><path d="M-3 2l-14 22M3 2l14 22" stroke="#c6d41f" stroke-width="7" stroke-linecap="round"/><circle r="7.5" fill="#d4e03c"/></g>`;
   return `<svg class="box${o.closed?" closed":""}" viewBox="-4 -4 ${W+8} ${H+8}" ${o.id?`id="${o.id}"`:""} aria-hidden="true">
-    <defs><radialGradient id="cupG" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#7a4a2a"/><stop offset=".72" stop-color="#5a321b"/><stop offset="1" stop-color="#3e2212"/></radialGradient></defs>
     <rect x="0" y="0" width="${W}" height="${H}" rx="16" fill="#4b2a00"/><rect x="6" y="6" width="${W-12}" height="${H-12}" rx="11" fill="#f6efe4" stroke="#c9a46a" stroke-width="1.5"/>
     ${cells}
     ${o.lid!==false?`<g class="lid"><rect x="0" y="0" width="${W}" height="${H}" rx="16" fill="#3d2717"/><rect x="8" y="8" width="${W-16}" height="${H-16}" rx="10" fill="none" stroke="#c9a46a" stroke-width="1.2" opacity=".7"/>
@@ -200,11 +199,13 @@ const VIEWS=["accueil","menu","infos"];
 function route(){
   const h=(location.hash||"#accueil").slice(1);
   if(h==="atelier"){openAtelier();return}
-  closeAtelier(true);
+  const fromAtl=$("#atl").classList.contains("on");closeAtelier();
   const v=VIEWS.includes(h)?h:(h.startsWith("c-")?"menu":"accueil");
+  const changed=!$("#v-"+v).classList.contains("on");
   VIEWS.forEach(x=>$("#v-"+x).classList.toggle("on",x===v));
   document.querySelectorAll(".nav a").forEach(t=>t.classList.toggle("on",t.dataset.n===v));
-  if(h.startsWith("c-")){setTimeout(()=>scrollToCat(h.slice(2)),30)}else window.scrollTo(0,0);
+  if(h.startsWith("c-"))setTimeout(()=>scrollToCat(h.slice(2)),30);
+  else if(changed||!fromAtl)window.scrollTo(0,0);   // en revenant de l'atelier, on garde sa place
 }
 window.addEventListener("hashchange",route);
 const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
@@ -215,8 +216,7 @@ const go=v=>{if(location.hash==="#"+v)route();else location.hash=v};
 function offerArt(f){
   if(f.art.box)return `<div class="collage"><span class="glow"></span>${boxSVG("g250",mixPieces(20,"all",5),{lid:false})}</div>`;
   if(f.art.imgs)return `<div class="collage"><span class="glow"></span>${f.art.imgs.map((k,i)=>`<img src="${prImg(k)}" alt="" style="transform:translate(${[-62,0,62][i]}%,${[8,-14,10][i]}%) rotate(${[-14,4,16][i]}deg) scale(${[1,1.18,1][i]})">`).join("")}</div>`;
-  return `<div class="collage"><span class="glow"></span><span style="position:absolute;width:62%;transform:translate(-14%,4%) rotate(-8deg)">${boxSVG("e9",mixPieces(9,"all",2),{closed:true})}</span>
-    <img src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt="" style="width:34%;border-radius:50%;transform:translate(70%,52%)"></div>`;
+  return `<div class="collage"><span class="glow"></span>${boxSVG("e9",mixPieces(9,"all",2),{closed:true})}<img class="side" src="assets/thes/the-noir-noel-a-paris-150x150-1.webp" alt=""></div>`;
 }
 function renderHome(){
   const OF=OFFERS.filter(live);
@@ -262,10 +262,16 @@ function renderMenu(){
   bindPralines($("#menuList"));
   $("#pills").querySelectorAll("a").forEach(a=>a.onclick=e=>{e.preventDefault();scrollToCat(a.dataset.c)});
   const links=[...document.querySelectorAll("#pills a")];
-  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle("on",a.dataset.c===e.target.id.slice(2)));const on=links.find(a=>a.classList.contains("on"));if(on){const c=$("#pills");c.scrollTo({left:on.offsetLeft-c.clientWidth/2+on.clientWidth/2,behavior:"smooth"})}}}),{rootMargin:"-80px 0px -65% 0px"});
+  let cur=null;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const id=e.target.id.slice(2);if(id===cur)return;cur=id;
+    links.forEach(a=>a.classList.toggle("on",a.dataset.c===id));const on=links.find(a=>a.dataset.c===id),c=$("#pills");
+    if(on)c.scrollTo({left:on.offsetLeft-c.clientWidth/2+on.clientWidth/2,behavior:"smooth"})}),{rootMargin:"-120px 0px -70% 0px"});
   document.querySelectorAll(".msec").forEach(s=>io.observe(s));
 }
-function scrollToCat(id){const t=document.getElementById("c-"+id);if(t)window.scrollTo({top:t.getBoundingClientRect().top+scrollY-116,behavior:"smooth"})}
+function scrollToCat(id){const t=document.getElementById("c-"+id);if(!t)return;const off=$("#hdr").offsetHeight+$("#pills").offsetHeight+8;window.scrollTo({top:t.getBoundingClientRect().top+scrollY-off,behavior:"smooth"})}
+/* hauteur réelle de l'en-tête → la barre des catégories se colle juste dessous */
+const setHH=()=>document.documentElement.style.setProperty("--hh",$("#hdr").offsetHeight+"px");
+addEventListener("resize",setHH,{passive:true});
 function renderBadges(){
   const q={};S.cart.forEach(l=>q[l.id]=(q[l.id]||0)+l.qty);
   document.querySelectorAll(".row[data-i]").forEach(b=>{const n=q[b.dataset.i];b.classList.toggle("in",!!n);b.querySelector(".add").innerHTML=n?n:I.plus});
@@ -283,8 +289,7 @@ function renderInfos(){
     ["Choisissez la boutique, le jour et l'heure",`Waterloo ou Ixelles. Dès ${CONFIG.prepMinutes} min pour aujourd'hui, ou jusqu'à ${CONFIG.preorderDays} jours à l'avance.`],
     ["Passez la retirer","Votre commande vous attend, emballée. Vous suivez sa préparation en direct. Paiement sur place."],
   ].map((s,i)=>`<div class="st3"><span class="n">${i+1}</span><span><b>${s[0]}</b><p>${s[1]}</p></span></div>`).join("");
-  $("#shopCards").innerHTML=CONFIG.shops.map(s=>{const st=openState(s.id);return `<div class="shopc"><a class="mp" href="${mapsUrl(s)}" target="_blank" rel="noopener" aria-label="Itinéraire vers ${s.name}"><iframe src="https://maps.google.com/maps?q=${encodeURIComponent("L'alchimie du chocolat, "+s.address)}&z=15&output=embed" loading="lazy" tabindex="-1" title="Carte : ${esc(s.name)}"></iframe></a>
-    <div class="bd"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>${s.name}</h3><span class="status ${st.open?"":"closed"}"><i></i><span>${st.text}</span></span></div>
+  $("#shopCards").innerHTML=CONFIG.shops.map(s=>{const st=openState(s.id);return `<div class="shopc"><div class="bd"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>${s.name}</h3><span class="status ${st.open?"":"closed"}"><i></i><span>${st.text}</span></span></div>
     <div class="ad">${esc(s.address)}</div>
     <div class="act"><a class="pri" href="${mapsUrl(s)}" target="_blank" rel="noopener">Itinéraire</a><a href="tel:+${s.phone}">${s.phoneDisplay}</a></div>
     <ul>${hoursList(s)}</ul></div></div>`}).join("");
@@ -295,122 +300,156 @@ function renderInfos(){
 function renderStatus(){const s=openState();$("#status").classList.toggle("closed",!s.open);$("#status span").textContent=`${SHOP(S.shop).name} · ${s.text.replace("Ouvert · ","ouvert ")}`}
 
 /* =====================================================================
-   ATELIER — ballotin sur mesure
+   ATELIER — ballotin sur mesure (3 étapes : taille → pralines → récap)
    ===================================================================== */
 let B;
-const bReset=()=>{B={step:0,size:"g250",pieces:new Array(20).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",closing:false}};bReset();
+const STEPS=["La taille","Les pralines","Votre ballotin"];
+const bReset=()=>{B={step:0,size:"g250",pieces:new Array(20).fill(null),layer:0,cv:"all",nonut:false,qty:1,msg:"",busy:false}};bReset();
 const bSize=()=>SZ[B.size];
 const bCount=()=>B.pieces.filter(Boolean).length;
 const bFull=()=>bCount()>=bSize().n;
 const perLayer=()=>bSize().cols*bSize().rows;
 const nLayers=()=>Math.ceil(bSize().n/perLayer());
-function setSize(id){const old=B.pieces.filter(Boolean);B.size=id;const n=SZ[id].n;B.pieces=new Array(n).fill(null);old.slice(0,n).forEach((k,i)=>B.pieces[i]=k);B.layer=0}
-function drawStage(drop){
-  const closed=B.step===2;
-  $("#stageBox").innerHTML=boxSVG(B.size,B.pieces,{layer:B.layer,drop,closed:false,id:"bx"});
-  if(closed)requestAnimationFrame(()=>requestAnimationFrame(()=>{const b=$("#bx");b&&b.classList.add("closed")}));
-  $("#livep").innerHTML=fmt(bSize().price);
-  const L=nLayers();
-  $("#layers").innerHTML=L>1&&!closed?Array.from({length:L},(_,i)=>{const done=B.pieces.slice(i*perLayer(),(i+1)*perLayer()).every(Boolean);return `<button data-ly="${i}" class="${i===B.layer?"on":""}">Étage ${i+1}${done?"<i></i>":""}</button>`}).join(""):"";
-  $("#layers").style.display=L>1&&!closed?"":"none";
-  $("#layers").querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{B.layer=+b.dataset.ly;drawStage()});
-  $("#stageBox").querySelectorAll(".slot").forEach(g=>g.onclick=()=>{const i=+g.dataset.i;if(B.step!==1||!B.pieces[i])return;
-    const im=g.querySelector(".pc");if(im)im.classList.add("out");B.pieces[i]=null;setTimeout(()=>{drawStage();updateFill()},200);if(navigator.vibrate)try{navigator.vibrate(6)}catch(e){}});
-}
-function openAtelier(){$("#atl").classList.add("on");document.documentElement.style.overflow="hidden";drawStage();drawPanel()}
-function closeAtelier(){if(!$("#atl").classList.contains("on"))return;$("#atl").classList.remove("on");document.documentElement.style.overflow=""}
-$("#atlBack").onclick=()=>{if(B.step>0){B.step--;drawStage();drawPanel()}else go("accueil")};
-$("#atlReset").onclick=()=>{bReset();drawStage();drawPanel();toast("On recommence",false)};
+const layerDone=i=>B.pieces.slice(i*perLayer(),(i+1)*perLayer()).every(Boolean);
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const cvOk=k=>{const p=PRI[k];return(B.cv==="all"||p.cv===B.cv)&&(!B.nonut||!/N/.test(p.al||""))};
-function fillHead(){const n=bCount(),N=bSize().n;return `<div class="ballo-h"><div><h3>${n===N?"C'est complet !":n?"Vos pralines":"Choisissez vos pralines"}</h3></div><small><b style="color:var(--ink)">${n}</b> / ${N}${n<N?` · encore ${N-n}`:""}</small></div><div class="fillbar ${n===N?"full":""}"><i style="width:${n/N*100}%"></i></div>`}
-function fillFoot(){const n=bCount(),N=bSize().n;
-  return `<div class="atl-f"><button class="btn btn-light sm" id="atlPrev" aria-label="Étape précédente"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
-    <button class="btn ${n===N?"btn-or":"btn-dark dis"}" id="atlNext">${n===N?`Fermer le ballotin · ${fmt(bSize().price)}`:`Encore ${N-n} praline${N-n>1?"s":""}`}</button></div>`}
-function drawPanel(){
-  const P=$("#atlPanel");P.classList.toggle("fill",B.step===1);$("#atl").classList.toggle("fillmode",B.step===1);
+const BACK_IC='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>';
+function setSize(id){const old=B.pieces.filter(Boolean);B.size=id;const n=SZ[id].n;B.pieces=new Array(n).fill(null);old.slice(0,n).forEach((k,i)=>B.pieces[i]=k);B.layer=0}
+
+function openAtelier(){const a=$("#atl");if(!a.classList.contains("on")){a.classList.add("on");a.setAttribute("aria-hidden","false");document.documentElement.style.overflow="hidden"}renderAtl()}
+function closeAtelier(){const a=$("#atl");if(!a.classList.contains("on"))return;a.classList.remove("on");a.setAttribute("aria-hidden","true");document.documentElement.style.overflow=""}
+$("#atlBack").onclick=()=>{if(B.step>0){B.step--;renderAtl()}else go("accueil")};
+$("#atlReset").onclick=()=>{if(!bCount()&&B.step===0)return;bReset();renderAtl();toast("On recommence",false)};
+
+function renderAtl(){
+  $("#atlStep").textContent=`Étape ${B.step+1} sur 3 · ${STEPS[B.step]}`;
+  [...$("#atlDots").children].forEach((d,i)=>d.className=i<B.step?"is-done":i===B.step?"is-cur":"");
+  const body=$("#atlBody"),foot=$("#atlFoot");body.className="atl-body"+(B.step===1?" fill":"");
   if(B.step===0){
-    P.innerHTML=`<div class="ph-h"><h2>La taille</h2><small>Étape 1/3</small></div>
-      <div class="sizes">${SIZES.map(s=>`<button class="sz ${s.id===B.size?"sel":""}" data-sz="${s.id}">${boxMini(s.id,s.id===B.size?B.pieces:[])}<b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`).join("")}</div>
-      <div class="atl-f"><button class="btn btn-dark" id="atlNext">Choisir mes pralines</button></div>`;
-    P.querySelectorAll("[data-sz]").forEach(b=>b.onclick=()=>{setSize(b.dataset.sz);drawStage();drawPanel()});
-    $("#atlNext").onclick=()=>{B.step=1;drawStage();drawPanel()};
+    body.innerHTML=`<div class="scrl"><div class="lead"><h2>Quelle taille ?</h2><p>Vous choisirez ensuite chaque praline.</p></div>
+      <div class="sizes">${SIZES.map(s=>`<button class="sz ${s.id===B.size?"sel":""}" data-sz="${s.id}" aria-pressed="${s.id===B.size}"><span class="ck">${I.check}</span><span class="vis">${boxMini(s.id,[])}</span><b>${s.label}</b><span>${s.sub}</span><em>${fmt(s.price)}</em></button>`).join("")}</div>
+      <p class="note-s">Poids indicatif : environ 12 g par praline. Le prix final est confirmé en boutique.</p></div>`;
+    foot.innerHTML=`<button class="btn btn-dark" id="atlNext">Choisir mes pralines ${I.arrow}</button>`;
+    body.querySelectorAll("[data-sz]").forEach(b=>b.onclick=()=>{if(b.dataset.sz===B.size)return;setSize(b.dataset.sz);
+      body.querySelectorAll("[data-sz]").forEach(x=>{const on=x===b;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)})});
+    $("#atlNext").onclick=()=>{B.step=1;renderAtl()};
     return;
   }
   if(B.step===1){
-    const cnt={};B.pieces.forEach(k=>{if(k)cnt[k]=(cnt[k]||0)+1});
-    P.innerHTML=`<div id="fh">${fillHead()}</div>
-      <div class="btools">${[["all","Tous"],["noir","Noir"],["lait","Lait"],["blanc","Blanc"]].map(([k,l])=>`<button data-cv="${k}" class="${B.cv===k?"on":""}">${l}</button>`).join("")}<span class="sep"></span>
-        <button id="nonut" class="${B.nonut?"on":""}">Sans fruits à coque</button><span class="sep"></span>
-        <button class="mag" id="bAuto">${I.spark}Compléter pour moi</button><button id="bClear">Vider</button></div>
-      <div class="bscroll" id="bsc">${BALLO_CATS.map(c=>{const L=c.items.filter(i=>cvOk(i.img));return L.length?`<div class="bcat">${c.name}</div><div class="pgrid">${L.map(i=>pralineCard(i.img,cnt[i.img])).join("")}</div>`:""}).join("")||`<div class="pempty">Aucune praline avec ces filtres.</div>`}</div>
-      <div id="ff">${fillFoot()}</div>`;
-    P.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{B.cv=b.dataset.cv;drawPanel()});
-    $("#nonut").onclick=()=>{B.nonut=!B.nonut;drawPanel()};
-    $("#bAuto").onclick=()=>{const pool=BALLO_KEYS.filter(cvOk);if(!pool.length)return;const free=B.pieces.map((k,i)=>k?null:i).filter(i=>i!==null);if(!free.length){toast("Le ballotin est déjà complet",false);return}
-      const r=rnd(Date.now()%100000),bag=[];free.forEach((i,j)=>{if(j%pool.length===0)bag.push(...[...pool].sort(()=>r()-.5));B.pieces[i]=bag[j]});
-      B.layer=Math.floor(free[0]/perLayer());drawStage();drawPanel();toast(`${free.length} praline${free.length>1?"s":""} choisie${free.length>1?"s":""} par le chocolatier`)};
-    $("#bClear").onclick=()=>{if(!bCount())return;B.pieces=B.pieces.map(()=>null);B.layer=0;drawStage();drawPanel()};
-    bindFill();
+    body.innerHTML=`<div class="fill-top"><div class="bbox" id="bbox"></div><div class="lytabs" id="lytabs"></div>
+        <div class="count"><b id="cntT"></b><span id="cntS"></span></div><div class="fillbar" id="fbar"><i></i></div></div>
+      <div class="tools" id="tools"></div>
+      <div class="scrl" id="bsc"></div>`;
+    foot.innerHTML=`<button class="ic-b back" id="atlPrev" aria-label="Changer de taille">${BACK_IC}</button><button class="btn" id="atlNext"></button>`;
+    $("#atlPrev").onclick=()=>{B.step=0;renderAtl()};
+    $("#atlNext").onclick=()=>{if(!bFull()){const r=bSize().n-bCount();toast(`Encore ${r} praline${r>1?"s":""} à choisir`,false);return}B.step=2;renderAtl();vib(14)};
+    drawBox();drawTools();drawGrid();updateFill();
+    /* la boîte se fait plus petite quand on parcourt les pralines */
+    const sc=$("#bsc"),top=body.querySelector(".fill-top");let cp=false;
+    sc.addEventListener("scroll",()=>{const c=sc.scrollTop>24;if(c!==cp){cp=c;top.classList.toggle("compact",c)}},{passive:true});
     return;
   }
   /* récap */
   const g={};B.pieces.forEach(k=>{if(k)g[k]=(g[k]||0)+1});
-  P.innerHTML=`<div class="ph-h"><h2>Votre ballotin</h2><small>${bSize().label} · ${bSize().n} pralines</small></div>
-    <div class="bcomp">${Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="rl">${tile(prImg(k),PRI[k].color)}<span>${esc(PRI[k].full)}</span><b>×${n}</b></div>`).join("")}
-      <div class="fld"><div class="in"><label for="bMsg">Un petit mot sur la carte ? (optionnel)</label><input id="bMsg" maxlength="140" placeholder="Ex. Joyeux anniversaire Maman !" value="${esc(B.msg)}"></div></div></div>
-    <div class="atl-f"><div class="stepper"><button id="aqm" aria-label="Moins">${I.minus}</button><span id="aqv">${B.qty}</span><button id="aqp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="atlAdd">Ajouter · ${fmt(bSize().price*B.qty)}</button></div>`;
-  const lbl=()=>{$("#aqv").textContent=B.qty;$("#atlAdd").textContent=`Ajouter · ${fmt(bSize().price*B.qty)}`};
+  body.innerHTML=`<div class="scrl"><div class="recap-box">${boxSVG(B.size,B.pieces,{id:"bxR"})}</div>
+    <div class="lead" style="padding-top:6px"><h2>Ballotin ${bSize().label}</h2><p>${bSize().n} pralines · ${fmt(bSize().price)}</p></div>
+    <div class="rlist">${Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="rl">${tile(prImg(k),PRI[k].color)}<span>${esc(PRI[k].full)}</span><b>×${n}</b></div>`).join("")}</div>
+    <div class="fld msg"><div class="in"><label for="bMsg">Un petit mot sur la carte ? (optionnel)</label><input id="bMsg" maxlength="140" placeholder="Ex. Joyeux anniversaire Maman !" value="${esc(B.msg)}"></div></div></div>`;
+  foot.innerHTML=`<div class="stepper"><button id="aqm" aria-label="Moins">${I.minus}</button><span id="aqv">${B.qty}</span><button id="aqp" aria-label="Plus">${I.plus}</button></div><button class="btn btn-or" id="atlAdd"></button>`;
+  const lbl=()=>{$("#aqv").textContent=B.qty;$("#atlAdd").textContent=`Ajouter · ${fmt(bSize().price*B.qty)}`};lbl();
   $("#aqm").onclick=()=>{if(B.qty>1){B.qty--;lbl()}};$("#aqp").onclick=()=>{B.qty++;lbl()};
-  $("#bMsg").oninput=e=>B.msg=e.target.value;
-  $("#atlAdd").onclick=addBallotin;
+  $("#bMsg").oninput=e=>B.msg=e.target.value;$("#atlAdd").onclick=addBallotin;
+  requestAnimationFrame(()=>setTimeout(()=>{const x=$("#bxR");x&&x.classList.add("closed")},120));
 }
-function bindFill(){
-  $("#bsc").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>addPiece(b.dataset.p,b));
-  $("#atlPrev").onclick=()=>{B.step=0;drawStage();drawPanel()};
-  $("#atlNext").onclick=()=>{if(!bFull())return;B.step=2;drawStage();drawPanel();if(navigator.vibrate)try{navigator.vibrate(14)}catch(e){}};
+/* la boîte : dessinée une fois par étage, puis mise à jour alvéole par alvéole */
+function drawBox(){
+  $("#bbox").innerHTML=boxSVG(B.size,B.pieces,{layer:B.layer,lid:false,id:"bx"});
+  $("#bbox").querySelectorAll(".slot").forEach(g=>g.onclick=()=>removePiece(+g.dataset.i));
+  const L=nLayers(),t=$("#lytabs");
+  t.style.display=L>1?"":"none";
+  t.innerHTML=L>1?Array.from({length:L},(_,i)=>`<button data-ly="${i}" class="${i===B.layer?"on":""} ${layerDone(i)?"ok":""}">Étage ${i+1}</button>`).join(""):"";
+  t.querySelectorAll("[data-ly]").forEach(b=>b.onclick=()=>{B.layer=+b.dataset.ly;drawBox()});
 }
+function setSlot(i,k,anim){
+  const g=$(`#bx .slot[data-i="${i}"]`);if(!g)return;
+  const old=g.querySelector(".pc");
+  if(!k){if(old){old.classList.add("out");setTimeout(()=>old.remove(),200)}return}
+  if(old)old.remove();
+  const c=g.querySelector("circle"),cx=+c.getAttribute("cx"),cy=+c.getAttribute("cy");
+  const im=document.createElementNS("http://www.w3.org/2000/svg","image");
+  im.setAttribute("class","pc"+(anim?" drop":""));im.setAttribute("href",prImg(k));
+  im.setAttribute("x",cx-23);im.setAttribute("y",cy-23);im.setAttribute("width",46);im.setAttribute("height",46);
+  g.appendChild(im);
+}
+function drawTools(){
+  const t=$("#tools");
+  t.innerHTML=`${[["all","Tous"],["noir","Noir"],["lait","Lait"],["blanc","Blanc"]].map(([k,l])=>`<button data-cv="${k}" class="${B.cv===k?"on":""}">${l}</button>`).join("")}
+    <button id="nonut" class="${B.nonut?"on":""}">Sans fruits à coque</button><span class="sep"></span>
+    <button class="mag" id="bAuto">${I.spark}Compléter pour moi</button><button id="bClear">Vider</button>`;
+  t.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{B.cv=b.dataset.cv;drawTools();drawGrid()});
+  $("#nonut").onclick=()=>{B.nonut=!B.nonut;drawTools();drawGrid()};
+  $("#bAuto").onclick=autoFill;
+  $("#bClear").onclick=()=>{if(!bCount())return;B.pieces=B.pieces.map(()=>null);B.layer=0;drawBox();updateFill()};
+}
+function drawGrid(){
+  const sc=$("#bsc"),y=sc.scrollTop;
+  const html=BALLO_CATS.map(c=>{const L=c.items.filter(i=>cvOk(i.img));return L.length?`<div class="bcat">${c.name}</div><div class="pgrid sm">${L.map(i=>pickCard(i.img)).join("")}</div>`:""}).join("");
+  sc.innerHTML=html||`<div class="pempty">Aucune praline avec ces filtres.</div>`;
+  sc.scrollTop=y;
+  sc.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>addPiece(b.dataset.p,b));
+}
+function pickCard(k){const p=PRI[k];return `<button class="pr-c" data-p="${k}" aria-label="Ajouter ${esc(p.full)}"><span class="imgw">${tile(prImg(k),p.color,"",p.full)}<span class="add1">${I.plus}</span></span>${p.cv?`<span class="cvt">${p.cv}</span>`:""}<span class="ey">${esc(p.ey)}</span><b>${esc(p.title)}</b></button>`}
 function updateFill(){
   if(B.step!==1)return;
-  $("#fh").innerHTML=fillHead();$("#ff").innerHTML=fillFoot();
+  const n=bCount(),N=bSize().n,full=n===N;
+  $("#cntT").textContent=full?"C'est complet !":`Ballotin ${bSize().label}`;
+  $("#cntS").innerHTML=`<strong>${n}</strong> / ${N} pralines · ${fmt(bSize().price)}`;
+  $("#fbar").classList.toggle("full",full);$("#fbar i").style.width=(n/N*100)+"%";
+  const nx=$("#atlNext");nx.className="btn "+(full?"btn-or":"btn-dark");nx.innerHTML=full?`Fermer le ballotin ${I.arrow}`:`Encore ${N-n} praline${N-n>1?"s":""}`;
   const cnt={};B.pieces.forEach(k=>{if(k)cnt[k]=(cnt[k]||0)+1});
-  $("#bsc").querySelectorAll("[data-p]").forEach(b=>{const n=cnt[b.dataset.p]||0,c=b.querySelector(".cnt");
-    if(n&&c){if(c.textContent!=String(n)){c.textContent=n;c.style.animation="none";void c.offsetWidth;c.style.animation=""}}
-    else if(n){b.insertAdjacentHTML("beforeend",`<span class="cnt">${n}</span>`)}else if(c)c.remove()});
-  bindFill();
-  const L=nLayers();if(L>1)$("#layers").querySelectorAll("[data-ly]").forEach((b,i)=>{const done=B.pieces.slice(i*perLayer(),(i+1)*perLayer()).every(Boolean);b.innerHTML=`Étage ${i+1}${done?"<i></i>":""}`});
+  $("#bsc").querySelectorAll("[data-p]").forEach(b=>{const q=cnt[b.dataset.p]||0,c=b.querySelector(".cnt");b.classList.toggle("full",full);
+    if(q){if(!c)b.querySelector(".imgw").insertAdjacentHTML("beforeend",`<span class="cnt">${q}</span>`);else if(c.textContent!=q)c.textContent=q}else if(c)c.remove()});
+  $("#lytabs").querySelectorAll("[data-ly]").forEach((b,i)=>b.classList.toggle("ok",layerDone(i)));
 }
 function addPiece(k,btn){
+  if(B.busy)return;
   const idx=B.pieces.indexOf(null);
-  if(idx<0){toast("Le ballotin est complet : touchez une praline dans la boîte pour la retirer",false);return}
-  B.pieces[idx]=k;const ly=Math.floor(idx/perLayer());const switched=ly!==B.layer;B.layer=ly;
-  if(switched)drawStage();
-  const tgt=$(`#bx .slot[data-i="${idx}"]`);
-  const done=()=>{drawStage(idx);updateFill()};
-  if(btn&&tgt&&btn.querySelector(".tile")&&document.documentElement.animate){fly(btn.querySelector(".tile"),tgt,k,done)}else done();
-  if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}
+  if(idx<0){toast("Ballotin complet : touchez une praline dans la boîte pour la retirer",false);return}
+  B.pieces[idx]=k;vib(8);
+  const ly=Math.floor(idx/perLayer());if(ly!==B.layer){B.layer=ly;drawBox();setSlot(idx,null);}
+  const tgt=$(`#bx .slot[data-i="${idx}"] circle`),src=btn&&btn.querySelector(".tile");
+  const done=()=>{setSlot(idx,k,true);updateFill()};
+  if(src&&tgt&&document.documentElement.animate&&!matchMedia("(prefers-reduced-motion:reduce)").matches)fly(src,tgt,k,done);else done();
 }
+function removePiece(i){if(!B.pieces[i])return;B.pieces[i]=null;setSlot(i,null);updateFill();vib(6)}
+function autoFill(){
+  const pool=BALLO_KEYS.filter(cvOk);if(!pool.length)return;
+  const free=B.pieces.map((k,i)=>k?null:i).filter(i=>i!==null);if(!free.length){toast("Le ballotin est déjà complet",false);return}
+  const r=rnd(Date.now()%100000),bag=[];free.forEach((i,j)=>{if(j%pool.length===0)bag.push(...[...pool].sort(()=>r()-.5));B.pieces[i]=bag[j]});
+  drawBox();updateFill();toast(`${free.length} praline${free.length>1?"s":""} choisie${free.length>1?"s":""} par le chocolatier`)}
 function fly(fromEl,toEl,k,done){
-  const a=fromEl.getBoundingClientRect(),b=toEl.getBoundingClientRect();
-  const el=document.createElement("img");el.src=prImg(k);el.className="fly";el.style.cssText=`position:fixed;z-index:90;left:${a.left}px;top:${a.top}px;width:${a.width}px;height:${a.height}px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 10px 12px #2b1a0f55)`;
+  B.busy=true;
+  const a=fromEl.getBoundingClientRect(),b=toEl.getBoundingClientRect(),sz=Math.min(a.width,a.height)*.8;
+  const el=document.createElement("img");el.src=prImg(k);el.className="fly";el.alt="";
+  el.style.cssText=`left:${a.left+(a.width-sz)/2}px;top:${a.top+(a.height-sz)/2}px;width:${sz}px;height:${sz}px`;
   document.body.appendChild(el);
-  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),sc=b.width/a.width;
-  const an=el.animate([{transform:"translate(0,0) scale(1)"},{transform:`translate(${dx*.5}px,${dy*.5-50}px) scale(${(1+sc)/1.6}) rotate(-10deg)`,offset:.55},{transform:`translate(${dx}px,${dy}px) scale(${sc}) rotate(0)`}],{duration:480,easing:"cubic-bezier(.45,0,.25,1)"});
-  an.onfinish=()=>{el.remove();done()};
+  const dx=b.left+b.width/2-(a.left+a.width/2),dy=b.top+b.height/2-(a.top+a.height/2),sc=b.width/sz;
+  const an=el.animate([{transform:"translate(0,0) scale(1)"},{transform:`translate(${dx*.55}px,${dy*.55-40}px) scale(${(1+sc)/2})`,offset:.6},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:380,easing:"cubic-bezier(.45,0,.25,1)"});
+  const end=()=>{el.remove();B.busy=false;done()};an.onfinish=end;an.oncancel=end;
 }
 function compText(pieces){const g={};pieces.forEach(k=>{if(k)g[k]=(g[k]||0)+1});return Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`${n}× ${prShort(k)}`).join(", ")}
 function addBallotin(){
-  if(B.closing)return;B.closing=true;
+  if(B.busy)return;B.busy=true;
   const s=bSize();
   S.cart.push({id:"atelier",name:`Ballotin ${s.label} · sur mesure`,opts:compText(B.pieces),note:B.msg.trim()?`Carte : « ${B.msg.trim()} »`:"",unit:s.price,qty:B.qty,box:{s:s.id,p:[...B.pieces]}});
-  update();toast(`${B.qty>1?B.qty+"× ":""}Votre ballotin est dans le panier`);
-  setTimeout(()=>{bReset();go("accueil");setTimeout(()=>{view="cart";drawCart();openSheet()},350)},500);
+  update();toast(`${B.qty>1?B.qty+"× ":""}Ballotin ajouté au panier`);
+  bReset();go("accueil");setTimeout(()=>{view="cart";drawCart();openSheet()},320);
 }
 /* depuis la fiche d'une praline */
 function pralineToBallotin(k){
-  if(B.step===2)B.step=1;
-  if(B.step===0)B.step=1;
+  if(B.step!==1)B.step=1;
   closeSheet();go("atelier");
-  setTimeout(()=>{if(bFull()){toast("Votre ballotin est complet",false);return}addPiece(k,null);toast(`${prShort(k)} ajoutée au ballotin`)},380);
+  setTimeout(()=>{if(bFull()){toast("Votre ballotin est complet",false);return}addPiece(k,null);toast(`${prShort(k)} ajoutée au ballotin`)},330);
 }
 
 /* =====================================================================

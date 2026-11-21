@@ -13,10 +13,7 @@ function renderFooter(){
   const L=CONFIG.legal,yr=new Date().getFullYear(),sh=SHOP(S.shop);
   const soc=Object.keys(SOC).map(k=>{const h=socialHref(k);return h?`<a href="${h}" target="_blank" rel="noopener" aria-label="${SOC[k][0]}" title="${SOC[k][0]}">${SOC[k][1]}</a>`:`<a class="off" aria-label="${SOC[k][0]} (bientôt)" title="${SOC[k][0]} — bientôt">${SOC[k][1]}</a>`}).join("");
   const missing=Object.keys(CONFIG.links).filter(k=>!CONFIG.links[k]).length;
-  $("#footer").innerHTML=`<a class="mapc" href="${mapsUrl(sh)}" target="_blank" rel="noopener" aria-label="Ouvrir la boutique de ${sh.name} dans Google Maps">
-      <iframe src="https://maps.google.com/maps?q=${encodeURIComponent("L'alchimie du chocolat, "+sh.address)}&z=15&output=embed" loading="lazy" tabindex="-1" title="Carte : ${esc(sh.name)}" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      <span class="mapc-b"><span class="mapc-t"><b>L'alchimie · ${sh.name}</b><span>${esc(sh.address)}</span></span><span class="mapc-go">Y aller ${I.arrow}</span></span>
-    </a>
+  $("#footer").innerHTML=`<div class="fshops">${CONFIG.shops.map(s=>{const st=openState(s.id);return `<a class="fshop" href="${mapsUrl(s)}" target="_blank" rel="noopener"><span class="pin">${SOC.maps[1]}</span><span class="t"><b>${s.name}</b><span>${esc(s.address)}</span><small class="${st.open?"o":""}">${st.text}</small></span><span class="go">${I.arrow}</span></a>`}).join("")}</div>
     <div class="lg2">${LOGO_LIGHT}</div>
     <p class="tg">Chocolaterie artisanale. Pralines, ganaches d'origine, macarons et thés, à Waterloo et Ixelles.</p>
     <div class="soc">${soc}</div>${missing?`<div class="soon">Certains réseaux arrivent bientôt.</div>`:""}
@@ -315,6 +312,7 @@ addEventListener("scroll",()=>$("#hdr").classList.toggle("stuck",scrollY>4),{pas
 /* =====================================================================
    UPDATE & INIT
    ===================================================================== */
+document.fonts&&document.fonts.ready.then(setHH);
 function update(){
   save();const t=totals();
   $("#cbar").classList.toggle("show",t.count>0);$("#cbN").textContent=t.count;$("#cbT").textContent=fmt(t.total);
@@ -322,4 +320,4 @@ function update(){
   renderBadges();
   if(view==="cart")drawCart();
 }
-renderHome();renderMenu();renderInfos();renderFooter();renderStatus();setInterval(renderStatus,60000);update();route();renderLive();Promise.resolve(accInit()).then(refreshLive);
+setHH();renderHome();renderMenu();renderInfos();renderFooter();renderStatus();setInterval(renderStatus,60000);update();route();renderLive();Promise.resolve(accInit()).then(refreshLive);

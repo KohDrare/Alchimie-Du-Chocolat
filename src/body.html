@@ -71,15 +71,21 @@
 </div>
 
 <!-- ================= ATELIER (ballotin sur mesure) ================= -->
-<section class="atl" id="atl" aria-label="L'Atelier — ballotin sur mesure">
-  <div class="atl-top">
-    <button class="bk" id="atlBack" aria-label="Retour"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
-    <div class="t"><b>L'Atelier</b><span>Votre ballotin sur mesure</span></div>
-    <button class="rs" id="atlReset" aria-label="Recommencer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 3v2.5h2.5"/></svg></button>
-  </div>
-  <div class="stage" id="stage"><div class="livep" id="livep"></div><div id="stageBox"></div><div class="layers" id="layers"></div></div>
-  <div class="panel" id="atlPanel"></div>
+<section class="atl" id="atl" aria-label="L'Atelier — ballotin sur mesure" aria-hidden="true">
+  <header class="atl-top">
+    <button class="ic-b" id="atlBack" aria-label="Retour"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
+    <div class="atl-t"><b>L'Atelier</b><span id="atlStep">Étape 1 sur 3 · La taille</span></div>
+    <button class="ic-b" id="atlReset" aria-label="Recommencer"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 3v2.5h2.5"/></svg></button>
+  </header>
+  <div class="atl-steps" id="atlDots"><i></i><i></i><i></i></div>
+  <main class="atl-body" id="atlBody"></main>
+  <footer class="atl-foot" id="atlFoot"></footer>
 </section>
+
+<!-- dégradé partagé des alvéoles du ballotin -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <radialGradient id="cupG" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#7a4a2a"/><stop offset=".72" stop-color="#5a321b"/><stop offset="1" stop-color="#3e2212"/></radialGradient>
+</defs></svg>
 
 <div class="cbar" id="cbar"><button id="openCart"><span class="n" id="cbN">0</span><span class="l">Voir le panier</span><span id="cbT"></span></button></div>
 

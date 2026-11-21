@@ -1,0 +1,111 @@
+/* =====================================================================
+   L'ATELIER — mise en page en 3 zones : en-tête / contenu / pied fixe
+   Rien n'est positionné en absolu au-dessus du contenu.
+   ===================================================================== */
+.atl{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;max-width:560px;margin:0 auto;
+  height:100vh;height:100dvh;visibility:hidden;opacity:0;transform:translateY(12px);transition:opacity .25s ease,transform .3s var(--ease),visibility 0s .3s}
+.atl.on{visibility:visible;opacity:1;transform:none;transition:opacity .25s ease,transform .3s var(--ease),visibility 0s}
+.atl-top{flex:none;display:flex;align-items:center;gap:12px;padding:calc(10px + var(--st)) 16px 6px}
+.ic-b{width:42px;height:42px;flex:none;border-radius:50%;background:var(--card);display:grid;place-items:center;box-shadow:0 0 0 1px var(--line);color:var(--ink)}
+.ic-b svg{width:16px;height:16px}
+.atl-t{flex:1;text-align:center;min-width:0}
+.atl-t b{display:block;font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.05}
+.atl-t span{display:block;font-size:12.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atl-steps{flex:none;display:flex;gap:6px;padding:6px 20px 0}
+.atl-steps i{flex:1;height:4px;border-radius:4px;background:#e4d8c8;transition:background .3s}
+.atl-steps i{display:block}.atl-steps i.is-done{background:#c9a27e}.atl-steps i.is-cur{background:var(--or)}
+.atl-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.atl-foot{flex:none;display:flex;gap:10px;align-items:center;padding:10px 16px calc(12px + var(--sb));background:var(--bg);box-shadow:0 -1px 0 var(--line)}
+.atl-foot .btn{flex:1}
+.atl-foot .back{width:52px;height:52px}
+
+/* zone qui défile, avec bord flouté en haut et en bas */
+.scrl{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 20px 18px}
+.lead{padding:16px 0 4px}
+.lead h2{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05}
+.lead p{font-size:14.5px;color:var(--mute);margin-top:4px}
+
+/* ---------- étape 1 : la taille ---------- */
+.sizes{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 0 6px}
+.sz{position:relative;background:var(--card);border-radius:20px;padding:12px;text-align:left;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;transition:box-shadow .2s,transform .15s}
+.sz:active{transform:scale(.98)}
+.sz.sel{box-shadow:0 0 0 2px var(--or),0 8px 18px #8a4a221f}
+.sz .vis{height:92px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.sz .vis svg{max-width:100%;max-height:100%;width:auto;height:auto}
+.sz b{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.sz span{font-size:12.5px;color:var(--mute);margin-top:3px}
+.sz em{font-style:normal;font-weight:800;font-size:15px;margin-top:8px}
+.sz .ck{position:absolute;right:10px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--or);color:#fff;display:none;place-items:center}
+.sz .ck svg{width:11px;height:11px}
+.sz.sel .ck{display:grid}
+.note-s{font-size:12.5px;color:var(--mute);margin-top:12px;line-height:1.4}
+
+/* ---------- étape 2 : les pralines ---------- */
+.fill-top{flex:none;padding:10px 20px 0}
+.bbox{height:clamp(130px,27dvh,250px);display:flex;align-items:center;justify-content:center}
+.bbox svg{height:100%;width:auto;max-width:100%;overflow:visible;filter:drop-shadow(0 10px 14px #2b1a0f26)}
+.lytabs{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.lytabs button{font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:20px;background:var(--card);color:var(--mute);box-shadow:0 0 0 1px var(--line)}
+.lytabs button.on{background:var(--ink);color:#fff;box-shadow:none}
+.lytabs button.ok::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-left:6px;vertical-align:middle}
+.count{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px}
+.count b{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.count span{font-size:13px;color:var(--mute)}
+.count span strong{color:var(--ink);font-weight:800}
+.fillbar{height:6px;border-radius:6px;background:#e4d8c8;margin-top:8px;overflow:hidden}
+.fillbar i{display:block;height:100%;width:0;background:var(--or);border-radius:6px;transition:width .35s var(--ease),background .3s}
+.fillbar.full i{background:var(--green)}
+.tools{flex:none;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:12px 20px 10px;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);box-shadow:0 1px 0 var(--line)}
+.tools::-webkit-scrollbar{display:none}
+.tools button{flex:none;font-size:13px;font-weight:700;padding:8px 13px;border-radius:20px;background:var(--card);box-shadow:0 0 0 1px var(--line);color:var(--ink2);display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.tools button.on{background:var(--ink);color:#fff;box-shadow:none}
+.tools button.mag{background:var(--lime);color:var(--ink);box-shadow:none}
+.tools .sep{flex:none;width:1px;background:var(--line2);margin:5px 1px}
+.fill .scrl{padding-top:4px}
+.bcat{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);margin:16px 2px 8px}
+.pgrid.sm{grid-template-columns:repeat(3,1fr);gap:12px 10px;margin-top:0}
+@media(min-width:420px){.pgrid.sm{grid-template-columns:repeat(4,1fr)}}
+.pgrid.sm .pr-c b{font-size:15.5px}
+.pgrid.sm .pr-c .tile{border-radius:18px}
+.pr-c .add1{position:absolute;right:6px;bottom:6px;width:26px;height:26px;border-radius:50%;background:#fffdf9;color:var(--or);display:grid;place-items:center;box-shadow:0 1px 4px #2b1a0f26}
+.pr-c .add1 svg{width:11px;height:11px}
+.pr-c .imgw{position:relative;width:100%}
+.pr-c.full .tile{opacity:.55}
+
+/* ---------- étape 3 : récap ---------- */
+.recap-box{height:clamp(150px,30dvh,260px);display:flex;align-items:center;justify-content:center;padding:14px 0 6px}
+.recap-box svg{height:100%;width:auto;max-width:100%;overflow:visible;filter:drop-shadow(0 14px 18px #2b1a0f2e)}
+.rlist{margin-top:6px}
+.rlist .rl{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.3}
+.rlist .rl .tile{width:40px;height:40px;border-radius:12px;flex:none}
+.rlist .rl span{flex:1}
+.rlist .rl b{font-weight:800}
+.msg{margin-top:16px}
+
+/* ---------- le ballotin SVG ---------- */
+svg.box .pc{transform-box:fill-box;transform-origin:center}
+svg.box .pc.drop{animation:pdrop .45s var(--ease) both}
+svg.box .pc.out{animation:pout .2s ease both}
+@keyframes pdrop{0%{transform:translateY(-14px) scale(1.35);opacity:0}60%{transform:translateY(1px) scale(.96);opacity:1}100%{transform:none}}
+@keyframes pout{to{transform:scale(.3);opacity:0}}
+svg.box .slot{cursor:pointer}
+svg.box .lid{transform-box:view-box;transform-origin:50% 0;transform:translateY(-112%);opacity:0;transition:transform .7s cubic-bezier(.3,1.25,.5,1),opacity .3s}
+svg.box.closed .lid{transform:none;opacity:1}
+.fly{position:fixed;z-index:80;pointer-events:none;object-fit:contain}
+
+@media (prefers-reduced-motion:reduce){.atl,svg.box .lid,svg.box .pc.drop{transition:none!important;animation:none!important}}
+
+/* boîte compacte pendant le défilement + petits écrans */
+.bbox{transition:height .28s var(--ease)}
+.fill-top.compact .bbox{height:clamp(86px,15dvh,130px)}
+.fill-top.compact .lytabs{margin-top:6px}
+@media (max-height:700px){
+  .bbox{height:clamp(110px,22dvh,190px)}
+  .count{margin-top:8px}.count b{font-size:21px}
+  .tools{padding-top:9px;padding-bottom:8px}
+  .pgrid.sm .pr-c .ey{display:none}
+  .atl-t b{font-size:21px}
+}
+/* les messages s'affichent au-dessus du pied de page dans l'atelier */
+.atl.on ~ .toast{top:auto;bottom:calc(84px + var(--sb))}

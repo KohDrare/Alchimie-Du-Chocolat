@@ -21,12 +21,14 @@ html=f'''<!DOCTYPE html>
 <title>L'alchimie du chocolat — Commander en ligne · Waterloo & Ixelles</title>
 <meta name="description" content="Chocolaterie artisanale à Waterloo et Ixelles. Composez votre ballotin praline par praline, précommandez pour les fêtes et retirez en boutique.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script>document.documentElement.classList.add("js");(function(){{var d=document.documentElement,ok=function(){{d.classList.add("ready")}};setTimeout(ok,900);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ok)}})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700;800&family=Allura&display=swap" rel="stylesheet">
 <style>
 {R('base.css')}
 {R('extra.css')}
+{R('atelier.css')}
 </style>
 </head>
 <body>

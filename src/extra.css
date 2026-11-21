@@ -23,7 +23,7 @@
 /* ---------- vignettes produits (détourés sur fond coloré) ---------- */
 .tile{position:relative;display:grid;place-items:center;overflow:hidden;background:var(--c,#e9dccb)}
 .tile::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#ffffff6b,#ffffff00 62%)}
-.tile img{position:relative;width:82%;height:82%;object-fit:contain;filter:drop-shadow(0 6px 8px #2b1a0f40)}
+.tile img{position:relative;width:82%;height:82%;object-fit:contain}
 .tile.sq img{width:100%;height:100%;object-fit:cover;filter:none}
 .tile svg.box{position:relative;width:92%;height:auto}
 .ph .tile,.im .tile,.th .tile{width:100%;height:100%}
@@ -77,61 +77,6 @@
 .chipsI{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .chipsI span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;background:var(--or-soft);color:var(--or-d)}
 .chipsI span.al{background:#fff1c2;color:#7a5a00}
-
-/* ---------- ballotin (SVG) ---------- */
-svg.box .cup{fill:url(#cupG)}
-svg.box .pc{transition:opacity .2s}
-svg.box .pc.drop{animation:pdrop .5s var(--ease) both;transform-box:fill-box;transform-origin:center}
-svg.box .pc.out{animation:pout .22s ease both;transform-box:fill-box;transform-origin:center}
-@keyframes pdrop{0%{transform:translateY(-26px) scale(1.5);opacity:0}60%{transform:translateY(2px) scale(.94);opacity:1}100%{transform:none}}
-@keyframes pout{to{transform:scale(.3);opacity:0}}
-svg.box .lid{transition:transform .8s cubic-bezier(.3,1.3,.5,1),opacity .4s;transform:translateY(-118%) rotate(-4deg);opacity:0;transform-box:view-box;transform-origin:50% 50%}
-svg.box.closed .lid{transform:none;opacity:1}
-.stage svg.box{width:min(88vw,46vh,440px);height:auto;max-height:100%;overflow:visible;filter:drop-shadow(0 18px 24px #2b1a0f33)}
-.stage svg.box .slot{cursor:pointer}
-.layers{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);display:flex;gap:6px;background:#fffdf9;border-radius:30px;padding:4px;box-shadow:0 2px 8px #2b1a0f1a}
-.layers button{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:20px;color:var(--mute)}
-.layers button.on{background:var(--ink);color:#fff}
-.layers button i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-left:5px;vertical-align:middle}
-
-/* panneau du compositeur */
-.ballo-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:16px 20px 0}
-.ballo-h h3{font-size:28px;line-height:1}
-.ballo-h small{font-size:13px;color:var(--mute)}
-.fillbar{height:8px;border-radius:8px;background:#e9dfd2;margin:10px 20px 0;overflow:hidden}
-.fillbar i{display:block;height:100%;background:linear-gradient(90deg,var(--or),#b97a45);border-radius:8px;transition:width .35s var(--ease)}
-.fillbar.full i{background:var(--lime)}
-.btools{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
-.btools::-webkit-scrollbar{display:none}
-.btools button{flex:none;font-size:13px;font-weight:700;padding:9px 13px;border-radius:14px;background:var(--card);box-shadow:0 0 0 1px var(--line);display:inline-flex;gap:6px;align-items:center;color:var(--ink2)}
-.btools button.on{background:var(--ink);color:#fff;box-shadow:none}
-.btools button.mag{background:var(--lime);color:var(--ink);box-shadow:none}
-.btools .sep{flex:none;width:1px;background:var(--line2);margin:4px 2px}
-.bscroll{flex:1;min-height:0;overflow:auto;padding:0 20px 10px;-webkit-overflow-scrolling:touch}
-.bscroll .pgrid{grid-template-columns:repeat(4,1fr);gap:10px 8px}
-.bscroll .pr-c b{font-size:15.5px}
-.bscroll .pr-c .tile{border-radius:18px}
-.bcat{font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);margin:16px 2px 0}
-#atlPanel{display:flex;flex-direction:column;max-height:58vh}
-#atlPanel.fill{height:58vh}
-.atl .stage{min-height:0}
-.atl.fillmode .stage{flex:0 0 auto;height:min(36vh,330px)}
-
-/* choix de la taille */
-.sizes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:14px 20px 4px;overflow:auto}
-.sz{background:var(--card);border-radius:22px;padding:12px 12px 13px;text-align:left;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;gap:2px;transition:.2s var(--ease)}
-.sz.sel{box-shadow:0 0 0 2.5px var(--or),0 8px 18px #8a4a2226}
-.sz svg.box{width:100%;height:auto;margin-bottom:6px}
-.sz b{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1}
-.sz span{font-size:12.5px;color:var(--mute)}
-.sz em{font-style:normal;font-weight:800;font-size:15px;margin-top:4px;color:var(--ink)}
-
-/* récap ballotin */
-.bcomp{padding:6px 20px 0;overflow:auto;flex:1;min-height:0}
-.bcomp .rl{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14.5px}
-.bcomp .rl .tile{width:38px;height:38px;border-radius:12px;flex:none}
-.bcomp .rl b{margin-left:auto;font-weight:800}
-.bcomp .fld{margin-top:12px}
 
 /* ---------- panier / finaliser ---------- */
 .cl .th .tile{width:100%;height:100%;border-radius:inherit}
@@ -194,12 +139,12 @@ svg.box.closed .lid{transform:none;opacity:1}
 .ft .lg2 svg{height:54px;width:auto}
 .ft .lg2 path[stroke="#4B2A00"],.ft .lg2 path[fill="#4B2A00"]{}
 
-.hdr{background:rgba(243,236,226,.88)}
+
 .legal table.alt{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
 .legal table.alt th{text-align:left;font-family:var(--serif);font-size:19px;font-weight:600;padding:14px 0 4px}
 .legal table.alt td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
 .legal table.alt td:last-child{text-align:right;color:var(--mute);white-space:nowrap;padding-left:10px}
-.pills{background:rgba(243,236,226,.9)}
+
 .to-atl svg.box{width:64px;height:auto;flex:none}
 .empty svg.box{width:130px;height:auto;margin:0 auto 10px;opacity:.9}
 .pick .im .tile{height:100%}
@@ -210,11 +155,44 @@ svg.box.closed .lid{transform:none;opacity:1}
 .nav a{padding:7px 9px;font-size:13px}
 @media(max-width:380px){.hdr .lg svg{max-width:84px}.nav a{padding:7px 7px}}
 .offer .collage img{width:34%}
-.atl.fillmode .stage{height:min(30vh,270px)}
-.atl.fillmode .stage svg.box{height:calc(100% - 34px);width:auto;max-width:92vw}
-.atl.fillmode .livep{top:2px}
-.atl.fillmode #atlPanel{flex:1;max-height:none;height:auto;min-height:0}
 .sh .ey2{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-top:8px}
-.atl.fillmode .stage{display:block;padding:6px 0 38px;overflow:hidden}
-.atl.fillmode #stageBox{height:100%;display:flex;justify-content:center;align-items:center}
-.atl.fillmode .stage svg.box{height:100%;width:auto;max-width:92vw}
+
+/* ---------- pied de page : boutiques (sans carte intégrée) ---------- */
+.fshops{display:grid;gap:10px}
+.fshop{display:flex;align-items:center;gap:12px;background:#ffffff12;border-radius:18px;padding:14px;color:#f3ece2;box-shadow:inset 0 0 0 1px #ffffff1a}
+.fshop .pin{width:40px;height:40px;border-radius:12px;background:var(--lime);color:var(--ink);display:grid;place-items:center;flex:none}
+.fshop .pin svg{width:20px;height:20px}
+.fshop .t{flex:1;min-width:0}
+.fshop b{display:block;font-family:var(--serif);font-size:22px;font-weight:600;line-height:1.05}
+.fshop .t span{display:block;font-size:13px;opacity:.75}
+.fshop small{display:inline-block;font-size:11.5px;font-weight:700;margin-top:4px;color:#e9b3a3}
+.fshop small.o{color:var(--lime)}
+.fshop .go{opacity:.6}
+.shopc .bd{padding:18px}
+
+/* ---------- apparition propre (pas de saut de police au chargement) ---------- */
+html.js:not(.ready) .app,html.js:not(.ready) .cbar{opacity:0}
+html.ready .app{opacity:1;transition:opacity .25s ease}
+.view.on{animation:vfade .22s ease}
+@keyframes vfade{from{opacity:.001}to{opacity:1}}
+.tile img{-webkit-user-drag:none;user-select:none}
+.pgrid,.list{contain:layout style}
+
+.pills{top:var(--hh,58px)!important}
+@media(min-width:1024px){.pills{top:96px!important}}
+.offer .collage{inset:0 0 44% 0}
+.offer .collage img{width:30%}
+.offer .collage svg.box{width:58%}
+.offer .collage .glow{width:62%}
+/* offres : l'illustration reste dans le coin haut, le texte en bas, sans se toucher */
+.offer .collage{inset:14px 14px auto auto;width:54%;height:44%;display:block}
+.offer .collage>*{position:absolute;left:50%;top:50%}
+.offer .collage .glow{width:120%;translate:-50% -50%}
+.offer .collage svg.box{width:100%;translate:-50% -50%}
+.offer .collage img{width:46%;translate:-50% -50%}
+.offer .collage>span:not(.glow){width:78%!important;translate:-60% -55%}
+.offer h2{font-size:38px}
+.offer .collage{height:40%}
+.offer .collage svg.box{height:100%;width:auto;max-width:100%}
+.offer .collage img.side{width:34%;border-radius:50%;translate:30% -10%;left:62%}
+.offer .collage{height:31%;top:12px}
