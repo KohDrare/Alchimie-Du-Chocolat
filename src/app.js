@@ -57,7 +57,14 @@ const PER_LAYER={b250:10,b350:13,b500:19,b750:29,b1000:35};
 /* disposition : coffret = plateau carré à alvéoles ; ballotin = boîte en longueur, pralines rangées en lignes */
 function layout(s){
   const c=[];
-  if(s.fmt==="coffret"){const N=s.grid;for(let r=0;r<N;r++)for(let k=0;k<N;k++)c.push({x:3+k*12,y:3+r*12,w:10,h:10});return{W:6+N*12-2,H:6+N*12-2,cells:c}}
+  if(s.fmt==="coffret"){
+    /* plateau réel : bande de rectangles couchés à gauche + grille de carrés (photos de la boutique) */
+    const {cols,rows,band}=s.tray,gh=rows*12-2;
+    if(!band){for(let r=0;r<rows;r++)for(let k=0;k<cols;k++){const mid=k===1;c.push(mid?{x:3+k*12,y:4.5+r*12,w:10,h:7,rect:1}:{x:3+k*12,y:3+r*12,w:10,h:10})}return{W:6+cols*12-2,H:6+gh,cells:c}}
+    const rh=(gh-(band-1)*2)/band;
+    for(let i=0;i<band;i++)c.push({x:3,y:3+i*(rh+2),w:12,h:rh,rect:1});
+    for(let r=0;r<rows;r++)for(let k=0;k<cols;k++)c.push({x:17+k*12,y:3+r*12,w:10,h:10});
+    return{W:17+cols*12-2+3,H:6+gh,cells:c}}
   const per=PER_LAYER[s.id],cols=Math.max(4,Math.ceil(Math.sqrt(per*2.2))),rows=Math.ceil(per/cols);
   for(let i=0;i<per;i++){const r=Math.floor(i/cols),inRow=r<rows-1?cols:per-cols*(rows-1),k=i-r*cols,off=(cols-inRow)*6;
     c.push({x:4+off+k*12,y:4+r*12,w:10,h:10})}
@@ -65,19 +72,21 @@ function layout(s){
 }
 const FORMATS=[
   {id:"ballotin",label:"Ballotin",sub:"Boîte blanche, ruban rouge · au poids, 105 €/kg",sizes:[["b250","250 g",250,26.25],["b350","350 g",350,36.75],["b500","500 g",500,52.50],["b750","750 g",750,78.75],["b1000","1 kg",1000,105]]},
-  {id:"coffret",label:"Coffret",sub:"Boîte bleu nuit, ruban doré · prix fixe",sizes:[["c9","9 pralines",3,13.80],["c16","16 pralines",4,21.30],["c25","25 pralines",5,32.70],["c36","36 pralines",6,43.40],["c49","49 pralines",7,59.30]]},
+  {id:"coffret",label:"Coffret",sub:"Boîte bleu nuit, ruban doré · prix fixe",sizes:[
+    ["c9","9 pralines",{cols:3,rows:3,band:0},13.80],["c17","17 pralines",{cols:3,rows:4,band:5},21.30],["c27","27 pralines",{cols:4,rows:5,band:7},32.70],
+    ["c38","38 pralines",{cols:5,rows:6,band:8},43.40],["c52","52 pralines",{cols:6,rows:7,band:10},59.30]]},
   {id:"sachet",label:"Sachet",sub:"Sur mesure, au poids · 105 €/kg",sizes:[["sachet","Sachet sur mesure",0,0]]},
 ];
 const SIZES=[];
 FORMATS.forEach(f=>f.sizes.forEach(([id,label,v,price])=>{
   const s={id,fmt:f.id,label,price};
   if(f.id==="ballotin"){s.grams=v;s.layers=3;s.lay=layout(s);s.per=s.lay.cells.length;s.n=s.per*3;s.sub=`${s.n} pralines · 3 couches`}
-  if(f.id==="coffret"){s.grid=v;s.layers=1;s.lay=layout(s);s.per=s.n=v*v;s.sub=`Plateau de ${v}×${v}`}
+  if(f.id==="coffret"){s.tray=v;s.layers=1;s.lay=layout(s);s.per=s.n=s.lay.cells.length;s.sub=v.band?`${v.band} rectangles + ${v.cols}×${v.rows} carrés`:"Plateau de 3×3"}
   if(f.id==="sachet"){s.layers=1;s.n=0;s.sub=`De ${SACHET_MIN} à ${SACHET_MAX} pralines`}
   SIZES.push(s)}));
 const SZ=Object.fromEntries(SIZES.map(s=>[s.id,s]));
 /* anciens identifiants (paniers déjà enregistrés) */
-Object.assign(SZ,{e9:SZ.c9,g250:SZ.b250,g500:SZ.b500,g750:SZ.b750,g1000:SZ.b1000});
+Object.assign(SZ,{c16:SZ.c17,c25:SZ.c27,c36:SZ.c38,c49:SZ.c52,e9:SZ.c9,g250:SZ.b250,g500:SZ.b500,g750:SZ.b750,g1000:SZ.b1000});
 const sachetPrice=n=>Math.round(n*PRALINE_G/1000*PRICE_KG*20)/20;   // arrondi à 5 cents
 const o=(l,p=0)=>({label:l,price:p});
 const SIZEG=(from,fmt="ballotin")=>({id:"taille",label:fmt==="coffret"?"Format":"Poids",type:"single",required:true,defaults:[SZ[from].label],
@@ -95,13 +104,13 @@ const MENU=[
   {id:"fetes",title:"Fêtes & précommandes",hint:"Réservez maintenant, on prépare tout pour le jour choisi.",items:[
     {id:"x1",name:"Ballotin Saint-Nicolas",desc:"Pralinés speculoos noir et lait, Manon speculoos et craquentine. Environ 250 g.",price:26.25,tag:"6 décembre",until:"12-06",
      box:{s:"b250",mix:["speculoos-noir","speculoos-lait","manon-specu","craquentine-noir","craquentine-lait"]}},
-    {id:"x2",name:"Coffret des fêtes",desc:"L'assortiment de la maison dans son coffret bleu nuit, ruban doré.",price:32.70,tag:"Noël",groups:[SIZEG("c25","coffret")],box:{s:"c25",mix:"all",seed:7}},
+    {id:"x2",name:"Coffret des fêtes",desc:"L'assortiment de la maison dans son coffret bleu nuit, ruban doré.",price:32.70,tag:"Noël",groups:[SIZEG("c27","coffret")],box:{s:"c27",mix:"all",seed:7}},
     {id:"x3",name:"Thé de Noël",desc:"Les éditions de fin d'année, en vrac. 100 g.",price:9.5,img:"assets/thes/the-noir-noel-a-paris-150x150-1.webp",sq:true,
      groups:[{id:"the",label:"Votre thé",type:"single",required:true,options:["Rooibos de Noël","Christmas tea vert","Noël à Pékin","Noël à Paris","Noël à St Pétersbourg","Christmas tea noir","Tisane de Noël"].map(l=>o(l))}]},
   ]},
   {id:"ballotins",title:"Ballotins",hint:"Ballotins au poids et coffrets : l'assortiment de la maison, ou le vôtre, composé à l'Atelier.",items:[
     {id:"b1",name:"Ballotin assorti",desc:"Le choix du chocolatier dans le ballotin blanc au ruban rouge. Vendu au poids, 105 €/kg.",price:26.25,tag:"Populaire",groups:[SIZEG("b250")],box:{s:"b250",mix:"all",seed:3}},
-    {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 9 à 49 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c9","coffret")],box:{s:"c9",mix:"all",seed:11}},
+    {id:"b2",name:"Coffret assorti",desc:"Coffret bleu nuit au ruban doré, de 9 à 52 pralines. Idéal à offrir.",price:13.80,groups:[SIZEG("c9","coffret")],box:{s:"c9",mix:"all",seed:11}},
   ]},
   {id:"pralines",title:"Nos pralines",hint:"Touchez une praline pour la découvrir et l'ajouter à votre ballotin.",special:true,items:[]},
   {id:"napolitains",title:"Napolitains",hint:"Carrés fins de chocolat d'origine, du plus doux au plus intense.",items:[
